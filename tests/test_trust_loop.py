@@ -9,6 +9,9 @@ from dip_framework.v02 import (
     compute_policy_preflight,
     compute_simulation,
     evaluate_approval_authority,
+    evaluate_durable_evidence_store,
+    evaluate_external_identity,
+    evaluate_release_lifecycle,
     evaluate_repository_governance,
     verify_case_manifest,
     write_v0_2_evidence,
@@ -50,6 +53,14 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(payload["acceptance"]["repository_governance_policy_observed"])
         self.assertTrue(payload["acceptance"]["admin_enforcement_required"])
         self.assertTrue(payload["acceptance"]["break_glass_policy_defined"])
+        self.assertTrue(payload["acceptance"]["release_lifecycle_policy_observed"])
+        self.assertTrue(payload["acceptance"]["release_lifecycle_valid"])
+        self.assertTrue(payload["acceptance"]["external_identity_contract_observed"])
+        self.assertTrue(payload["acceptance"]["external_identity_contract_valid"])
+        self.assertFalse(payload["acceptance"]["live_external_identity_provider_authenticated"])
+        self.assertTrue(payload["acceptance"]["durable_evidence_store_policy_observed"])
+        self.assertTrue(payload["acceptance"]["durable_store_contract_valid"])
+        self.assertFalse(payload["acceptance"]["production_storage_backend_observed"])
         self.assertFalse(payload["acceptance"]["runtime_integration_authorized"])
         self.assertFalse(payload["acceptance"]["production_decision_execution_authorized"])
 
@@ -89,7 +100,7 @@ class TrustLoopTests(unittest.TestCase):
         )
 
     def test_v0_5_computes_decision_diff_from_simulation(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.7.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
         payload = result["decision_diff"]
 
         self.assertTrue(payload["computed"])
@@ -104,7 +115,7 @@ class TrustLoopTests(unittest.TestCase):
     def test_v0_5_manifest_approval_and_release_pack_are_pre_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             write_trust_loop(Path(tmp), ROOT)
-            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.7.0-pre")
+            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
 
             self.assertTrue(verify_case_manifest(ROOT, result["manifest"]))
             self.assertTrue(verify_case_manifest(ROOT, result["durable_manifest"]))
@@ -128,12 +139,15 @@ class TrustLoopTests(unittest.TestCase):
             self.assertTrue(result["release"]["repository_governance_policy_observed"])
             self.assertTrue(result["release"]["admin_enforcement_required"])
             self.assertTrue(result["release"]["break_glass_policy_defined"])
+            self.assertTrue(result["release"]["release_lifecycle_valid"])
+            self.assertTrue(result["release"]["external_identity_contract_valid"])
+            self.assertTrue(result["release"]["durable_store_contract_valid"])
             self.assertTrue(result["release"]["release_acceptance_passed"])
             self.assertFalse(result["release"]["runtime_integration_authorized"])
             self.assertFalse(result["release"]["production_decision_execution_authorized"])
 
     def test_v0_6_evaluates_identity_rbac_approval_authority_without_external_idp(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.7.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
         authority = evaluate_approval_authority(ROOT, result["durable_manifest"])
 
         self.assertTrue(authority["computed"])
@@ -152,7 +166,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v0_7_defines_repository_governance_policy_without_runtime_authority(self) -> None:
         governance = evaluate_repository_governance(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.7.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
 
         self.assertTrue(governance["computed"])
         self.assertEqual(governance["source_boundary"], "declared_repository_governance_policy_not_runtime_execution")
@@ -165,6 +179,51 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(result["release"]["repository_governance_policy_observed"])
         self.assertTrue(result["release"]["admin_enforcement_required"])
         self.assertTrue(result["release"]["break_glass_policy_defined"])
+
+    def test_v0_8_defines_release_lifecycle_without_runtime_authority(self) -> None:
+        lifecycle = evaluate_release_lifecycle(ROOT)
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
+
+        self.assertTrue(lifecycle["computed"])
+        self.assertEqual(lifecycle["stage_count"], 6)
+        self.assertTrue(lifecycle["release_lifecycle_valid"])
+        self.assertTrue(lifecycle["independent_approval_required"])
+        self.assertTrue(lifecycle["codeowner_review_required"])
+        self.assertTrue(lifecycle["conversation_resolution_required"])
+        self.assertGreaterEqual(lifecycle["rollback_criteria_count"], 3)
+        self.assertFalse(lifecycle["runtime_integration_authorized"])
+        self.assertTrue(result["release"]["release_lifecycle_policy_observed"])
+        self.assertTrue(result["release"]["release_lifecycle_valid"])
+
+    def test_v0_9_defines_external_identity_contract_without_live_auth(self) -> None:
+        external = evaluate_external_identity(ROOT)
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
+
+        self.assertTrue(external["computed"])
+        self.assertEqual(external["source_boundary"], "external_idp_contract_evidence_not_live_authentication")
+        self.assertTrue(external["external_identity_contract_valid"])
+        self.assertTrue(external["required_claims_present"])
+        self.assertTrue(external["approval_identity_bound_to_subject"])
+        self.assertFalse(external["live_provider_authenticated"])
+        self.assertTrue(result["release"]["external_identity_contract_observed"])
+        self.assertTrue(result["release"]["external_identity_contract_valid"])
+        self.assertFalse(result["release"]["live_external_identity_provider_authenticated"])
+
+    def test_v1_0_defines_durable_store_contract_without_production_storage(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v1.0.0-pre")
+        durable_store = evaluate_durable_evidence_store(ROOT, result["durable_manifest"])
+
+        self.assertTrue(durable_store["computed"])
+        self.assertEqual(durable_store["storage_model"], "append_only_content_addressed_log")
+        self.assertTrue(durable_store["required_controls_present"])
+        self.assertTrue(durable_store["content_addressed_records"])
+        self.assertTrue(durable_store["manifest_hash_chain"])
+        self.assertTrue(durable_store["append_only_enforced_by_contract"])
+        self.assertTrue(durable_store["delete_denied_by_contract"])
+        self.assertFalse(durable_store["production_storage_backend_observed"])
+        self.assertTrue(result["release"]["durable_evidence_store_policy_observed"])
+        self.assertTrue(result["release"]["durable_store_contract_valid"])
+        self.assertFalse(result["release"]["production_storage_backend_observed"])
 
 
 if __name__ == "__main__":

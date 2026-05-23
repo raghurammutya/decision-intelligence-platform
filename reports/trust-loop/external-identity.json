@@ -1,0 +1,20 @@
+{
+  "ai_identity_excluded_from_approval_roles": true,
+  "approval_identity_bound_to_subject": true,
+  "computed": true,
+  "evaluation_id": "external-identity-v0.9-pre-runtime-1",
+  "evidence_hash": "e6907184d458fdba55d518c79c5901b9bef5b54d68fba58932f975f85f054342",
+  "evidence_id": "dip-external-identity-pre-runtime",
+  "evidence_version": "0.9.0-pre",
+  "external_identity_contract_valid": true,
+  "live_provider_authenticated": false,
+  "mfa_claim_observed_in_contract": true,
+  "mfa_claim_required": true,
+  "production_decision_execution_authorized": false,
+  "provider_type": "oidc",
+  "required_claims_present": true,
+  "role_mapping_count": 1,
+  "runtime_integration_authorized": false,
+  "schema_version": "external-identity-evaluation/v1",
+  "source_boundary": "external_idp_contract_evidence_not_live_authentication"
+}

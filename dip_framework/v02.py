@@ -18,6 +18,9 @@ ARTIFACTS = [
     ("policy_definitions", "examples/support-ticket-policy-definitions.json"),
     ("identity_rbac_registry", "examples/identity-rbac-registry.json"),
     ("repository_governance_policy", "examples/repository-governance-policy.json"),
+    ("release_lifecycle_policy", "examples/release-lifecycle-policy.json"),
+    ("external_identity_evidence", "examples/external-identity-evidence.json"),
+    ("durable_evidence_store_policy", "examples/durable-evidence-store-policy.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -411,6 +414,115 @@ def evaluate_repository_governance(root: Path) -> dict[str, Any]:
     }
 
 
+def evaluate_release_lifecycle(root: Path) -> dict[str, Any]:
+    policy = load_json(root / "examples/release-lifecycle-policy.json")
+    stages = policy.get("stages", [])
+    rollback_criteria = policy.get("rollback_criteria", [])
+    return {
+        "schema_version": "release-lifecycle-evaluation/v1",
+        "evaluation_id": "release-lifecycle-v0.8-pre-runtime-1",
+        "computed": True,
+        "policy_id": policy.get("policy_id"),
+        "policy_version": policy.get("policy_version"),
+        "policy_hash": _sha256(root / "examples/release-lifecycle-policy.json"),
+        "source_boundary": policy.get("source_boundary"),
+        "stage_count": len(stages),
+        "required_stages_present": set(stages)
+        >= {"draft", "candidate", "approved", "tagged", "artifact_backed", "rollback_ready"},
+        "independent_approval_required": policy.get("independent_approval_required") is True,
+        "codeowner_review_required": policy.get("codeowner_review_required") is True,
+        "conversation_resolution_required": policy.get("conversation_resolution_required") is True,
+        "release_artifact_required": policy.get("release_artifact_required") is True,
+        "source_commit_binding_required": policy.get("source_commit_binding_required") is True,
+        "rollback_required": policy.get("rollback_required") is True,
+        "rollback_criteria_count": len(rollback_criteria),
+        "release_lifecycle_valid": len(stages) >= 6
+        and len(rollback_criteria) >= 3
+        and policy.get("independent_approval_required") is True
+        and policy.get("release_artifact_required") is True
+        and policy.get("source_commit_binding_required") is True
+        and policy.get("rollback_required") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_external_identity(root: Path) -> dict[str, Any]:
+    evidence = load_json(root / "examples/external-identity-evidence.json")
+    role_mapping = evidence.get("role_mapping", [])
+    required_claims = set(evidence.get("required_claims", []))
+    claims_mapped = set(evidence.get("claims_mapped", []))
+    return {
+        "schema_version": "external-identity-evaluation/v1",
+        "evaluation_id": "external-identity-v0.9-pre-runtime-1",
+        "computed": True,
+        "evidence_id": evidence.get("evidence_id"),
+        "evidence_version": evidence.get("evidence_version"),
+        "evidence_hash": _sha256(root / "examples/external-identity-evidence.json"),
+        "source_boundary": evidence.get("source_boundary"),
+        "provider_type": evidence.get("provider_type"),
+        "live_provider_authenticated": evidence.get("live_provider_authenticated") is True,
+        "required_claims_present": required_claims.issubset(claims_mapped),
+        "role_mapping_count": len(role_mapping),
+        "approval_identity_bound_to_subject": evidence.get("approval_identity_bound_to_subject") is True,
+        "mfa_claim_required": evidence.get("mfa_claim_required") is True,
+        "mfa_claim_observed_in_contract": evidence.get("mfa_claim_observed_in_contract") is True,
+        "ai_identity_excluded_from_approval_roles": evidence.get("ai_identity_excluded_from_approval_roles") is True,
+        "external_identity_contract_valid": required_claims.issubset(claims_mapped)
+        and len(role_mapping) >= 1
+        and evidence.get("approval_identity_bound_to_subject") is True
+        and evidence.get("mfa_claim_required") is True
+        and evidence.get("mfa_claim_observed_in_contract") is True
+        and evidence.get("ai_identity_excluded_from_approval_roles") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_durable_evidence_store(root: Path, durable_manifest: dict[str, Any]) -> dict[str, Any]:
+    policy = load_json(root / "examples/durable-evidence-store-policy.json")
+    controls = set(policy.get("required_controls", []))
+    required = {
+        "content_addressed_records",
+        "manifest_hash_chain",
+        "append_only_writes",
+        "delete_denied",
+        "mutation_detection",
+        "replay_from_store_manifest",
+        "exportable_acceptance_pack",
+    }
+    return {
+        "schema_version": "durable-evidence-store-evaluation/v1",
+        "evaluation_id": "durable-evidence-store-v1.0-pre-runtime-1",
+        "computed": True,
+        "policy_id": policy.get("policy_id"),
+        "policy_version": policy.get("policy_version"),
+        "policy_hash": _sha256(root / "examples/durable-evidence-store-policy.json"),
+        "source_boundary": policy.get("source_boundary"),
+        "storage_model": policy.get("storage_model"),
+        "required_control_count": len(controls),
+        "required_controls_present": required.issubset(controls),
+        "content_addressed_records": bool(durable_manifest.get("manifest_hash")),
+        "manifest_hash_chain": bool(durable_manifest.get("parent_manifest_hash")) and durable_manifest.get("chain_valid") is True,
+        "append_only_enforced_by_contract": policy.get("append_only_enforced_by_contract") is True,
+        "delete_denied_by_contract": policy.get("delete_denied_by_contract") is True,
+        "mutation_detection_required": policy.get("mutation_detection_required") is True,
+        "mutation_detected": durable_manifest.get("mutation_detected") is True,
+        "replay_required": policy.get("replay_required") is True,
+        "multi_writer_ready": policy.get("multi_writer_ready") is True,
+        "production_storage_backend_observed": policy.get("production_storage_backend_observed") is True,
+        "durable_store_contract_valid": required.issubset(controls)
+        and bool(durable_manifest.get("manifest_hash"))
+        and durable_manifest.get("chain_valid") is True
+        and durable_manifest.get("mutation_detected") is False
+        and policy.get("append_only_enforced_by_contract") is True
+        and policy.get("delete_denied_by_contract") is True
+        and policy.get("replay_required") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_approval_record(
     durable_manifest: dict[str, Any],
     approval_authority: dict[str, Any],
@@ -470,6 +582,9 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     approval = load_json(root / "reports/trust-loop/approval-record.json")
     approval_authority = load_json(root / "reports/trust-loop/approval-authority.json")
     repository_governance = load_json(root / "reports/trust-loop/repository-governance.json")
+    release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
+    external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
     manifest_valid = verify_case_manifest(root, manifest)
     durable_manifest_valid = verify_case_manifest(root, durable_manifest)
@@ -512,6 +627,18 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "admin_enforcement_required": repository_governance.get("admin_enforcement_required") is True,
         "required_status_check_count": repository_governance.get("required_status_check_count", 0),
         "break_glass_policy_defined": repository_governance.get("break_glass_policy_defined") is True,
+        "release_lifecycle_policy_observed": release_lifecycle.get("computed") is True,
+        "release_lifecycle_valid": release_lifecycle.get("release_lifecycle_valid") is True,
+        "independent_release_approval_required": release_lifecycle.get("independent_approval_required") is True,
+        "codeowner_review_required": release_lifecycle.get("codeowner_review_required") is True,
+        "conversation_resolution_required": release_lifecycle.get("conversation_resolution_required") is True,
+        "rollback_criteria_defined": int(release_lifecycle.get("rollback_criteria_count", 0) or 0) >= 3,
+        "external_identity_contract_observed": external_identity.get("computed") is True,
+        "external_identity_contract_valid": external_identity.get("external_identity_contract_valid") is True,
+        "live_external_identity_provider_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "durable_evidence_store_policy_observed": durable_store.get("computed") is True,
+        "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
+        "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
@@ -530,6 +657,9 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and approval_authority.get("ai_self_approval_blocked") is True
         and repository_governance.get("admin_enforcement_required") is True
         and repository_governance.get("break_glass_policy_defined") is True
+        and release_lifecycle.get("release_lifecycle_valid") is True
+        and external_identity.get("external_identity_contract_valid") is True
+        and durable_store.get("durable_store_contract_valid") is True
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -569,6 +699,14 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Repository governance policy observed: `{payload['repository_governance_policy_observed']}`",
         f"Admin enforcement required: `{payload['admin_enforcement_required']}`",
         f"Break-glass policy defined: `{payload['break_glass_policy_defined']}`",
+        f"Release lifecycle policy observed: `{payload['release_lifecycle_policy_observed']}`",
+        f"Release lifecycle valid: `{payload['release_lifecycle_valid']}`",
+        f"External identity contract observed: `{payload['external_identity_contract_observed']}`",
+        f"External identity contract valid: `{payload['external_identity_contract_valid']}`",
+        f"Live external identity provider authenticated: `{payload['live_external_identity_provider_authenticated']}`",
+        f"Durable evidence store policy observed: `{payload['durable_evidence_store_policy_observed']}`",
+        f"Durable store contract valid: `{payload['durable_store_contract_valid']}`",
+        f"Production storage backend observed: `{payload['production_storage_backend_observed']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
         f"Production decision execution authorized: `{payload['production_decision_execution_authorized']}`",
         f"Release acceptance passed: `{payload['release_acceptance_passed']}`",
@@ -604,6 +742,12 @@ def write_v0_2_evidence(
     write_json(target / "approval-authority.json", approval_authority)
     repository_governance = evaluate_repository_governance(root)
     write_json(target / "repository-governance.json", repository_governance)
+    release_lifecycle = evaluate_release_lifecycle(root)
+    write_json(target / "release-lifecycle.json", release_lifecycle)
+    external_identity = evaluate_external_identity(root)
+    write_json(target / "external-identity.json", external_identity)
+    durable_store = evaluate_durable_evidence_store(root, durable_manifest)
+    write_json(target / "durable-evidence-store.json", durable_store)
     approval = build_approval_record(durable_manifest, approval_authority)
     write_json(target / "approval-record.json", approval)
     replay = build_replay_result_from_manifest(root, durable_manifest)
@@ -621,6 +765,9 @@ def write_v0_2_evidence(
         "durable_manifest": durable_manifest,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
+        "release_lifecycle": release_lifecycle,
+        "external_identity": external_identity,
+        "durable_store": durable_store,
         "approval": approval,
         "replay": replay,
         "release": release,

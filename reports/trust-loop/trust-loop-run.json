@@ -10,6 +10,9 @@
     "bind_approval_to_manifest",
     "evaluate_identity_rbac_authority",
     "evaluate_repository_governance_policy",
+    "evaluate_release_lifecycle_policy",
+    "evaluate_external_identity_contract",
+    "evaluate_durable_evidence_store_contract",
     "write_case_evidence",
     "replay_from_manifest"
   ],

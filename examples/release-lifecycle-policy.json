@@ -1,0 +1,21 @@
+{
+  "schema_version": "release-lifecycle-policy/v1",
+  "policy_id": "dip-release-lifecycle",
+  "policy_version": "0.8.0-pre",
+  "source_boundary": "declared_release_lifecycle_policy_not_runtime_deployment",
+  "stages": ["draft", "candidate", "approved", "tagged", "artifact_backed", "rollback_ready"],
+  "independent_approval_required": true,
+  "codeowner_review_required": true,
+  "conversation_resolution_required": true,
+  "release_artifact_required": true,
+  "source_commit_binding_required": true,
+  "rollback_required": true,
+  "rollback_criteria": [
+    "release acceptance artifact missing or invalid",
+    "source commit does not match tag",
+    "required governance evidence is missing",
+    "runtime authority requested before approval"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}
