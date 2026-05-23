@@ -1,22 +1,12 @@
 {
-  "capability_versions": [
-    {
-      "capability_id": "ticket-priority-normalizer",
-      "version": "1.0.0"
-    }
-  ],
   "case_id": "case-support-ticket-routing-1",
+  "case_manifest_hash": "f65b821d7c6fec646291d3f4a1b3a7ebbc33d106e0cba98283abfd5d58664fa4",
   "decision_id": "support-ticket-routing",
-  "original_case_ref": "examples/support-ticket-case-evidence.json",
-  "policy_versions": [
-    {
-      "policy_id": "no-production-side-effects",
-      "version": "fixture"
-    }
-  ],
-  "replay_id": "replay-support-ticket-routing-1",
-  "replay_outcome_diff": [],
-  "replayed_case_ref": "examples/support-ticket-case-evidence.json",
+  "manifest_replay_valid": true,
+  "original_case_ref": "reports/trust-loop/durable-case-manifest.json",
+  "replay_id": "replay-case-support-ticket-routing-1",
+  "replay_source": "durable_case_manifest",
+  "replayed_case_ref": "reports/trust-loop/durable-case-manifest.json",
   "schema_version": "replay-result/v1",
   "side_effects_executed": false
 }

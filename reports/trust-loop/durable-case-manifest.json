@@ -59,8 +59,12 @@
     }
   ],
   "case_id": "case-support-ticket-routing-1",
-  "manifest_id": "manifest-case-support-ticket-routing-1",
+  "chain_valid": true,
+  "manifest_hash": "f65b821d7c6fec646291d3f4a1b3a7ebbc33d106e0cba98283abfd5d58664fa4",
+  "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
-  "schema_version": "case-manifest/v1",
-  "storage_mode": "file_backed_tamper_evident"
+  "mutation_detected": false,
+  "parent_manifest_hash": "f2b360890be45e23c6d07b8dd89a268b79929dde6ca8cde10b26f1f546fb8ad1",
+  "schema_version": "durable-case-manifest/v1",
+  "storage_mode": "append_only_manifest_chain"
 }
