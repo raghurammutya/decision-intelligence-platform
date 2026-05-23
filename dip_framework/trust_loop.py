@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v1.0.0-pre")
+    write_v0_2_evidence(root, version="v1.1.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")

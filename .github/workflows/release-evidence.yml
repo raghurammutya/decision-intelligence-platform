@@ -9,7 +9,7 @@ on:
       version:
         description: Release version
         required: true
-        default: v1.0.0-pre
+        default: v1.1.0-pre
 
 permissions:
   contents: read
@@ -17,6 +17,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   release-evidence:

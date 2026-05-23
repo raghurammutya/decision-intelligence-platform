@@ -57,6 +57,73 @@ def _git_head(root: Path) -> str:
     return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 
+def _gh_repo_slug(root: Path) -> str | None:
+    result = subprocess.run(
+        ["gh", "repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        return None
+    slug = result.stdout.strip()
+    return slug or None
+
+
+def _gh_api(path: str, cwd: Path | None = None) -> dict[str, Any]:
+    result = subprocess.run(
+        ["gh", "api", "--method", "GET", path],
+        cwd=cwd,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        return {"available": False, "body": {}, "error": result.stderr.strip()}
+    try:
+        body = json.loads(result.stdout or "{}")
+    except json.JSONDecodeError:
+        body = {}
+    return {"available": True, "body": body, "error": ""}
+
+
+def _gh_branch_protection(root: Path, branch: str) -> dict[str, Any]:
+    repo = _gh_repo_slug(root)
+    if not repo:
+        return {
+            "repo": "",
+            "branch": branch,
+            "observed": False,
+            "required_status_checks_observed": False,
+            "required_approving_review_count_observed": 0,
+            "admin_enforcement_observed": False,
+            "codeowner_review_required_observed": False,
+            "conversation_resolution_required_observed": False,
+            "force_pushes_blocked": False,
+            "deletions_blocked": False,
+        }
+    response = _gh_api(f"repos/{repo}/branches/{branch}/protection", cwd=root)
+    body = response["body"] if response["available"] else {}
+    reviews = body.get("required_pull_request_reviews", {})
+    checks = body.get("required_status_checks", {})
+    return {
+        "repo": repo,
+        "branch": branch,
+        "observed": response["available"] is True and bool(body),
+        "required_status_checks_observed": bool(checks.get("contexts") or checks.get("checks")),
+        "required_approving_review_count_observed": int(reviews.get("required_approving_review_count", 0) or 0),
+        "admin_enforcement_observed": body.get("enforce_admins", {}).get("enabled") is True,
+        "codeowner_review_required_observed": reviews.get("require_code_owner_reviews") is True,
+        "conversation_resolution_required_observed": body.get("required_conversation_resolution", {}).get("enabled")
+        is True,
+        "force_pushes_blocked": body.get("allow_force_pushes", {}).get("enabled") is False,
+        "deletions_blocked": body.get("allow_deletions", {}).get("enabled") is False,
+    }
+
+
 def compute_policy_preflight(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
     spec = load_json(examples / "support-ticket-routing-decision-spec.json")
@@ -388,6 +455,22 @@ def evaluate_repository_governance(root: Path) -> dict[str, Any]:
     policy = load_json(root / "examples/repository-governance-policy.json")
     required_status_checks = policy.get("required_status_checks", [])
     break_glass = policy.get("break_glass", {})
+    live_path = root / "reports" / "trust-loop" / "repository-governance.json"
+    live = load_json(live_path) if live_path.exists() else {}
+    branch_protection = (
+        {
+            "observed": live.get("branch_protection_observed", False),
+            "required_status_checks_observed": live.get("required_status_checks_observed", False),
+            "required_approving_review_count_observed": live.get("required_approving_review_count_observed", 0),
+            "admin_enforcement_observed": live.get("admin_enforcement_observed", False),
+            "codeowner_review_required_observed": live.get("codeowner_review_required_observed", False),
+            "conversation_resolution_required_observed": live.get("conversation_resolution_required_observed", False),
+            "force_pushes_blocked": live.get("force_pushes_blocked", False),
+            "deletions_blocked": live.get("deletions_blocked", False),
+        }
+        if live
+        else _gh_branch_protection(root, str(policy.get("required_default_branch", "main")))
+    )
     return {
         "schema_version": "repository-governance-evaluation/v1",
         "evaluation_id": "repository-governance-v0.7-pre-runtime-1",
@@ -404,6 +487,14 @@ def evaluate_repository_governance(root: Path) -> dict[str, Any]:
         "admin_enforcement_required": policy.get("admin_enforcement_required") is True,
         "force_pushes_allowed": policy.get("force_pushes_allowed") is True,
         "branch_deletions_allowed": policy.get("branch_deletions_allowed") is True,
+        "branch_protection_observed": branch_protection["observed"],
+        "required_status_checks_observed": branch_protection["required_status_checks_observed"],
+        "required_approving_review_count_observed": branch_protection["required_approving_review_count_observed"],
+        "admin_enforcement_observed": branch_protection["admin_enforcement_observed"],
+        "codeowner_review_required_observed": branch_protection["codeowner_review_required_observed"],
+        "conversation_resolution_required_observed": branch_protection["conversation_resolution_required_observed"],
+        "force_pushes_blocked": branch_protection["force_pushes_blocked"],
+        "deletions_blocked": branch_protection["deletions_blocked"],
         "break_glass_policy_defined": break_glass.get("allowed") is True
         and break_glass.get("requires_reason") is True
         and break_glass.get("requires_followup_evidence") is True
@@ -625,6 +716,15 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "external_identity_provider_observed": approval_authority.get("external_identity_provider_observed") is True,
         "repository_governance_policy_observed": repository_governance.get("computed") is True,
         "admin_enforcement_required": repository_governance.get("admin_enforcement_required") is True,
+        "required_status_checks_observed": repository_governance.get("required_status_checks_observed") is True,
+        "required_approving_review_count_observed": repository_governance.get(
+            "required_approving_review_count_observed", 0
+        ),
+        "codeowner_review_required_observed": repository_governance.get("codeowner_review_required_observed") is True,
+        "conversation_resolution_required_observed": repository_governance.get(
+            "conversation_resolution_required_observed"
+        )
+        is True,
         "required_status_check_count": repository_governance.get("required_status_check_count", 0),
         "break_glass_policy_defined": repository_governance.get("break_glass_policy_defined") is True,
         "release_lifecycle_policy_observed": release_lifecycle.get("computed") is True,
@@ -656,6 +756,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and approval_authority.get("approval_authority_valid") is True
         and approval_authority.get("ai_self_approval_blocked") is True
         and repository_governance.get("admin_enforcement_required") is True
+        and repository_governance.get("required_status_checks_observed") is True
+        and repository_governance.get("required_approving_review_count_observed", 0) >= 1
+        and repository_governance.get("codeowner_review_required_observed") is True
+        and repository_governance.get("conversation_resolution_required_observed") is True
         and repository_governance.get("break_glass_policy_defined") is True
         and release_lifecycle.get("release_lifecycle_valid") is True
         and external_identity.get("external_identity_contract_valid") is True
@@ -698,6 +802,10 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"External identity provider observed: `{payload['external_identity_provider_observed']}`",
         f"Repository governance policy observed: `{payload['repository_governance_policy_observed']}`",
         f"Admin enforcement required: `{payload['admin_enforcement_required']}`",
+        f"Required status checks observed: `{payload['required_status_checks_observed']}`",
+        f"Required approving review count observed: `{payload['required_approving_review_count_observed']}`",
+        f"Codeowner review required observed: `{payload['codeowner_review_required_observed']}`",
+        f"Conversation resolution required observed: `{payload['conversation_resolution_required_observed']}`",
         f"Break-glass policy defined: `{payload['break_glass_policy_defined']}`",
         f"Release lifecycle policy observed: `{payload['release_lifecycle_policy_observed']}`",
         f"Release lifecycle valid: `{payload['release_lifecycle_valid']}`",
