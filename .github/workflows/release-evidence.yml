@@ -9,7 +9,7 @@ on:
       version:
         description: Release version
         required: true
-        default: v0.3.0-pre
+        default: v0.4.0-pre
 
 permissions:
   contents: read

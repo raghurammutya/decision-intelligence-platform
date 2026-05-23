@@ -1,0 +1,91 @@
+{
+  "baseline_decision_version": "0.9.0",
+  "case_count": 9,
+  "case_set": "v0.4-pre-runtime-cases",
+  "changed_outcome_count": 3,
+  "computed": true,
+  "cost_delta": {
+    "amount": 0,
+    "currency": "USD"
+  },
+  "decision_diff_ref": "reports/trust-loop/computed-decision-diff.json",
+  "decision_id": "multi-decision-pre-runtime-review",
+  "decision_shape_count": 2,
+  "decision_version": "v0.4.0-pre",
+  "domain_count": 2,
+  "engineering_review_results": [
+    {
+      "case_id": "eng-001",
+      "decision_output": "hold_for_governance_review",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "eng-002",
+      "decision_output": "ready_for_independent_review",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "eng-003",
+      "decision_output": "hold_for_ci",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "eng-004",
+      "decision_output": "blocked_runtime_requested",
+      "side_effects_executed": false
+    }
+  ],
+  "policy_decisions": [
+    {
+      "preflight_id": "computed-preflight-support-ticket-routing-1",
+      "result": "approval_required"
+    }
+  ],
+  "production_decision_execution_authorized": false,
+  "runtime_execution_requested": false,
+  "schema_version": "simulation-evidence/v1",
+  "side_effects_requested": [
+    {
+      "executed": false,
+      "side_effect_id": "queue-route"
+    }
+  ],
+  "simulation_run_id": "computed-sim-v0.4-pre-runtime-1",
+  "support_ticket_results": [
+    {
+      "baseline_output": "standard_queue",
+      "case_id": "ticket-001",
+      "changed": true,
+      "current_output": "priority_queue",
+      "side_effects_executed": false
+    },
+    {
+      "baseline_output": "standard_queue",
+      "case_id": "ticket-002",
+      "changed": false,
+      "current_output": "standard_queue",
+      "side_effects_executed": false
+    },
+    {
+      "baseline_output": "standard_queue",
+      "case_id": "ticket-003",
+      "changed": true,
+      "current_output": "priority_queue",
+      "side_effects_executed": false
+    },
+    {
+      "baseline_output": "standard_queue",
+      "case_id": "ticket-004",
+      "changed": false,
+      "current_output": "standard_queue",
+      "side_effects_executed": false
+    },
+    {
+      "baseline_output": "standard_queue",
+      "case_id": "ticket-005",
+      "changed": true,
+      "current_output": "priority_queue",
+      "side_effects_executed": false
+    }
+  ]
+}

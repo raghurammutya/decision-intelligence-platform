@@ -5,7 +5,12 @@ from pathlib import Path
 
 from dip_framework.contracts import ROOT, validate_default_examples, validate_file
 from dip_framework.trust_loop import build_trust_loop, write_trust_loop
-from dip_framework.v02 import compute_decision_diff, compute_policy_preflight, verify_case_manifest, write_v0_2_evidence
+from dip_framework.v02 import (
+    compute_policy_preflight,
+    compute_simulation,
+    verify_case_manifest,
+    write_v0_2_evidence,
+)
 
 
 class TrustLoopTests(unittest.TestCase):
@@ -26,6 +31,9 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(payload["acceptance"]["trust_loop_complete"])
         self.assertFalse(payload["trust_loop_run"]["runtime_execution_requested"])
         self.assertTrue(payload["acceptance"]["computed_policy_preflight_observed"])
+        self.assertTrue(payload["acceptance"]["computed_simulation_observed"])
+        self.assertEqual(payload["acceptance"]["computed_simulation_case_count"], 9)
+        self.assertEqual(payload["acceptance"]["computed_simulation_domain_count"], 2)
         self.assertTrue(payload["acceptance"]["computed_decision_diff_observed"])
         self.assertEqual(payload["acceptance"]["computed_decision_diff_changed_outcomes"], 3)
         self.assertTrue(payload["acceptance"]["case_manifest_valid"])
@@ -49,22 +57,44 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(payload["ai_override_allowed"])
         self.assertIn("support-platform-owner", payload["required_approvals"])
 
-    def test_v0_3_computes_decision_diff_from_versioned_specs(self) -> None:
-        payload = compute_decision_diff(ROOT)
+    def test_v0_4_computes_simulation_from_explicit_case_inputs(self) -> None:
+        payload = compute_simulation(ROOT)
+
+        self.assertTrue(payload["computed"])
+        self.assertEqual(payload["case_count"], 9)
+        self.assertEqual(payload["domain_count"], 2)
+        self.assertEqual(payload["decision_shape_count"], 2)
+        self.assertEqual(payload["changed_outcome_count"], 3)
+        self.assertFalse(payload["runtime_execution_requested"])
+        self.assertFalse(payload["production_decision_execution_authorized"])
+        self.assertIn(
+            "hold_for_governance_review",
+            [record["decision_output"] for record in payload["engineering_review_results"]],
+        )
+
+    def test_v0_4_computes_decision_diff_from_simulation(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.4.0-pre")
+        payload = result["decision_diff"]
 
         self.assertTrue(payload["computed"])
         self.assertEqual(payload["from_decision_version"], "0.9.0")
         self.assertEqual(payload["to_decision_version"], "1.0.0")
         self.assertIn("decision_logic_changed", payload["spec_changes"])
         self.assertEqual(payload["changed_outcome_count"], 3)
+        self.assertTrue(payload["simulation_computed"])
+        self.assertEqual(payload["simulation_case_count"], 9)
         self.assertFalse(payload["runtime_execution_requested"])
 
-    def test_v0_3_manifest_and_release_pack_are_pre_runtime(self) -> None:
+    def test_v0_4_manifest_and_release_pack_are_pre_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             write_trust_loop(Path(tmp), ROOT)
-            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.3.0-pre")
+            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.4.0-pre")
 
             self.assertTrue(verify_case_manifest(ROOT, result["manifest"]))
+            self.assertTrue(result["release"]["computed_simulation_observed"])
+            self.assertEqual(result["release"]["computed_simulation_case_count"], 9)
+            self.assertEqual(result["release"]["computed_simulation_domain_count"], 2)
+            self.assertEqual(result["release"]["computed_simulation_decision_shape_count"], 2)
             self.assertTrue(result["release"]["computed_decision_diff_observed"])
             self.assertEqual(result["release"]["computed_decision_diff_changed_outcomes"], 3)
             self.assertTrue(result["release"]["release_acceptance_passed"])

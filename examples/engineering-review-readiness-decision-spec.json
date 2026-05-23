@@ -1,0 +1,84 @@
+{
+  "approval": {
+    "approver_roles": [
+      "engineering-governance-owner"
+    ],
+    "required": true
+  },
+  "capability_requirements": [
+    {
+      "capability_id": "release-evidence-reader",
+      "version": "1.0.0"
+    }
+  ],
+  "decision_id": "engineering-review-readiness",
+  "decision_logic": {
+    "summary": "Hold for review when runtime authority, missing evidence, failed CI, or admin bypass is observed.",
+    "type": "rules"
+  },
+  "decision_version": "1.0.0",
+  "environment_scope": {
+    "allowed_environments": [
+      "dev",
+      "test"
+    ],
+    "production_allowed": false
+  },
+  "evidence_requirements": [
+    "release-artifact",
+    "ci-status",
+    "branch-protection"
+  ],
+  "inputs": [
+    {
+      "input_id": "computed_evidence_observed",
+      "schema_ref": "schemas/review-readiness-input/v1"
+    },
+    {
+      "input_id": "admin_bypass_observed",
+      "schema_ref": "schemas/review-readiness-input/v1"
+    },
+    {
+      "input_id": "runtime_execution_requested",
+      "schema_ref": "schemas/review-readiness-input/v1"
+    }
+  ],
+  "intent": {
+    "source": "user_declared",
+    "summary": "Classify whether an engineering decision is ready for independent review."
+  },
+  "name": "Engineering Review Readiness",
+  "outputs": [
+    {
+      "output_id": "review_readiness",
+      "schema_ref": "schemas/review-readiness-output/v1"
+    }
+  ],
+  "owner": {
+    "display_name": "Engineering Governance",
+    "id": "engineering-governance",
+    "type": "team"
+  },
+  "product_id": "dip-fixture",
+  "risk": {
+    "autonomy_mode": "observe",
+    "explainability_tier": 1,
+    "risk_tier": 2
+  },
+  "schema_version": "decision-spec/v1",
+  "side_effects": [
+    {
+      "mode": "simulation_only",
+      "side_effect_id": "review-readiness-label"
+    }
+  ],
+  "simulation": {
+    "case_set_requirements": [
+      "engineering-review-readiness-cases"
+    ],
+    "required": true
+  },
+  "source_labels": [
+    "user_declared"
+  ]
+}

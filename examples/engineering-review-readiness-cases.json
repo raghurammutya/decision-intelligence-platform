@@ -1,0 +1,42 @@
+{
+  "case_set": "engineering-review-readiness-cases",
+  "cases": [
+    {
+      "case_id": "eng-001",
+      "inputs": {
+        "admin_bypass_observed": true,
+        "ci_passed": true,
+        "computed_evidence_observed": true,
+        "runtime_execution_requested": false
+      }
+    },
+    {
+      "case_id": "eng-002",
+      "inputs": {
+        "admin_bypass_observed": false,
+        "ci_passed": true,
+        "computed_evidence_observed": true,
+        "runtime_execution_requested": false
+      }
+    },
+    {
+      "case_id": "eng-003",
+      "inputs": {
+        "admin_bypass_observed": false,
+        "ci_passed": false,
+        "computed_evidence_observed": true,
+        "runtime_execution_requested": false
+      }
+    },
+    {
+      "case_id": "eng-004",
+      "inputs": {
+        "admin_bypass_observed": false,
+        "ci_passed": true,
+        "computed_evidence_observed": true,
+        "runtime_execution_requested": true
+      }
+    }
+  ],
+  "schema_version": "simulation-case-set/v1"
+}
