@@ -98,6 +98,55 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "release_lifecycle_policy": [
+        "schema_version",
+        "policy_id",
+        "policy_version",
+        "source_boundary",
+        "stages",
+        "independent_approval_required",
+        "codeowner_review_required",
+        "conversation_resolution_required",
+        "release_artifact_required",
+        "source_commit_binding_required",
+        "rollback_required",
+        "rollback_criteria",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "external_identity_evidence": [
+        "schema_version",
+        "evidence_id",
+        "evidence_version",
+        "source_boundary",
+        "provider_type",
+        "live_provider_authenticated",
+        "claims_mapped",
+        "required_claims",
+        "role_mapping",
+        "approval_identity_bound_to_subject",
+        "mfa_claim_required",
+        "mfa_claim_observed_in_contract",
+        "ai_identity_excluded_from_approval_roles",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "durable_evidence_store_policy": [
+        "schema_version",
+        "policy_id",
+        "policy_version",
+        "source_boundary",
+        "storage_model",
+        "required_controls",
+        "multi_writer_ready",
+        "production_storage_backend_observed",
+        "append_only_enforced_by_contract",
+        "delete_denied_by_contract",
+        "mutation_detection_required",
+        "replay_required",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "case_evidence": [
         "schema_version",
         "case_id",
@@ -172,6 +221,27 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("repository governance cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("repository governance cannot authorize production decisions")
+    if kind == "release_lifecycle_policy":
+        if payload.get("independent_approval_required") is not True:
+            errors.append("release lifecycle must require independent approval")
+        if payload.get("rollback_required") is not True:
+            errors.append("release lifecycle must require rollback criteria")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("release lifecycle cannot authorize runtime integration")
+    if kind == "external_identity_evidence":
+        if payload.get("live_provider_authenticated") is not False:
+            errors.append("external identity evidence must not claim live authentication")
+        if payload.get("approval_identity_bound_to_subject") is not True:
+            errors.append("external identity evidence must bind approval identity to subject")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("external identity evidence cannot authorize production decisions")
+    if kind == "durable_evidence_store_policy":
+        if payload.get("production_storage_backend_observed") is not False:
+            errors.append("durable evidence store policy must not claim production storage")
+        if payload.get("append_only_enforced_by_contract") is not True:
+            errors.append("durable evidence store policy must require append-only contract")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("durable evidence store policy cannot authorize runtime integration")
     if kind == "case_evidence" and payload.get("mutable") is not False:
         errors.append("case evidence must be immutable or append-only")
     if kind == "replay" and payload.get("side_effects_executed") is not False:
@@ -197,6 +267,9 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "approval": examples / "support-ticket-approval-record.json",
         "identity_rbac_registry": examples / "identity-rbac-registry.json",
         "repository_governance_policy": examples / "repository-governance-policy.json",
+        "release_lifecycle_policy": examples / "release-lifecycle-policy.json",
+        "external_identity_evidence": examples / "external-identity-evidence.json",
+        "durable_evidence_store_policy": examples / "durable-evidence-store-policy.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
     }

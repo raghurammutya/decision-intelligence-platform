@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 13,
+  "artifact_count": 16,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -31,6 +31,21 @@
       "artifact_type": "repository_governance_policy",
       "path": "examples/repository-governance-policy.json",
       "sha256": "bcc50f61465f23b73f33ddf4f1a7f83942bb80a30797f349a2962d088b8a45f6"
+    },
+    {
+      "artifact_type": "release_lifecycle_policy",
+      "path": "examples/release-lifecycle-policy.json",
+      "sha256": "01886dd2c2e2036b283412cc7de54fb2c45e9f5c53fd52c8a8ddf65ae8a62325"
+    },
+    {
+      "artifact_type": "external_identity_evidence",
+      "path": "examples/external-identity-evidence.json",
+      "sha256": "e6907184d458fdba55d518c79c5901b9bef5b54d68fba58932f975f85f054342"
+    },
+    {
+      "artifact_type": "durable_evidence_store_policy",
+      "path": "examples/durable-evidence-store-policy.json",
+      "sha256": "d30e5b92d4c4fb6af5b04284bed8e40109d3a8981cdf01fe6cbc3fb99a1f744e"
     },
     {
       "artifact_type": "support_ticket_case_set",

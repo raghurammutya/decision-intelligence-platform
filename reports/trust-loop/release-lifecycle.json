@@ -1,0 +1,21 @@
+{
+  "codeowner_review_required": true,
+  "computed": true,
+  "conversation_resolution_required": true,
+  "evaluation_id": "release-lifecycle-v0.8-pre-runtime-1",
+  "independent_approval_required": true,
+  "policy_hash": "01886dd2c2e2036b283412cc7de54fb2c45e9f5c53fd52c8a8ddf65ae8a62325",
+  "policy_id": "dip-release-lifecycle",
+  "policy_version": "0.8.0-pre",
+  "production_decision_execution_authorized": false,
+  "release_artifact_required": true,
+  "release_lifecycle_valid": true,
+  "required_stages_present": true,
+  "rollback_criteria_count": 4,
+  "rollback_required": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "release-lifecycle-evaluation/v1",
+  "source_boundary": "declared_release_lifecycle_policy_not_runtime_deployment",
+  "source_commit_binding_required": true,
+  "stage_count": 6
+}

@@ -59,3 +59,16 @@ python3 -m dip_framework release-pack --version v0.7.0-pre
 v0.7 adds repository governance policy evidence for required status checks,
 one-review admission, admin enforcement, force-push/deletion blocking, and
 time-boxed break-glass handling. It remains pre-runtime evidence only.
+
+## v0.8-v1.0 Governance Maturity
+
+```bash
+python3 -m dip_framework release-pack --version v1.0.0-pre
+```
+
+v0.8 adds release lifecycle policy evidence for independent approval,
+CODEOWNER/conversation-resolution expectations, rollback criteria, and
+artifact/source-commit binding. v0.9 adds external identity provider contract
+evidence without live authentication. v1.0 adds durable evidence-store contract
+evidence for append-only content-addressed storage semantics without claiming a
+production storage backend. Runtime execution remains blocked.

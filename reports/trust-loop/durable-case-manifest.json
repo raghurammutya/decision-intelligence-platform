@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 13,
+  "artifact_count": 16,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -31,6 +31,21 @@
       "artifact_type": "repository_governance_policy",
       "path": "examples/repository-governance-policy.json",
       "sha256": "bcc50f61465f23b73f33ddf4f1a7f83942bb80a30797f349a2962d088b8a45f6"
+    },
+    {
+      "artifact_type": "release_lifecycle_policy",
+      "path": "examples/release-lifecycle-policy.json",
+      "sha256": "01886dd2c2e2036b283412cc7de54fb2c45e9f5c53fd52c8a8ddf65ae8a62325"
+    },
+    {
+      "artifact_type": "external_identity_evidence",
+      "path": "examples/external-identity-evidence.json",
+      "sha256": "e6907184d458fdba55d518c79c5901b9bef5b54d68fba58932f975f85f054342"
+    },
+    {
+      "artifact_type": "durable_evidence_store_policy",
+      "path": "examples/durable-evidence-store-policy.json",
+      "sha256": "d30e5b92d4c4fb6af5b04284bed8e40109d3a8981cdf01fe6cbc3fb99a1f744e"
     },
     {
       "artifact_type": "support_ticket_case_set",
@@ -70,11 +85,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "3f769826bc56527f7a2c3b9b12c2fb99dd7702535f547c8ce8baee27d17b6c80",
+  "manifest_hash": "3f0d1c2b34d7ac5dd7a565d5a42c0b2b897222c4d1be259e8002d335d627f9de",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "04a650ac31fa2881fc6e5b8b203ad73797a34275cfd60103058d992a430bf520",
+  "parent_manifest_hash": "1439dc146d2844a69a446f96dce6d4d34646ffc446350f77eefffd54efc74a81",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

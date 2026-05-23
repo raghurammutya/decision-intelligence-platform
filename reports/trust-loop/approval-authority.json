@@ -3,7 +3,7 @@
   "approval_authority_valid": true,
   "approver_identity": "acct-support-platform-owner-001",
   "approver_subject": "support-platform-owner@example.invalid",
-  "case_manifest_hash": "3f769826bc56527f7a2c3b9b12c2fb99dd7702535f547c8ce8baee27d17b6c80",
+  "case_manifest_hash": "3f0d1c2b34d7ac5dd7a565d5a42c0b2b897222c4d1be259e8002d335d627f9de",
   "computed": true,
   "decision_id": "support-ticket-routing",
   "decision_scope_authorized": true,

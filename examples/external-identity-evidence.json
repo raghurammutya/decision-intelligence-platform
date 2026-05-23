@@ -1,0 +1,25 @@
+{
+  "schema_version": "external-identity-evidence/v1",
+  "evidence_id": "dip-external-identity-pre-runtime",
+  "evidence_version": "0.9.0-pre",
+  "source_boundary": "external_idp_contract_evidence_not_live_authentication",
+  "provider_type": "oidc",
+  "issuer_ref": "https://idp.example.invalid/",
+  "jwks_ref": "https://idp.example.invalid/.well-known/jwks.json",
+  "live_provider_authenticated": false,
+  "claims_mapped": ["sub", "email", "groups", "mfa"],
+  "required_claims": ["sub", "groups", "mfa"],
+  "role_mapping": [
+    {
+      "claim": "groups",
+      "value": "support-platform-owners",
+      "role": "support-platform-owner"
+    }
+  ],
+  "approval_identity_bound_to_subject": true,
+  "mfa_claim_required": true,
+  "mfa_claim_observed_in_contract": true,
+  "ai_identity_excluded_from_approval_roles": true,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

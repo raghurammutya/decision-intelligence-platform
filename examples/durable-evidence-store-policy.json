@@ -1,0 +1,24 @@
+{
+  "schema_version": "durable-evidence-store-policy/v1",
+  "policy_id": "dip-durable-evidence-store",
+  "policy_version": "1.0.0-pre",
+  "source_boundary": "durable_store_contract_not_production_storage",
+  "storage_model": "append_only_content_addressed_log",
+  "required_controls": [
+    "content_addressed_records",
+    "manifest_hash_chain",
+    "append_only_writes",
+    "delete_denied",
+    "mutation_detection",
+    "replay_from_store_manifest",
+    "exportable_acceptance_pack"
+  ],
+  "multi_writer_ready": false,
+  "production_storage_backend_observed": false,
+  "append_only_enforced_by_contract": true,
+  "delete_denied_by_contract": true,
+  "mutation_detection_required": true,
+  "replay_required": true,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

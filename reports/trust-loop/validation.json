@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 11,
-  "record_count": 11,
+  "passed_count": 14,
+  "record_count": 14,
   "records": [
     {
       "errors": [],
@@ -56,6 +56,24 @@
       "kind": "repository_governance_policy",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/repository-governance-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "release_lifecycle_policy",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/release-lifecycle-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "external_identity_evidence",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/external-identity-evidence.json"
+    },
+    {
+      "errors": [],
+      "kind": "durable_evidence_store_policy",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/durable-evidence-store-policy.json"
     },
     {
       "errors": [],
