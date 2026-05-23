@@ -1,0 +1,56 @@
+{
+  "append_only_required": true,
+  "artifact_count": 9,
+  "artifacts": [
+    {
+      "artifact_type": "decision_spec",
+      "path": "examples/support-ticket-routing-decision-spec.json",
+      "sha256": "487e9f4af3f97a4cd2e8ab33ea3829e664f9ac3fd1d23701a591aca3e48b4956"
+    },
+    {
+      "artifact_type": "capability_registry",
+      "path": "examples/support-ticket-capability-registry.json",
+      "sha256": "ff65a54a86a7bec041673c4f68f0dc2805f7d5e0b25b9bb886dc1f3b98d09edb"
+    },
+    {
+      "artifact_type": "policy_definitions",
+      "path": "examples/support-ticket-policy-definitions.json",
+      "sha256": "a5d9b065a84220c74005240fec55200933d505eba3cea77d5f65ee51950009d5"
+    },
+    {
+      "artifact_type": "policy_preflight",
+      "path": "reports/trust-loop/computed-policy-preflight.json",
+      "sha256": "121100862d63252f726174a9e3d31c37e8431cb290f1fc077400acb4626f25be"
+    },
+    {
+      "artifact_type": "simulation",
+      "path": "examples/support-ticket-simulation-evidence.json",
+      "sha256": "050f5bbe78dc59c42ee624ee7987b8418e62c1a4b02f3a22dda6e27a72a15650"
+    },
+    {
+      "artifact_type": "decision_diff",
+      "path": "examples/support-ticket-decision-diff.json",
+      "sha256": "5b2a224ac2a90a6a1409e95833aea256f8a8e4bba4dda065a53030c81f0e5fec"
+    },
+    {
+      "artifact_type": "approval",
+      "path": "examples/support-ticket-approval-record.json",
+      "sha256": "cf9ccdcde501e7f76c1e5113df060a7ab3cbfcaf2cebeecaa5ce4a40d4ba31ed"
+    },
+    {
+      "artifact_type": "case_evidence",
+      "path": "reports/trust-loop/case-evidence.json",
+      "sha256": "4ae7ff969818ce55c0d740a8edcff98c020c6a385d956d772d33e00114447539"
+    },
+    {
+      "artifact_type": "replay",
+      "path": "reports/trust-loop/replay-result.json",
+      "sha256": "8c6913daea6517e743db61374c8f5c92ce3a2071f58384d8686787ccf503787b"
+    }
+  ],
+  "case_id": "case-support-ticket-routing-1",
+  "manifest_id": "manifest-case-support-ticket-routing-1",
+  "mutable": false,
+  "schema_version": "case-manifest/v1",
+  "storage_mode": "file_backed_tamper_evident"
+}

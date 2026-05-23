@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from dip_framework.contracts import ROOT, load_json, validate_default_examples
+from dip_framework.v02 import write_v0_2_evidence
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -16,9 +17,12 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
+    write_v0_2_evidence(root)
     validation = validate_default_examples(root)
     case_evidence = load_json(examples / "support-ticket-case-evidence.json")
     replay_result = load_json(examples / "support-ticket-replay-result.json")
+    computed_preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    case_manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     trust_loop_run = {
         "schema_version": "trust-loop-run/v1",
         "run_id": "trust-loop-support-ticket-routing-1",
@@ -27,11 +31,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "completed_steps": [
             "validate_spec",
             "load_capability_registry",
-            "run_policy_preflight",
+            "compute_policy_preflight",
             "load_simulation_evidence",
             "generate_decision_diff",
             "record_approval",
             "write_case_evidence",
+            "write_case_manifest",
             "read_replay_result",
         ],
         "runtime_execution_requested": False,
@@ -43,6 +48,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "acceptance_id": "dip-mvp-acceptance-1",
         "trust_loop_complete": validation["passed"],
         "case_evidence_complete": bool(case_evidence.get("case_id")),
+        "computed_policy_preflight_observed": computed_preflight.get("computed") is True,
+        "case_manifest_valid": case_manifest.get("append_only_required") is True and case_manifest.get("mutable") is False,
         "replay_evidence_complete": bool(replay_result.get("replay_id")),
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
@@ -54,6 +61,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     return {
         "validation": validation,
         "case_evidence": case_evidence,
+        "computed_preflight": computed_preflight,
+        "case_manifest": case_manifest,
         "replay_result": replay_result,
         "trust_loop_run": trust_loop_run,
         "acceptance": acceptance,
@@ -63,7 +72,9 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
 def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     payload = build_trust_loop(root)
     write_json(out / "validation.json", payload["validation"])
+    write_json(out / "computed-policy-preflight.json", payload["computed_preflight"])
     write_json(out / "case-evidence.json", payload["case_evidence"])
+    write_json(out / "case-manifest.json", payload["case_manifest"])
     write_json(out / "replay-result.json", payload["replay_result"])
     write_json(out / "trust-loop-run.json", payload["trust_loop_run"])
     write_json(out / "dip-mvp-acceptance.json", payload["acceptance"])

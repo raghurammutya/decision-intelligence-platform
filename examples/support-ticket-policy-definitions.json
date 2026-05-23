@@ -1,0 +1,37 @@
+{
+  "schema_version": "policy-definitions/v1",
+  "policy_set_id": "support-ticket-routing-policy-set",
+  "policy_set_version": "1.0.0",
+  "policies": [
+    {
+      "policy_id": "no-production-side-effects",
+      "version": "1.0.0",
+      "decision": "deny",
+      "rule_type": "production_allowed_false",
+      "message": "The first DIP wedge cannot allow production execution."
+    },
+    {
+      "policy_id": "simulation-only-side-effects",
+      "version": "1.0.0",
+      "decision": "deny",
+      "rule_type": "side_effects_simulation_only",
+      "message": "All side effects must remain simulation-only before runtime authority."
+    },
+    {
+      "policy_id": "owner-approval-required",
+      "version": "1.0.0",
+      "decision": "approval_required",
+      "rule_type": "approval_required_for_risk_tier",
+      "minimum_risk_tier": 2,
+      "message": "Risk tier 2 or higher requires owner approval."
+    },
+    {
+      "policy_id": "evidence-pack-required",
+      "version": "1.0.0",
+      "decision": "approval_required",
+      "rule_type": "required_evidence_present",
+      "required_evidence": ["policy-preflight", "simulation-evidence", "approval-record"],
+      "message": "Decision specs must declare the pre-runtime evidence pack."
+    }
+  ]
+}

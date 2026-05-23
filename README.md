@@ -28,3 +28,13 @@ python3 -m dip_framework trust-loop --out reports/trust-loop
 
 The trust loop writes fixture evidence only. It does not call external systems
 or request runtime execution.
+
+## v0.2 Pre-Runtime Evidence
+
+```bash
+python3 -m dip_framework release-pack --version v0.2.0-pre
+```
+
+v0.2 adds computed policy preflight from versioned policy definitions, a
+file-backed case manifest with SHA-256 checksums, and release acceptance
+evidence. Runtime execution remains blocked.

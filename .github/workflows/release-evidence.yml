@@ -1,0 +1,40 @@
+name: DIP Release Evidence
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version
+        required: true
+        default: v0.2.0-pre
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  release-evidence:
+    name: release-evidence
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate DIP
+        run: ./scripts/validate.sh
+
+      - name: Build release evidence
+        run: |
+          version="${{ github.event.inputs.version || github.ref_name }}"
+          python3 -m dip_framework release-pack --version "$version" --source-commit "${{ github.sha }}" --json

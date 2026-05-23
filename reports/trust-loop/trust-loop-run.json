@@ -3,11 +3,12 @@
   "completed_steps": [
     "validate_spec",
     "load_capability_registry",
-    "run_policy_preflight",
+    "compute_policy_preflight",
     "load_simulation_evidence",
     "generate_decision_diff",
     "record_approval",
     "write_case_evidence",
+    "write_case_manifest",
     "read_replay_result"
   ],
   "decision_id": "support-ticket-routing",

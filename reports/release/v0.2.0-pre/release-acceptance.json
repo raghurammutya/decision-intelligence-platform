@@ -1,0 +1,19 @@
+{
+  "blocked_claims": [
+    "runtime integration is authorized",
+    "production decision execution is authorized"
+  ],
+  "case_manifest_artifact_count": 9,
+  "case_manifest_observed": true,
+  "case_manifest_valid": true,
+  "computed_policy_preflight_observed": true,
+  "computed_policy_preflight_result": "approval_required",
+  "production_decision_execution_authorized": false,
+  "release_acceptance_passed": true,
+  "release_version": "v0.2.0-pre",
+  "runtime_integration_authorized": false,
+  "schema_version": "dip-release-acceptance/v1",
+  "source_commit": "local-validation",
+  "validation_passed": true,
+  "validation_record_count": 9
+}

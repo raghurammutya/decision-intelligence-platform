@@ -8,6 +8,7 @@ from pathlib import Path
 
 from dip_framework.contracts import ROOT, validate_default_examples, validate_file
 from dip_framework.trust_loop import write_trust_loop
+from dip_framework.v02 import write_v0_2_evidence
 
 
 def print_json(payload: dict) -> None:
@@ -51,6 +52,17 @@ def trust_loop(args: argparse.Namespace) -> int:
     return 0 if result["acceptance"]["trust_loop_complete"] else 1
 
 
+def release_pack(args: argparse.Namespace) -> int:
+    result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", args.version, args.source_commit)
+    if args.json:
+        print_json(result["release"])
+    else:
+        print(f"release_version={result['release']['release_version']}")
+        print(f"release_acceptance_passed={result['release']['release_acceptance_passed']}")
+        print(f"runtime_integration_authorized={result['release']['runtime_integration_authorized']}")
+    return 0 if result["release"]["release_acceptance_passed"] else 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -63,6 +75,7 @@ def main() -> int:
     validate_one_parser.add_argument("kind", choices=[
         "decision_spec",
         "capability_registry",
+        "policy_definitions",
         "preflight",
         "simulation",
         "decision_diff",
@@ -78,6 +91,12 @@ def main() -> int:
     trust_loop_parser.add_argument("--out", default="reports/trust-loop")
     trust_loop_parser.add_argument("--json", action="store_true")
     trust_loop_parser.set_defaults(func=trust_loop)
+
+    release_parser = subparsers.add_parser("release-pack", help="Write DIP v0.2 release acceptance evidence.")
+    release_parser.add_argument("--version", default="v0.2.0-pre")
+    release_parser.add_argument("--source-commit", default="local-validation")
+    release_parser.add_argument("--json", action="store_true")
+    release_parser.set_defaults(func=release_pack)
 
     args = parser.parse_args()
     return args.func(args)

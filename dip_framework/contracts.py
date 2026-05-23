@@ -39,6 +39,12 @@ REQUIRED = {
         "required_approvals",
         "ai_override_allowed",
     ],
+    "policy_definitions": [
+        "schema_version",
+        "policy_set_id",
+        "policy_set_version",
+        "policies",
+    ],
     "simulation": [
         "schema_version",
         "simulation_run_id",
@@ -108,6 +114,13 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
         errors.append("decision spec production_allowed must be false for the first wedge")
     if kind == "preflight" and payload.get("ai_override_allowed") is not False:
         errors.append("policy preflight cannot allow AI override")
+    if kind == "policy_definitions":
+        policies = payload.get("policies", [])
+        if not policies:
+            errors.append("policy definitions must include at least one policy")
+        for policy in policies:
+            if policy.get("decision") not in {"allow", "approval_required", "deny"}:
+                errors.append(f"policy {policy.get('policy_id')} has invalid decision")
     if kind == "approval" and payload.get("ai_approved") is not False:
         errors.append("approval cannot be AI-approved")
     if kind == "case_evidence" and payload.get("mutable") is not False:
@@ -129,6 +142,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "decision_spec": examples / "support-ticket-routing-decision-spec.json",
         "capability_registry": examples / "support-ticket-capability-registry.json",
         "preflight": examples / "support-ticket-policy-preflight.json",
+        "policy_definitions": examples / "support-ticket-policy-definitions.json",
         "simulation": examples / "support-ticket-simulation-evidence.json",
         "decision_diff": examples / "support-ticket-decision-diff.json",
         "approval": examples / "support-ticket-approval-record.json",

@@ -1,0 +1,47 @@
+{
+  "ai_override_allowed": false,
+  "computed": true,
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "environment_restrictions": [
+    "prod"
+  ],
+  "evaluated_policies": [
+    {
+      "policy_id": "no-production-side-effects",
+      "rule_type": "production_allowed_false",
+      "version": "1.0.0"
+    },
+    {
+      "policy_id": "simulation-only-side-effects",
+      "rule_type": "side_effects_simulation_only",
+      "version": "1.0.0"
+    },
+    {
+      "policy_id": "owner-approval-required",
+      "rule_type": "approval_required_for_risk_tier",
+      "version": "1.0.0"
+    },
+    {
+      "policy_id": "evidence-pack-required",
+      "rule_type": "required_evidence_present",
+      "version": "1.0.0"
+    }
+  ],
+  "missing_evidence": [],
+  "policy_set_id": "support-ticket-routing-policy-set",
+  "policy_set_version": "1.0.0",
+  "preflight_id": "computed-preflight-support-ticket-routing-1",
+  "remediation_guidance": [
+    "Record required approvals before release evidence is accepted."
+  ],
+  "required_approvals": [
+    "support-platform-owner"
+  ],
+  "result": "approval_required",
+  "schema_version": "policy-preflight/v1",
+  "side_effect_restrictions": [
+    "simulation_only"
+  ],
+  "violated_policies": []
+}

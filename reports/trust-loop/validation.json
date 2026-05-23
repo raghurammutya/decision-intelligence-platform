@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 8,
-  "record_count": 8,
+  "passed_count": 9,
+  "record_count": 9,
   "records": [
     {
       "errors": [],
@@ -20,6 +20,12 @@
       "kind": "preflight",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-policy-preflight.json"
+    },
+    {
+      "errors": [],
+      "kind": "policy_definitions",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-policy-definitions.json"
     },
     {
       "errors": [],
