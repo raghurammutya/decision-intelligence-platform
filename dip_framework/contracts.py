@@ -74,6 +74,15 @@ REQUIRED = {
         "approval_reason",
         "ai_approved",
     ],
+    "identity_rbac_registry": [
+        "schema_version",
+        "registry_id",
+        "registry_version",
+        "source_boundary",
+        "external_identity_provider_observed",
+        "roles",
+        "identities",
+    ],
     "case_evidence": [
         "schema_version",
         "case_id",
@@ -125,6 +134,18 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
                 errors.append(f"policy {policy.get('policy_id')} has invalid decision")
     if kind == "approval" and payload.get("ai_approved") is not False:
         errors.append("approval cannot be AI-approved")
+    if kind == "identity_rbac_registry":
+        if payload.get("external_identity_provider_observed") is not False:
+            errors.append("identity registry must not claim external IdP evidence")
+        if not payload.get("roles"):
+            errors.append("identity registry must include roles")
+        if not payload.get("identities"):
+            errors.append("identity registry must include identities")
+        for identity in payload.get("identities", []):
+            if not identity.get("identity_id"):
+                errors.append("identity registry identity missing identity_id")
+            if not isinstance(identity.get("roles"), list) or not identity.get("roles"):
+                errors.append(f"identity {identity.get('identity_id')} missing roles")
     if kind == "case_evidence" and payload.get("mutable") is not False:
         errors.append("case evidence must be immutable or append-only")
     if kind == "replay" and payload.get("side_effects_executed") is not False:
@@ -148,6 +169,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "simulation": examples / "support-ticket-simulation-evidence.json",
         "decision_diff": examples / "support-ticket-decision-diff.json",
         "approval": examples / "support-ticket-approval-record.json",
+        "identity_rbac_registry": examples / "identity-rbac-registry.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
     }

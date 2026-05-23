@@ -1,0 +1,53 @@
+{
+  "schema_version": "identity-rbac-registry/v1",
+  "registry_id": "dip-local-identity-rbac",
+  "registry_version": "0.6.0-pre",
+  "source_boundary": "versioned_local_registry_not_external_idp",
+  "external_identity_provider_observed": false,
+  "roles": [
+    {
+      "role": "support-platform-owner",
+      "decision_scope": ["support-ticket-routing"],
+      "approval_authority": true,
+      "max_risk_tier": 3
+    },
+    {
+      "role": "engineering-governance-owner",
+      "decision_scope": ["engineering-review-readiness"],
+      "approval_authority": true,
+      "max_risk_tier": 3
+    },
+    {
+      "role": "ai-agent",
+      "decision_scope": [],
+      "approval_authority": false,
+      "max_risk_tier": 0
+    }
+  ],
+  "identities": [
+    {
+      "identity_id": "acct-support-platform-owner-001",
+      "subject": "support-platform-owner@example.invalid",
+      "display_name": "Support Platform Owner",
+      "roles": ["support-platform-owner"],
+      "active": true,
+      "valid_from": "2026-05-23T00:00:00Z",
+      "valid_until": "2026-12-31T23:59:59Z",
+      "mfa_required": true,
+      "mfa_observed": true,
+      "delegated": false
+    },
+    {
+      "identity_id": "acct-dip-autopilot-001",
+      "subject": "dip-autopilot@example.invalid",
+      "display_name": "DIP Autopilot",
+      "roles": ["ai-agent"],
+      "active": true,
+      "valid_from": "2026-05-23T00:00:00Z",
+      "valid_until": "2026-12-31T23:59:59Z",
+      "mfa_required": false,
+      "mfa_observed": false,
+      "delegated": false
+    }
+  ]
+}

@@ -16,6 +16,7 @@ ARTIFACTS = [
     ("baseline_decision_spec", "examples/support-ticket-routing-decision-spec-v0.9.0.json"),
     ("capability_registry", "examples/support-ticket-capability-registry.json"),
     ("policy_definitions", "examples/support-ticket-policy-definitions.json"),
+    ("identity_rbac_registry", "examples/identity-rbac-registry.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -308,17 +309,94 @@ def build_durable_case_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def build_approval_record(durable_manifest: dict[str, Any]) -> dict[str, Any]:
+def evaluate_approval_authority(
+    root: Path,
+    durable_manifest: dict[str, Any],
+    approver_identity: str = "acct-support-platform-owner-001",
+) -> dict[str, Any]:
+    registry = load_json(root / "examples/identity-rbac-registry.json")
+    spec = load_json(root / "examples/support-ticket-routing-decision-spec.json")
+    preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    roles = {str(role.get("role", "")): role for role in registry.get("roles", [])}
+    identities = {str(identity.get("identity_id", "")): identity for identity in registry.get("identities", [])}
+    identity = identities.get(approver_identity, {})
+    required_roles = set(preflight.get("required_approvals", []))
+    identity_roles = set(identity.get("roles", []))
+    matching_roles = sorted(required_roles.intersection(identity_roles))
+    decision_id = str(spec.get("decision_id", ""))
+    risk_tier = int(spec.get("risk", {}).get("risk_tier", 0) or 0)
+    role_authorized = False
+    scope_authorized = False
+    for role_name in matching_roles:
+        role = roles.get(role_name, {})
+        role_authorized = role_authorized or role.get("approval_authority") is True
+        scope_authorized = scope_authorized or decision_id in role.get("decision_scope", [])
+        if risk_tier > int(role.get("max_risk_tier", 0) or 0):
+            role_authorized = False
+    identity_active = identity.get("active") is True
+    identity_not_expired = str(identity.get("valid_until", "")) >= "2026-05-23T00:00:00Z"
+    mfa_satisfied = identity.get("mfa_required") is not True or identity.get("mfa_observed") is True
+    ai_identity = identities.get("acct-dip-autopilot-001", {})
+    ai_self_approval_blocked = "ai-agent" in ai_identity.get("roles", []) and not any(
+        roles.get(role, {}).get("approval_authority") is True for role in ai_identity.get("roles", [])
+    )
+    approval_authority_valid = (
+        bool(identity)
+        and identity_active
+        and identity_not_expired
+        and mfa_satisfied
+        and bool(matching_roles)
+        and role_authorized
+        and scope_authorized
+        and ai_self_approval_blocked
+        and bool(durable_manifest.get("manifest_hash"))
+    )
+    return {
+        "schema_version": "approval-authority-evaluation/v1",
+        "evaluation_id": "approval-authority-support-ticket-routing-1",
+        "computed": True,
+        "registry_id": registry.get("registry_id"),
+        "registry_version": registry.get("registry_version"),
+        "registry_hash": _sha256(root / "examples/identity-rbac-registry.json"),
+        "source_boundary": registry.get("source_boundary"),
+        "external_identity_provider_observed": registry.get("external_identity_provider_observed") is True,
+        "decision_id": decision_id,
+        "risk_tier": risk_tier,
+        "approver_identity": approver_identity,
+        "approver_subject": identity.get("subject", ""),
+        "required_approver_roles": sorted(required_roles),
+        "identity_roles": sorted(identity_roles),
+        "matching_roles": matching_roles,
+        "identity_active": identity_active,
+        "identity_not_expired": identity_not_expired,
+        "mfa_satisfied": mfa_satisfied,
+        "role_authorized": role_authorized,
+        "decision_scope_authorized": scope_authorized,
+        "ai_self_approval_blocked": ai_self_approval_blocked,
+        "case_manifest_hash": durable_manifest.get("manifest_hash"),
+        "approval_authority_valid": approval_authority_valid,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def build_approval_record(
+    durable_manifest: dict[str, Any],
+    approval_authority: dict[str, Any],
+) -> dict[str, Any]:
     return {
         "schema_version": "approval-record/v1",
         "approval_id": "approval-support-ticket-routing-1",
         "decision_id": "support-ticket-routing",
         "decision_version": "1.0.0",
         "requester": "dip-fixture-builder",
-        "approver_identity": "support-platform-owner",
+        "approver_identity": approval_authority.get("approver_identity"),
+        "approver_subject": approval_authority.get("approver_subject"),
         "approver_role": "support-platform-owner",
-        "required_approver_roles": ["support-platform-owner"],
-        "role_binding_valid": True,
+        "required_approver_roles": approval_authority.get("required_approver_roles", []),
+        "role_binding_valid": approval_authority.get("approval_authority_valid") is True,
+        "approval_authority_ref": "reports/trust-loop/approval-authority.json",
+        "approval_authority_valid": approval_authority.get("approval_authority_valid") is True,
         "case_manifest_hash": durable_manifest.get("manifest_hash"),
         "approval_bound_to_manifest": True,
         "decision": "approved",
@@ -359,6 +437,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
     approval = load_json(root / "reports/trust-loop/approval-record.json")
+    approval_authority = load_json(root / "reports/trust-loop/approval-authority.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
     manifest_valid = verify_case_manifest(root, manifest)
     durable_manifest_valid = verify_case_manifest(root, durable_manifest)
@@ -389,6 +468,14 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "approval_bound_to_manifest": approval.get("approval_bound_to_manifest") is True
         and approval.get("case_manifest_hash") == durable_manifest.get("manifest_hash"),
         "approval_role_binding_valid": approval.get("role_binding_valid") is True,
+        "approval_authority_evaluated": approval_authority.get("computed") is True,
+        "approval_authority_valid": approval_authority.get("approval_authority_valid") is True,
+        "approval_identity_active": approval_authority.get("identity_active") is True,
+        "approval_identity_not_expired": approval_authority.get("identity_not_expired") is True,
+        "approval_mfa_satisfied": approval_authority.get("mfa_satisfied") is True,
+        "approval_decision_scope_authorized": approval_authority.get("decision_scope_authorized") is True,
+        "ai_self_approval_blocked": approval_authority.get("ai_self_approval_blocked") is True,
+        "external_identity_provider_observed": approval_authority.get("external_identity_provider_observed") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
@@ -403,6 +490,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and replay.get("manifest_replay_valid") is True
         and approval.get("approval_bound_to_manifest") is True
         and approval.get("role_binding_valid") is True
+        and approval_authority.get("approval_authority_valid") is True
+        and approval_authority.get("ai_self_approval_blocked") is True
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -435,6 +524,10 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Replay from manifest observed: `{payload['replay_from_manifest_observed']}`",
         f"Approval bound to manifest: `{payload['approval_bound_to_manifest']}`",
         f"Approval role binding valid: `{payload['approval_role_binding_valid']}`",
+        f"Approval authority evaluated: `{payload['approval_authority_evaluated']}`",
+        f"Approval authority valid: `{payload['approval_authority_valid']}`",
+        f"AI self-approval blocked: `{payload['ai_self_approval_blocked']}`",
+        f"External identity provider observed: `{payload['external_identity_provider_observed']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
         f"Production decision execution authorized: `{payload['production_decision_execution_authorized']}`",
         f"Release acceptance passed: `{payload['release_acceptance_passed']}`",
@@ -466,7 +559,9 @@ def write_v0_2_evidence(
     write_json(target / "case-manifest.json", manifest)
     durable_manifest = build_durable_case_manifest(manifest)
     write_json(target / "durable-case-manifest.json", durable_manifest)
-    approval = build_approval_record(durable_manifest)
+    approval_authority = evaluate_approval_authority(root, durable_manifest)
+    write_json(target / "approval-authority.json", approval_authority)
+    approval = build_approval_record(durable_manifest, approval_authority)
     write_json(target / "approval-record.json", approval)
     replay = build_replay_result_from_manifest(root, durable_manifest)
     write_json(target / "replay-result.json", replay)
@@ -481,6 +576,7 @@ def write_v0_2_evidence(
         "case_evidence": case_evidence,
         "manifest": manifest,
         "durable_manifest": durable_manifest,
+        "approval_authority": approval_authority,
         "approval": approval,
         "replay": replay,
         "release": release,

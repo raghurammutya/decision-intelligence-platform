@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 9,
-  "record_count": 9,
+  "passed_count": 10,
+  "record_count": 10,
   "records": [
     {
       "errors": [],
@@ -44,6 +44,12 @@
       "kind": "approval",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-approval-record.json"
+    },
+    {
+      "errors": [],
+      "kind": "identity_rbac_registry",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/identity-rbac-registry.json"
     },
     {
       "errors": [],

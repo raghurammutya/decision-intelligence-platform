@@ -8,6 +8,7 @@ from dip_framework.trust_loop import build_trust_loop, write_trust_loop
 from dip_framework.v02 import (
     compute_policy_preflight,
     compute_simulation,
+    evaluate_approval_authority,
     verify_case_manifest,
     write_v0_2_evidence,
 )
@@ -42,6 +43,9 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(payload["acceptance"]["case_mutation_detected"])
         self.assertTrue(payload["acceptance"]["approval_bound_to_manifest"])
         self.assertTrue(payload["acceptance"]["approval_role_binding_valid"])
+        self.assertTrue(payload["acceptance"]["approval_authority_evaluated"])
+        self.assertTrue(payload["acceptance"]["approval_authority_valid"])
+        self.assertFalse(payload["acceptance"]["external_identity_provider_observed"])
         self.assertFalse(payload["acceptance"]["runtime_integration_authorized"])
         self.assertFalse(payload["acceptance"]["production_decision_execution_authorized"])
 
@@ -54,6 +58,7 @@ class TrustLoopTests(unittest.TestCase):
             self.assertTrue(acceptance["trust_loop_complete"])
             self.assertTrue(acceptance["durable_case_manifest_valid"])
             self.assertTrue(acceptance["approval_bound_to_manifest"])
+            self.assertTrue(acceptance["approval_authority_valid"])
             self.assertFalse(acceptance["runtime_integration_authorized"])
 
     def test_v0_2_computes_policy_preflight(self) -> None:
@@ -80,7 +85,7 @@ class TrustLoopTests(unittest.TestCase):
         )
 
     def test_v0_5_computes_decision_diff_from_simulation(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.5.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.6.0-pre")
         payload = result["decision_diff"]
 
         self.assertTrue(payload["computed"])
@@ -95,7 +100,7 @@ class TrustLoopTests(unittest.TestCase):
     def test_v0_5_manifest_approval_and_release_pack_are_pre_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             write_trust_loop(Path(tmp), ROOT)
-            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.5.0-pre")
+            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.6.0-pre")
 
             self.assertTrue(verify_case_manifest(ROOT, result["manifest"]))
             self.assertTrue(verify_case_manifest(ROOT, result["durable_manifest"]))
@@ -119,6 +124,24 @@ class TrustLoopTests(unittest.TestCase):
             self.assertTrue(result["release"]["release_acceptance_passed"])
             self.assertFalse(result["release"]["runtime_integration_authorized"])
             self.assertFalse(result["release"]["production_decision_execution_authorized"])
+
+    def test_v0_6_evaluates_identity_rbac_approval_authority_without_external_idp(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.6.0-pre")
+        authority = evaluate_approval_authority(ROOT, result["durable_manifest"])
+
+        self.assertTrue(authority["computed"])
+        self.assertEqual(authority["source_boundary"], "versioned_local_registry_not_external_idp")
+        self.assertTrue(authority["approval_authority_valid"])
+        self.assertTrue(authority["identity_active"])
+        self.assertTrue(authority["identity_not_expired"])
+        self.assertTrue(authority["mfa_satisfied"])
+        self.assertTrue(authority["decision_scope_authorized"])
+        self.assertTrue(authority["ai_self_approval_blocked"])
+        self.assertFalse(authority["external_identity_provider_observed"])
+        self.assertTrue(result["release"]["approval_authority_evaluated"])
+        self.assertTrue(result["release"]["approval_authority_valid"])
+        self.assertTrue(result["release"]["ai_self_approval_blocked"])
+        self.assertFalse(result["release"]["external_identity_provider_observed"])
 
 
 if __name__ == "__main__":

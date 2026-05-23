@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 11,
+  "artifact_count": 12,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -21,6 +21,11 @@
       "artifact_type": "policy_definitions",
       "path": "examples/support-ticket-policy-definitions.json",
       "sha256": "a5d9b065a84220c74005240fec55200933d505eba3cea77d5f65ee51950009d5"
+    },
+    {
+      "artifact_type": "identity_rbac_registry",
+      "path": "examples/identity-rbac-registry.json",
+      "sha256": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4"
     },
     {
       "artifact_type": "support_ticket_case_set",

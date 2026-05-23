@@ -38,3 +38,14 @@ python3 -m dip_framework release-pack --version v0.2.0-pre
 v0.2 adds computed policy preflight from versioned policy definitions, a
 file-backed case manifest with SHA-256 checksums, and release acceptance
 evidence. Runtime execution remains blocked.
+
+## v0.6 Identity/RBAC Approval Evidence
+
+```bash
+python3 -m dip_framework release-pack --version v0.6.0-pre
+```
+
+v0.6 adds a versioned local identity/RBAC registry and computed approval
+authority evaluation. It proves approval role, scope, active identity, MFA, and
+AI self-approval blocking against local evidence only. External identity
+provider integration and runtime execution remain blocked.
