@@ -83,6 +83,21 @@ REQUIRED = {
         "roles",
         "identities",
     ],
+    "repository_governance_policy": [
+        "schema_version",
+        "policy_id",
+        "policy_version",
+        "source_boundary",
+        "required_default_branch",
+        "required_status_checks",
+        "required_approving_review_count",
+        "admin_enforcement_required",
+        "force_pushes_allowed",
+        "branch_deletions_allowed",
+        "break_glass",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "case_evidence": [
         "schema_version",
         "case_id",
@@ -146,6 +161,17 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
                 errors.append("identity registry identity missing identity_id")
             if not isinstance(identity.get("roles"), list) or not identity.get("roles"):
                 errors.append(f"identity {identity.get('identity_id')} missing roles")
+    if kind == "repository_governance_policy":
+        if payload.get("admin_enforcement_required") is not True:
+            errors.append("repository governance must require admin enforcement")
+        if payload.get("force_pushes_allowed") is not False:
+            errors.append("repository governance must block force pushes")
+        if payload.get("branch_deletions_allowed") is not False:
+            errors.append("repository governance must block branch deletions")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("repository governance cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("repository governance cannot authorize production decisions")
     if kind == "case_evidence" and payload.get("mutable") is not False:
         errors.append("case evidence must be immutable or append-only")
     if kind == "replay" and payload.get("side_effects_executed") is not False:
@@ -170,6 +196,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "decision_diff": examples / "support-ticket-decision-diff.json",
         "approval": examples / "support-ticket-approval-record.json",
         "identity_rbac_registry": examples / "identity-rbac-registry.json",
+        "repository_governance_policy": examples / "repository-governance-policy.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
     }

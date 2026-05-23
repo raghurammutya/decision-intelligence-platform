@@ -49,3 +49,13 @@ v0.6 adds a versioned local identity/RBAC registry and computed approval
 authority evaluation. It proves approval role, scope, active identity, MFA, and
 AI self-approval blocking against local evidence only. External identity
 provider integration and runtime execution remain blocked.
+
+## v0.7 Repository Governance Evidence
+
+```bash
+python3 -m dip_framework release-pack --version v0.7.0-pre
+```
+
+v0.7 adds repository governance policy evidence for required status checks,
+one-review admission, admin enforcement, force-push/deletion blocking, and
+time-boxed break-glass handling. It remains pre-runtime evidence only.

@@ -9,6 +9,7 @@
     "write_durable_case_manifest",
     "bind_approval_to_manifest",
     "evaluate_identity_rbac_authority",
+    "evaluate_repository_governance_policy",
     "write_case_evidence",
     "replay_from_manifest"
   ],
