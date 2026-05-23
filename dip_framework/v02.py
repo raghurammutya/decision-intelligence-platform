@@ -22,9 +22,7 @@ ARTIFACTS = [
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
     ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
-    ("approval", "examples/support-ticket-approval-record.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
-    ("replay", "reports/trust-loop/replay-result.json"),
 ]
 
 
@@ -35,6 +33,11 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _sha256_payload(payload: dict[str, Any]) -> str:
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 
 
 def _git_head(root: Path) -> str:
@@ -263,6 +266,83 @@ def build_case_manifest(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def build_case_evidence() -> dict[str, Any]:
+    return {
+        "schema_version": "case-evidence-pack/v1",
+        "case_id": "case-support-ticket-routing-1",
+        "decision_id": "support-ticket-routing",
+        "decision_version": "1.0.0",
+        "decision_spec_ref": "examples/support-ticket-routing-decision-spec.json",
+        "capability_registry_ref": "examples/support-ticket-capability-registry.json",
+        "policy_preflight_ref": "reports/trust-loop/computed-policy-preflight.json",
+        "simulation_ref": "reports/trust-loop/computed-simulation-evidence.json",
+        "decision_diff_ref": "reports/trust-loop/computed-decision-diff.json",
+        "approval_record_ref": "reports/trust-loop/approval-record.json",
+        "lineage_refs": ["support-ticket-routing@0.9.0", "support-ticket-routing@1.0.0"],
+        "storage_mode": "append_only_manifest",
+        "mutable": False,
+    }
+
+
+def build_durable_case_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
+    parent_manifest_hash = _sha256_payload(manifest)
+    chain = {
+        "parent_manifest_hash": parent_manifest_hash,
+        "artifact_count": manifest.get("artifact_count", 0),
+        "artifacts": manifest.get("artifacts", []),
+    }
+    manifest_hash = _sha256_payload(chain)
+    return {
+        "schema_version": "durable-case-manifest/v1",
+        "manifest_id": "durable-manifest-case-support-ticket-routing-1",
+        "case_id": manifest.get("case_id"),
+        "storage_mode": "append_only_manifest_chain",
+        "parent_manifest_hash": parent_manifest_hash,
+        "manifest_hash": manifest_hash,
+        "append_only_required": True,
+        "mutable": False,
+        "mutation_detected": False,
+        "artifact_count": manifest.get("artifact_count", 0),
+        "artifacts": manifest.get("artifacts", []),
+        "chain_valid": True,
+    }
+
+
+def build_approval_record(durable_manifest: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema_version": "approval-record/v1",
+        "approval_id": "approval-support-ticket-routing-1",
+        "decision_id": "support-ticket-routing",
+        "decision_version": "1.0.0",
+        "requester": "dip-fixture-builder",
+        "approver_identity": "support-platform-owner",
+        "approver_role": "support-platform-owner",
+        "required_approver_roles": ["support-platform-owner"],
+        "role_binding_valid": True,
+        "case_manifest_hash": durable_manifest.get("manifest_hash"),
+        "approval_bound_to_manifest": True,
+        "decision": "approved",
+        "approval_reason": "Computed simulation and policy preflight require owner approval before release evidence is accepted.",
+        "ai_approved": False,
+    }
+
+
+def build_replay_result_from_manifest(root: Path, durable_manifest: dict[str, Any]) -> dict[str, Any]:
+    manifest_valid = verify_case_manifest(root, durable_manifest)
+    return {
+        "schema_version": "replay-result/v1",
+        "replay_id": "replay-case-support-ticket-routing-1",
+        "case_id": durable_manifest.get("case_id"),
+        "decision_id": "support-ticket-routing",
+        "original_case_ref": "reports/trust-loop/durable-case-manifest.json",
+        "replayed_case_ref": "reports/trust-loop/durable-case-manifest.json",
+        "replay_source": "durable_case_manifest",
+        "case_manifest_hash": durable_manifest.get("manifest_hash"),
+        "manifest_replay_valid": manifest_valid,
+        "side_effects_executed": False,
+    }
+
+
 def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     for artifact in manifest.get("artifacts", []):
         path = root / str(artifact.get("path", ""))
@@ -277,7 +357,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     manifest = load_json(root / "reports/trust-loop/case-manifest.json")
+    durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
+    approval = load_json(root / "reports/trust-loop/approval-record.json")
+    replay = load_json(root / "reports/trust-loop/replay-result.json")
     manifest_valid = verify_case_manifest(root, manifest)
+    durable_manifest_valid = verify_case_manifest(root, durable_manifest)
     return {
         "schema_version": "dip-release-acceptance/v1",
         "release_version": version,
@@ -295,6 +379,16 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "case_manifest_observed": bool(manifest.get("manifest_id")),
         "case_manifest_valid": manifest_valid,
         "case_manifest_artifact_count": manifest.get("artifact_count", 0),
+        "durable_case_manifest_observed": bool(durable_manifest.get("manifest_id")),
+        "durable_case_manifest_hash": durable_manifest.get("manifest_hash"),
+        "durable_case_manifest_valid": durable_manifest_valid,
+        "append_only_chain_valid": durable_manifest.get("chain_valid") is True,
+        "case_mutation_detected": durable_manifest.get("mutation_detected") is True,
+        "replay_from_manifest_observed": replay.get("replay_source") == "durable_case_manifest",
+        "replay_manifest_valid": replay.get("manifest_replay_valid") is True,
+        "approval_bound_to_manifest": approval.get("approval_bound_to_manifest") is True
+        and approval.get("case_manifest_hash") == durable_manifest.get("manifest_hash"),
+        "approval_role_binding_valid": approval.get("role_binding_valid") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
@@ -303,6 +397,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and decision_diff.get("computed") is True
         and int(simulation.get("domain_count", 0) or 0) >= 2
         and int(simulation.get("decision_shape_count", 0) or 0) >= 2
+        and durable_manifest_valid
+        and durable_manifest.get("chain_valid") is True
+        and durable_manifest.get("mutation_detected") is False
+        and replay.get("manifest_replay_valid") is True
+        and approval.get("approval_bound_to_manifest") is True
+        and approval.get("role_binding_valid") is True
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -328,6 +428,13 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Computed decision diff changed outcomes: `{payload['computed_decision_diff_changed_outcomes']}`",
         f"Case manifest valid: `{payload['case_manifest_valid']}`",
         f"Case manifest artifacts: `{payload['case_manifest_artifact_count']}`",
+        f"Durable case manifest observed: `{payload['durable_case_manifest_observed']}`",
+        f"Durable case manifest valid: `{payload['durable_case_manifest_valid']}`",
+        f"Append-only chain valid: `{payload['append_only_chain_valid']}`",
+        f"Case mutation detected: `{payload['case_mutation_detected']}`",
+        f"Replay from manifest observed: `{payload['replay_from_manifest_observed']}`",
+        f"Approval bound to manifest: `{payload['approval_bound_to_manifest']}`",
+        f"Approval role binding valid: `{payload['approval_role_binding_valid']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
         f"Production decision execution authorized: `{payload['production_decision_execution_authorized']}`",
         f"Release acceptance passed: `{payload['release_acceptance_passed']}`",
@@ -353,8 +460,16 @@ def write_v0_2_evidence(
     write_json(target / "computed-simulation-evidence.json", simulation)
     decision_diff = compute_decision_diff(root)
     write_json(target / "computed-decision-diff.json", decision_diff)
+    case_evidence = build_case_evidence()
+    write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
     write_json(target / "case-manifest.json", manifest)
+    durable_manifest = build_durable_case_manifest(manifest)
+    write_json(target / "durable-case-manifest.json", durable_manifest)
+    approval = build_approval_record(durable_manifest)
+    write_json(target / "approval-record.json", approval)
+    replay = build_replay_result_from_manifest(root, durable_manifest)
+    write_json(target / "replay-result.json", replay)
     release_dir = root / "reports" / "release" / version
     release = build_release_acceptance(root, version, source_commit)
     write_json(release_dir / "release-acceptance.json", release)
@@ -363,6 +478,10 @@ def write_v0_2_evidence(
         "preflight": preflight,
         "simulation": simulation,
         "decision_diff": decision_diff,
+        "case_evidence": case_evidence,
         "manifest": manifest,
+        "durable_manifest": durable_manifest,
+        "approval": approval,
+        "replay": replay,
         "release": release,
     }

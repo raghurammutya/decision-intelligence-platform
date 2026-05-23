@@ -6,10 +6,10 @@
     "compute_policy_preflight",
     "compute_simulation_evidence",
     "compute_decision_diff",
-    "record_approval",
+    "write_durable_case_manifest",
+    "bind_approval_to_manifest",
     "write_case_evidence",
-    "write_case_manifest",
-    "read_replay_result"
+    "replay_from_manifest"
   ],
   "decision_id": "support-ticket-routing",
   "decision_version": "1.0.0",

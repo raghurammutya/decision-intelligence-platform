@@ -1,0 +1,18 @@
+{
+  "ai_approved": false,
+  "approval_bound_to_manifest": true,
+  "approval_id": "approval-support-ticket-routing-1",
+  "approval_reason": "Computed simulation and policy preflight require owner approval before release evidence is accepted.",
+  "approver_identity": "support-platform-owner",
+  "approver_role": "support-platform-owner",
+  "case_manifest_hash": "f65b821d7c6fec646291d3f4a1b3a7ebbc33d106e0cba98283abfd5d58664fa4",
+  "decision": "approved",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "requester": "dip-fixture-builder",
+  "required_approver_roles": [
+    "support-platform-owner"
+  ],
+  "role_binding_valid": true,
+  "schema_version": "approval-record/v1"
+}

@@ -16,15 +16,16 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    examples = root / "examples"
-    write_v0_2_evidence(root, version="v0.4.0-pre")
+    write_v0_2_evidence(root, version="v0.5.0-pre")
     validation = validate_default_examples(root)
-    case_evidence = load_json(examples / "support-ticket-case-evidence.json")
-    replay_result = load_json(examples / "support-ticket-replay-result.json")
+    case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
+    replay_result = load_json(root / "reports/trust-loop/replay-result.json")
+    approval_record = load_json(root / "reports/trust-loop/approval-record.json")
     computed_preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     computed_simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     computed_decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     case_manifest = load_json(root / "reports/trust-loop/case-manifest.json")
+    durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
     trust_loop_run = {
         "schema_version": "trust-loop-run/v1",
         "run_id": "trust-loop-support-ticket-routing-1",
@@ -36,10 +37,10 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "compute_policy_preflight",
             "compute_simulation_evidence",
             "compute_decision_diff",
-            "record_approval",
+            "write_durable_case_manifest",
+            "bind_approval_to_manifest",
             "write_case_evidence",
-            "write_case_manifest",
-            "read_replay_result",
+            "replay_from_manifest",
         ],
         "runtime_execution_requested": False,
         "case_evidence_ref": "case-evidence.json",
@@ -57,7 +58,13 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "computed_decision_diff_observed": computed_decision_diff.get("computed") is True,
         "computed_decision_diff_changed_outcomes": computed_decision_diff.get("changed_outcome_count", 0),
         "case_manifest_valid": case_manifest.get("append_only_required") is True and case_manifest.get("mutable") is False,
-        "replay_evidence_complete": bool(replay_result.get("replay_id")),
+        "durable_case_manifest_observed": bool(durable_manifest.get("manifest_id")),
+        "durable_case_manifest_valid": durable_manifest.get("chain_valid") is True
+        and durable_manifest.get("mutable") is False,
+        "case_mutation_detected": durable_manifest.get("mutation_detected") is True,
+        "replay_evidence_complete": replay_result.get("manifest_replay_valid") is True,
+        "approval_bound_to_manifest": approval_record.get("approval_bound_to_manifest") is True,
+        "approval_role_binding_valid": approval_record.get("role_binding_valid") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "blocked_claims": [
@@ -72,6 +79,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "computed_simulation": computed_simulation,
         "computed_decision_diff": computed_decision_diff,
         "case_manifest": case_manifest,
+        "durable_manifest": durable_manifest,
+        "approval_record": approval_record,
         "replay_result": replay_result,
         "trust_loop_run": trust_loop_run,
         "acceptance": acceptance,
@@ -86,6 +95,8 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "computed-decision-diff.json", payload["computed_decision_diff"])
     write_json(out / "case-evidence.json", payload["case_evidence"])
     write_json(out / "case-manifest.json", payload["case_manifest"])
+    write_json(out / "durable-case-manifest.json", payload["durable_manifest"])
+    write_json(out / "approval-record.json", payload["approval_record"])
     write_json(out / "replay-result.json", payload["replay_result"])
     write_json(out / "trust-loop-run.json", payload["trust_loop_run"])
     write_json(out / "dip-mvp-acceptance.json", payload["acceptance"])

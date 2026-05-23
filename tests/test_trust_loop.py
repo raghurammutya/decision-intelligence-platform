@@ -37,6 +37,11 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(payload["acceptance"]["computed_decision_diff_observed"])
         self.assertEqual(payload["acceptance"]["computed_decision_diff_changed_outcomes"], 3)
         self.assertTrue(payload["acceptance"]["case_manifest_valid"])
+        self.assertTrue(payload["acceptance"]["durable_case_manifest_observed"])
+        self.assertTrue(payload["acceptance"]["durable_case_manifest_valid"])
+        self.assertFalse(payload["acceptance"]["case_mutation_detected"])
+        self.assertTrue(payload["acceptance"]["approval_bound_to_manifest"])
+        self.assertTrue(payload["acceptance"]["approval_role_binding_valid"])
         self.assertFalse(payload["acceptance"]["runtime_integration_authorized"])
         self.assertFalse(payload["acceptance"]["production_decision_execution_authorized"])
 
@@ -47,6 +52,8 @@ class TrustLoopTests(unittest.TestCase):
 
             acceptance = json.loads((out / "dip-mvp-acceptance.json").read_text(encoding="utf-8"))
             self.assertTrue(acceptance["trust_loop_complete"])
+            self.assertTrue(acceptance["durable_case_manifest_valid"])
+            self.assertTrue(acceptance["approval_bound_to_manifest"])
             self.assertFalse(acceptance["runtime_integration_authorized"])
 
     def test_v0_2_computes_policy_preflight(self) -> None:
@@ -85,18 +92,30 @@ class TrustLoopTests(unittest.TestCase):
         self.assertEqual(payload["simulation_case_count"], 9)
         self.assertFalse(payload["runtime_execution_requested"])
 
-    def test_v0_4_manifest_and_release_pack_are_pre_runtime(self) -> None:
+    def test_v0_5_manifest_approval_and_release_pack_are_pre_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             write_trust_loop(Path(tmp), ROOT)
-            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.4.0-pre")
+            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.5.0-pre")
 
             self.assertTrue(verify_case_manifest(ROOT, result["manifest"]))
+            self.assertTrue(verify_case_manifest(ROOT, result["durable_manifest"]))
+            self.assertFalse(result["durable_manifest"]["mutation_detected"])
+            self.assertTrue(result["approval"]["approval_bound_to_manifest"])
+            self.assertEqual(result["approval"]["case_manifest_hash"], result["durable_manifest"]["manifest_hash"])
+            self.assertTrue(result["approval"]["role_binding_valid"])
+            self.assertTrue(result["replay"]["manifest_replay_valid"])
             self.assertTrue(result["release"]["computed_simulation_observed"])
             self.assertEqual(result["release"]["computed_simulation_case_count"], 9)
             self.assertEqual(result["release"]["computed_simulation_domain_count"], 2)
             self.assertEqual(result["release"]["computed_simulation_decision_shape_count"], 2)
             self.assertTrue(result["release"]["computed_decision_diff_observed"])
             self.assertEqual(result["release"]["computed_decision_diff_changed_outcomes"], 3)
+            self.assertTrue(result["release"]["durable_case_manifest_valid"])
+            self.assertTrue(result["release"]["append_only_chain_valid"])
+            self.assertFalse(result["release"]["case_mutation_detected"])
+            self.assertTrue(result["release"]["replay_from_manifest_observed"])
+            self.assertTrue(result["release"]["approval_bound_to_manifest"])
+            self.assertTrue(result["release"]["approval_role_binding_valid"])
             self.assertTrue(result["release"]["release_acceptance_passed"])
             self.assertFalse(result["release"]["runtime_integration_authorized"])
             self.assertFalse(result["release"]["production_decision_execution_authorized"])
