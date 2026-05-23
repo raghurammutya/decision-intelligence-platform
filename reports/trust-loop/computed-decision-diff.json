@@ -1,0 +1,30 @@
+{
+  "baseline_spec_ref": "examples/support-ticket-routing-decision-spec-v0.9.0.json",
+  "capability_version_changes": [
+    {
+      "capability_id": "ticket-priority-normalizer",
+      "from": "0.9.0",
+      "to": "1.0.0"
+    }
+  ],
+  "changed_outcome_count": 3,
+  "computed": true,
+  "decision_id": "support-ticket-routing",
+  "diff_id": "computed-diff-support-ticket-routing-1",
+  "from_decision_version": "0.9.0",
+  "policy_impact": [
+    "approval_required"
+  ],
+  "runtime_execution_requested": false,
+  "schema_version": "decision-diff/v1",
+  "simulation_changes": [
+    "3 changed outcomes in urgent-ticket-fixtures"
+  ],
+  "spec_changes": [
+    "decision_logic_changed",
+    "risk_profile_changed",
+    "approval_requirements_changed"
+  ],
+  "target_spec_ref": "examples/support-ticket-routing-decision-spec.json",
+  "to_decision_version": "1.0.0"
+}

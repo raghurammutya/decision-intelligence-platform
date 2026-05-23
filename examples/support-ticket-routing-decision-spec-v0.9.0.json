@@ -1,0 +1,73 @@
+{
+  "approval": {
+    "approver_roles": [],
+    "required": false
+  },
+  "capability_requirements": [
+    {
+      "capability_id": "ticket-priority-normalizer",
+      "version": "0.9.0"
+    }
+  ],
+  "decision_id": "support-ticket-routing",
+  "decision_logic": {
+    "summary": "Route all tickets to the standard queue.",
+    "type": "rules"
+  },
+  "decision_version": "0.9.0",
+  "environment_scope": {
+    "allowed_environments": [
+      "dev",
+      "test"
+    ],
+    "production_allowed": false
+  },
+  "evidence_requirements": [
+    "policy-preflight",
+    "simulation-evidence"
+  ],
+  "inputs": [
+    {
+      "input_id": "priority",
+      "schema_ref": "schemas/support-ticket/v1"
+    }
+  ],
+  "intent": {
+    "source": "user_declared",
+    "summary": "Route support tickets to a queue."
+  },
+  "name": "Support Ticket Routing",
+  "outputs": [
+    {
+      "output_id": "target_queue",
+      "schema_ref": "schemas/routing-output/v1"
+    }
+  ],
+  "owner": {
+    "display_name": "Support Platform",
+    "id": "support-platform",
+    "type": "team"
+  },
+  "product_id": "dip-fixture",
+  "risk": {
+    "autonomy_mode": "observe",
+    "explainability_tier": 1,
+    "risk_tier": 1
+  },
+  "schema_version": "decision-spec/v1",
+  "side_effects": [
+    {
+      "mode": "simulation_only",
+      "side_effect_id": "queue-route"
+    }
+  ],
+  "simulation": {
+    "case_set_requirements": [
+      "urgent-ticket-fixtures"
+    ],
+    "required": true
+  },
+  "source_labels": [
+    "user_declared"
+  ]
+}

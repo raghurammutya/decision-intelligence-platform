@@ -1,11 +1,16 @@
 {
   "append_only_required": true,
-  "artifact_count": 9,
+  "artifact_count": 10,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
       "path": "examples/support-ticket-routing-decision-spec.json",
       "sha256": "487e9f4af3f97a4cd2e8ab33ea3829e664f9ac3fd1d23701a591aca3e48b4956"
+    },
+    {
+      "artifact_type": "baseline_decision_spec",
+      "path": "examples/support-ticket-routing-decision-spec-v0.9.0.json",
+      "sha256": "8caf4c79c1da164120de96e1b67d886f3be2b427630637297b8fda7c21dca638"
     },
     {
       "artifact_type": "capability_registry",
@@ -29,8 +34,8 @@
     },
     {
       "artifact_type": "decision_diff",
-      "path": "examples/support-ticket-decision-diff.json",
-      "sha256": "5b2a224ac2a90a6a1409e95833aea256f8a8e4bba4dda065a53030c81f0e5fec"
+      "path": "reports/trust-loop/computed-decision-diff.json",
+      "sha256": "b995250bb7455405ff22e8dcf3ea7e2cd3271db22737defbae58b5f554c827ff"
     },
     {
       "artifact_type": "approval",

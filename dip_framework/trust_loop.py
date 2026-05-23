@@ -17,11 +17,12 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
-    write_v0_2_evidence(root)
+    write_v0_2_evidence(root, version="v0.3.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(examples / "support-ticket-case-evidence.json")
     replay_result = load_json(examples / "support-ticket-replay-result.json")
     computed_preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    computed_decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     case_manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     trust_loop_run = {
         "schema_version": "trust-loop-run/v1",
@@ -33,7 +34,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "load_capability_registry",
             "compute_policy_preflight",
             "load_simulation_evidence",
-            "generate_decision_diff",
+            "compute_decision_diff",
             "record_approval",
             "write_case_evidence",
             "write_case_manifest",
@@ -49,6 +50,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "trust_loop_complete": validation["passed"],
         "case_evidence_complete": bool(case_evidence.get("case_id")),
         "computed_policy_preflight_observed": computed_preflight.get("computed") is True,
+        "computed_decision_diff_observed": computed_decision_diff.get("computed") is True,
+        "computed_decision_diff_changed_outcomes": computed_decision_diff.get("changed_outcome_count", 0),
         "case_manifest_valid": case_manifest.get("append_only_required") is True and case_manifest.get("mutable") is False,
         "replay_evidence_complete": bool(replay_result.get("replay_id")),
         "runtime_integration_authorized": False,
@@ -62,6 +65,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "validation": validation,
         "case_evidence": case_evidence,
         "computed_preflight": computed_preflight,
+        "computed_decision_diff": computed_decision_diff,
         "case_manifest": case_manifest,
         "replay_result": replay_result,
         "trust_loop_run": trust_loop_run,
@@ -73,6 +77,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     payload = build_trust_loop(root)
     write_json(out / "validation.json", payload["validation"])
     write_json(out / "computed-policy-preflight.json", payload["computed_preflight"])
+    write_json(out / "computed-decision-diff.json", payload["computed_decision_diff"])
     write_json(out / "case-evidence.json", payload["case_evidence"])
     write_json(out / "case-manifest.json", payload["case_manifest"])
     write_json(out / "replay-result.json", payload["replay_result"])
