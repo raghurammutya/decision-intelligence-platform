@@ -79,8 +79,8 @@ class TrustLoopTests(unittest.TestCase):
             [record["decision_output"] for record in payload["engineering_review_results"]],
         )
 
-    def test_v0_4_computes_decision_diff_from_simulation(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.4.0-pre")
+    def test_v0_5_computes_decision_diff_from_simulation(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v0.5.0-pre")
         payload = result["decision_diff"]
 
         self.assertTrue(payload["computed"])
