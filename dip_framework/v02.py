@@ -13,11 +13,12 @@ from dip_framework.contracts import ROOT, load_json, validate_default_examples
 
 ARTIFACTS = [
     ("decision_spec", "examples/support-ticket-routing-decision-spec.json"),
+    ("baseline_decision_spec", "examples/support-ticket-routing-decision-spec-v0.9.0.json"),
     ("capability_registry", "examples/support-ticket-capability-registry.json"),
     ("policy_definitions", "examples/support-ticket-policy-definitions.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("simulation", "examples/support-ticket-simulation-evidence.json"),
-    ("decision_diff", "examples/support-ticket-decision-diff.json"),
+    ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
     ("approval", "examples/support-ticket-approval-record.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
     ("replay", "reports/trust-loop/replay-result.json"),
@@ -102,6 +103,58 @@ def compute_policy_preflight(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def _index_by_id(records: list[dict[str, Any]], key: str) -> dict[str, dict[str, Any]]:
+    return {str(record.get(key, "")): record for record in records if record.get(key)}
+
+
+def compute_decision_diff(root: Path = ROOT) -> dict[str, Any]:
+    examples = root / "examples"
+    baseline = load_json(examples / "support-ticket-routing-decision-spec-v0.9.0.json")
+    current = load_json(examples / "support-ticket-routing-decision-spec.json")
+    simulation = load_json(examples / "support-ticket-simulation-evidence.json")
+
+    spec_changes: list[str] = []
+    if baseline.get("decision_logic") != current.get("decision_logic"):
+        spec_changes.append("decision_logic_changed")
+    if baseline.get("risk") != current.get("risk"):
+        spec_changes.append("risk_profile_changed")
+    if baseline.get("approval") != current.get("approval"):
+        spec_changes.append("approval_requirements_changed")
+
+    baseline_capabilities = _index_by_id(baseline.get("capability_requirements", []), "capability_id")
+    current_capabilities = _index_by_id(current.get("capability_requirements", []), "capability_id")
+    capability_version_changes = []
+    for capability_id, current_record in sorted(current_capabilities.items()):
+        baseline_record = baseline_capabilities.get(capability_id, {})
+        if baseline_record.get("version") != current_record.get("version"):
+            capability_version_changes.append(
+                {
+                    "capability_id": capability_id,
+                    "from": baseline_record.get("version"),
+                    "to": current_record.get("version"),
+                }
+            )
+
+    changed_outcome_count = int(simulation.get("changed_outcome_count", 0) or 0)
+    policy_impact = ["approval_required"] if current.get("approval", {}).get("required") else ["none"]
+    return {
+        "schema_version": "decision-diff/v1",
+        "diff_id": "computed-diff-support-ticket-routing-1",
+        "decision_id": current.get("decision_id"),
+        "from_decision_version": baseline.get("decision_version"),
+        "to_decision_version": current.get("decision_version"),
+        "computed": True,
+        "baseline_spec_ref": "examples/support-ticket-routing-decision-spec-v0.9.0.json",
+        "target_spec_ref": "examples/support-ticket-routing-decision-spec.json",
+        "spec_changes": spec_changes,
+        "capability_version_changes": capability_version_changes,
+        "policy_impact": policy_impact,
+        "simulation_changes": [f"{changed_outcome_count} changed outcomes in {simulation.get('case_set')}"],
+        "changed_outcome_count": changed_outcome_count,
+        "runtime_execution_requested": False,
+    }
+
+
 def build_case_manifest(root: Path = ROOT) -> dict[str, Any]:
     records = []
     for artifact_type, relative_path in ARTIFACTS:
@@ -136,6 +189,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
 def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     manifest_valid = verify_case_manifest(root, manifest)
     return {
@@ -146,6 +200,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "validation_record_count": validation["record_count"],
         "computed_policy_preflight_observed": preflight.get("computed") is True,
         "computed_policy_preflight_result": preflight.get("result"),
+        "computed_decision_diff_observed": decision_diff.get("computed") is True,
+        "computed_decision_diff_changed_outcomes": decision_diff.get("changed_outcome_count", 0),
         "case_manifest_observed": bool(manifest.get("manifest_id")),
         "case_manifest_valid": manifest_valid,
         "case_manifest_artifact_count": manifest.get("artifact_count", 0),
@@ -153,6 +209,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
         and preflight.get("computed") is True
+        and decision_diff.get("computed") is True
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -170,6 +227,8 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Validation passed: `{payload['validation_passed']}`",
         f"Computed policy preflight observed: `{payload['computed_policy_preflight_observed']}`",
         f"Computed policy preflight result: `{payload['computed_policy_preflight_result']}`",
+        f"Computed decision diff observed: `{payload['computed_decision_diff_observed']}`",
+        f"Computed decision diff changed outcomes: `{payload['computed_decision_diff_changed_outcomes']}`",
         f"Case manifest valid: `{payload['case_manifest_valid']}`",
         f"Case manifest artifacts: `{payload['case_manifest_artifact_count']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
@@ -193,10 +252,12 @@ def write_v0_2_evidence(
     target = out or root / "reports" / "trust-loop"
     preflight = compute_policy_preflight(root)
     write_json(target / "computed-policy-preflight.json", preflight)
+    decision_diff = compute_decision_diff(root)
+    write_json(target / "computed-decision-diff.json", decision_diff)
     manifest = build_case_manifest(root)
     write_json(target / "case-manifest.json", manifest)
     release_dir = root / "reports" / "release" / version
     release = build_release_acceptance(root, version, source_commit)
     write_json(release_dir / "release-acceptance.json", release)
     write_release_acceptance_markdown(release_dir / "release-acceptance.md", release)
-    return {"preflight": preflight, "manifest": manifest, "release": release}
+    return {"preflight": preflight, "decision_diff": decision_diff, "manifest": manifest, "release": release}

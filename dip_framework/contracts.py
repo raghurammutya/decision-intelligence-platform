@@ -114,6 +114,8 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
         errors.append("decision spec production_allowed must be false for the first wedge")
     if kind == "preflight" and payload.get("ai_override_allowed") is not False:
         errors.append("policy preflight cannot allow AI override")
+    if kind == "decision_diff" and "runtime_execution_requested" in payload and payload.get("runtime_execution_requested") is not False:
+        errors.append("decision diff cannot request runtime execution")
     if kind == "policy_definitions":
         policies = payload.get("policies", [])
         if not policies:

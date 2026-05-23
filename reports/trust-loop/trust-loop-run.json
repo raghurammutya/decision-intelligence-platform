@@ -5,7 +5,7 @@
     "load_capability_registry",
     "compute_policy_preflight",
     "load_simulation_evidence",
-    "generate_decision_diff",
+    "compute_decision_diff",
     "record_approval",
     "write_case_evidence",
     "write_case_manifest",
