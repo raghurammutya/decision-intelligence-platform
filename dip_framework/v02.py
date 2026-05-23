@@ -17,6 +17,7 @@ ARTIFACTS = [
     ("capability_registry", "examples/support-ticket-capability-registry.json"),
     ("policy_definitions", "examples/support-ticket-policy-definitions.json"),
     ("identity_rbac_registry", "examples/identity-rbac-registry.json"),
+    ("repository_governance_policy", "examples/repository-governance-policy.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -380,6 +381,36 @@ def evaluate_approval_authority(
     }
 
 
+def evaluate_repository_governance(root: Path) -> dict[str, Any]:
+    policy = load_json(root / "examples/repository-governance-policy.json")
+    required_status_checks = policy.get("required_status_checks", [])
+    break_glass = policy.get("break_glass", {})
+    return {
+        "schema_version": "repository-governance-evaluation/v1",
+        "evaluation_id": "repository-governance-v0.7-pre-runtime-1",
+        "computed": True,
+        "policy_id": policy.get("policy_id"),
+        "policy_version": policy.get("policy_version"),
+        "policy_hash": _sha256(root / "examples/repository-governance-policy.json"),
+        "source_boundary": policy.get("source_boundary"),
+        "required_default_branch": policy.get("required_default_branch"),
+        "required_status_checks": required_status_checks,
+        "required_status_check_count": len(required_status_checks),
+        "required_approving_review_count": policy.get("required_approving_review_count", 0),
+        "dismiss_stale_reviews_required": policy.get("dismiss_stale_reviews_required") is True,
+        "admin_enforcement_required": policy.get("admin_enforcement_required") is True,
+        "force_pushes_allowed": policy.get("force_pushes_allowed") is True,
+        "branch_deletions_allowed": policy.get("branch_deletions_allowed") is True,
+        "break_glass_policy_defined": break_glass.get("allowed") is True
+        and break_glass.get("requires_reason") is True
+        and break_glass.get("requires_followup_evidence") is True
+        and break_glass.get("requires_restored_protection") is True
+        and int(break_glass.get("expires_after_hours", 0) or 0) <= 24,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_approval_record(
     durable_manifest: dict[str, Any],
     approval_authority: dict[str, Any],
@@ -438,6 +469,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
     approval = load_json(root / "reports/trust-loop/approval-record.json")
     approval_authority = load_json(root / "reports/trust-loop/approval-authority.json")
+    repository_governance = load_json(root / "reports/trust-loop/repository-governance.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
     manifest_valid = verify_case_manifest(root, manifest)
     durable_manifest_valid = verify_case_manifest(root, durable_manifest)
@@ -476,6 +508,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "approval_decision_scope_authorized": approval_authority.get("decision_scope_authorized") is True,
         "ai_self_approval_blocked": approval_authority.get("ai_self_approval_blocked") is True,
         "external_identity_provider_observed": approval_authority.get("external_identity_provider_observed") is True,
+        "repository_governance_policy_observed": repository_governance.get("computed") is True,
+        "admin_enforcement_required": repository_governance.get("admin_enforcement_required") is True,
+        "required_status_check_count": repository_governance.get("required_status_check_count", 0),
+        "break_glass_policy_defined": repository_governance.get("break_glass_policy_defined") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
@@ -492,6 +528,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and approval.get("role_binding_valid") is True
         and approval_authority.get("approval_authority_valid") is True
         and approval_authority.get("ai_self_approval_blocked") is True
+        and repository_governance.get("admin_enforcement_required") is True
+        and repository_governance.get("break_glass_policy_defined") is True
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -528,6 +566,9 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Approval authority valid: `{payload['approval_authority_valid']}`",
         f"AI self-approval blocked: `{payload['ai_self_approval_blocked']}`",
         f"External identity provider observed: `{payload['external_identity_provider_observed']}`",
+        f"Repository governance policy observed: `{payload['repository_governance_policy_observed']}`",
+        f"Admin enforcement required: `{payload['admin_enforcement_required']}`",
+        f"Break-glass policy defined: `{payload['break_glass_policy_defined']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
         f"Production decision execution authorized: `{payload['production_decision_execution_authorized']}`",
         f"Release acceptance passed: `{payload['release_acceptance_passed']}`",
@@ -561,6 +602,8 @@ def write_v0_2_evidence(
     write_json(target / "durable-case-manifest.json", durable_manifest)
     approval_authority = evaluate_approval_authority(root, durable_manifest)
     write_json(target / "approval-authority.json", approval_authority)
+    repository_governance = evaluate_repository_governance(root)
+    write_json(target / "repository-governance.json", repository_governance)
     approval = build_approval_record(durable_manifest, approval_authority)
     write_json(target / "approval-record.json", approval)
     replay = build_replay_result_from_manifest(root, durable_manifest)
@@ -577,6 +620,7 @@ def write_v0_2_evidence(
         "manifest": manifest,
         "durable_manifest": durable_manifest,
         "approval_authority": approval_authority,
+        "repository_governance": repository_governance,
         "approval": approval,
         "replay": replay,
         "release": release,

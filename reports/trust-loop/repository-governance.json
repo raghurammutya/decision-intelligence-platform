@@ -1,0 +1,22 @@
+{
+  "admin_enforcement_required": true,
+  "branch_deletions_allowed": false,
+  "break_glass_policy_defined": true,
+  "computed": true,
+  "dismiss_stale_reviews_required": true,
+  "evaluation_id": "repository-governance-v0.7-pre-runtime-1",
+  "force_pushes_allowed": false,
+  "policy_hash": "bcc50f61465f23b73f33ddf4f1a7f83942bb80a30797f349a2962d088b8a45f6",
+  "policy_id": "dip-repository-governance",
+  "policy_version": "0.7.0-pre",
+  "production_decision_execution_authorized": false,
+  "required_approving_review_count": 1,
+  "required_default_branch": "main",
+  "required_status_check_count": 1,
+  "required_status_checks": [
+    "validate"
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "repository-governance-evaluation/v1",
+  "source_boundary": "declared_repository_governance_policy_not_runtime_execution"
+}

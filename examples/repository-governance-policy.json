@@ -1,0 +1,22 @@
+{
+  "schema_version": "repository-governance-policy/v1",
+  "policy_id": "dip-repository-governance",
+  "policy_version": "0.7.0-pre",
+  "source_boundary": "declared_repository_governance_policy_not_runtime_execution",
+  "required_default_branch": "main",
+  "required_status_checks": ["validate"],
+  "required_approving_review_count": 1,
+  "dismiss_stale_reviews_required": true,
+  "admin_enforcement_required": true,
+  "force_pushes_allowed": false,
+  "branch_deletions_allowed": false,
+  "break_glass": {
+    "allowed": true,
+    "requires_reason": true,
+    "requires_followup_evidence": true,
+    "requires_restored_protection": true,
+    "expires_after_hours": 24
+  },
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

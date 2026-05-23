@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 12,
+  "artifact_count": 13,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -26,6 +26,11 @@
       "artifact_type": "identity_rbac_registry",
       "path": "examples/identity-rbac-registry.json",
       "sha256": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4"
+    },
+    {
+      "artifact_type": "repository_governance_policy",
+      "path": "examples/repository-governance-policy.json",
+      "sha256": "bcc50f61465f23b73f33ddf4f1a7f83942bb80a30797f349a2962d088b8a45f6"
     },
     {
       "artifact_type": "support_ticket_case_set",

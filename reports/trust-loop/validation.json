@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 10,
-  "record_count": 10,
+  "passed_count": 11,
+  "record_count": 11,
   "records": [
     {
       "errors": [],
@@ -50,6 +50,12 @@
       "kind": "identity_rbac_registry",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/identity-rbac-registry.json"
+    },
+    {
+      "errors": [],
+      "kind": "repository_governance_policy",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/repository-governance-policy.json"
     },
     {
       "errors": [],
