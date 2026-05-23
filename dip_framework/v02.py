@@ -455,7 +455,22 @@ def evaluate_repository_governance(root: Path) -> dict[str, Any]:
     policy = load_json(root / "examples/repository-governance-policy.json")
     required_status_checks = policy.get("required_status_checks", [])
     break_glass = policy.get("break_glass", {})
-    branch_protection = _gh_branch_protection(root, str(policy.get("required_default_branch", "main")))
+    live_path = root / "reports" / "trust-loop" / "repository-governance.json"
+    live = load_json(live_path) if live_path.exists() else {}
+    branch_protection = (
+        {
+            "observed": live.get("branch_protection_observed", False),
+            "required_status_checks_observed": live.get("required_status_checks_observed", False),
+            "required_approving_review_count_observed": live.get("required_approving_review_count_observed", 0),
+            "admin_enforcement_observed": live.get("admin_enforcement_observed", False),
+            "codeowner_review_required_observed": live.get("codeowner_review_required_observed", False),
+            "conversation_resolution_required_observed": live.get("conversation_resolution_required_observed", False),
+            "force_pushes_blocked": live.get("force_pushes_blocked", False),
+            "deletions_blocked": live.get("deletions_blocked", False),
+        }
+        if live
+        else _gh_branch_protection(root, str(policy.get("required_default_branch", "main")))
+    )
     return {
         "schema_version": "repository-governance-evaluation/v1",
         "evaluation_id": "repository-governance-v0.7-pre-runtime-1",
