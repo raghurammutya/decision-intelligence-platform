@@ -1,0 +1,20 @@
+{
+  "schema_version": "decision-spec/v1",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "name": "Support Ticket Routing",
+  "product_id": "dip-fixture",
+  "owner": {"type": "team", "id": "support-platform", "display_name": "Support Platform"},
+  "environment_scope": {"allowed_environments": ["dev", "test"], "production_allowed": false},
+  "intent": {"summary": "Route urgent tickets to a priority queue.", "source": "user_declared"},
+  "inputs": [{"input_id": "priority", "schema_ref": "schemas/support-ticket/v1"}],
+  "capability_requirements": [{"capability_id": "ticket-priority-normalizer", "version": "1.0.0"}],
+  "decision_logic": {"type": "rules", "summary": "If priority is urgent, route to priority queue."},
+  "outputs": [{"output_id": "target_queue", "schema_ref": "schemas/routing-output/v1"}],
+  "side_effects": [{"side_effect_id": "queue-route", "mode": "simulation_only"}],
+  "risk": {"risk_tier": 2, "explainability_tier": 1, "autonomy_mode": "observe"},
+  "approval": {"required": true, "approver_roles": ["support-platform-owner"]},
+  "simulation": {"required": true, "case_set_requirements": ["urgent-ticket-fixtures"]},
+  "evidence_requirements": ["policy-preflight", "simulation-evidence", "approval-record"],
+  "source_labels": ["user_declared"]
+}

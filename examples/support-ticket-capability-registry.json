@@ -1,0 +1,18 @@
+{
+  "schema_version": "capability-registry/v1",
+  "capabilities": [
+    {
+      "capability_id": "ticket-priority-normalizer",
+      "version": "1.0.0",
+      "owner": "support-platform",
+      "capability_type": "data_transform",
+      "trust_class": "reviewed_fixture",
+      "risk_tier": 2,
+      "input_contract": "schemas/support-ticket/v1",
+      "output_contract": "schemas/normalized-priority/v1",
+      "policy_dependencies": ["no-production-side-effects"],
+      "evaluation_evidence_ref": "examples/support-ticket-simulation-evidence.json",
+      "checksum": "sha256:fixture"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "policy-preflight/v1",
+  "preflight_id": "preflight-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "result": "approval_required",
+  "violated_policies": [],
+  "required_approvals": ["support-platform-owner"],
+  "missing_evidence": [],
+  "environment_restrictions": ["prod"],
+  "side_effect_restrictions": ["simulation_only"],
+  "remediation_guidance": ["Record approval before promotion."],
+  "ai_override_allowed": false
+}

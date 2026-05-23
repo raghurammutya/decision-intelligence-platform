@@ -1,0 +1,13 @@
+{
+  "acceptance_id": "dip-mvp-acceptance-1",
+  "blocked_claims": [
+    "runtime integration is authorized",
+    "production decision execution is authorized"
+  ],
+  "case_evidence_complete": true,
+  "production_decision_execution_authorized": false,
+  "replay_evidence_complete": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "dip-mvp-acceptance/v1",
+  "trust_loop_complete": true
+}

@@ -1,0 +1,22 @@
+{
+  "capability_versions": [
+    {
+      "capability_id": "ticket-priority-normalizer",
+      "version": "1.0.0"
+    }
+  ],
+  "case_id": "case-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "original_case_ref": "examples/support-ticket-case-evidence.json",
+  "policy_versions": [
+    {
+      "policy_id": "no-production-side-effects",
+      "version": "fixture"
+    }
+  ],
+  "replay_id": "replay-support-ticket-routing-1",
+  "replay_outcome_diff": [],
+  "replayed_case_ref": "examples/support-ticket-case-evidence.json",
+  "schema_version": "replay-result/v1",
+  "side_effects_executed": false
+}

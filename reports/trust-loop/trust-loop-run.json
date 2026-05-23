@@ -1,0 +1,19 @@
+{
+  "case_evidence_ref": "case-evidence.json",
+  "completed_steps": [
+    "validate_spec",
+    "load_capability_registry",
+    "run_policy_preflight",
+    "load_simulation_evidence",
+    "generate_decision_diff",
+    "record_approval",
+    "write_case_evidence",
+    "read_replay_result"
+  ],
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "replay_result_ref": "replay-result.json",
+  "run_id": "trust-loop-support-ticket-routing-1",
+  "runtime_execution_requested": false,
+  "schema_version": "trust-loop-run/v1"
+}

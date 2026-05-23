@@ -1,0 +1,11 @@
+{
+  "schema_version": "approval-record/v1",
+  "approval_id": "approval-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "requester": "dip-fixture-builder",
+  "approver_identity": "support-platform-owner",
+  "decision": "approved",
+  "approval_reason": "Simulation changes are expected and policy preflight requires owner approval.",
+  "ai_approved": false
+}

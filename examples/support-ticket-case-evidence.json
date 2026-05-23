@@ -1,0 +1,15 @@
+{
+  "schema_version": "case-evidence-pack/v1",
+  "case_id": "case-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "decision_spec_ref": "examples/support-ticket-routing-decision-spec.json",
+  "capability_registry_ref": "examples/support-ticket-capability-registry.json",
+  "policy_preflight_ref": "examples/support-ticket-policy-preflight.json",
+  "simulation_ref": "examples/support-ticket-simulation-evidence.json",
+  "decision_diff_ref": "examples/support-ticket-decision-diff.json",
+  "approval_record_ref": "examples/support-ticket-approval-record.json",
+  "lineage_refs": ["support-ticket-routing@0.9.0", "support-ticket-routing@1.0.0"],
+  "storage_mode": "immutable_fixture",
+  "mutable": false
+}

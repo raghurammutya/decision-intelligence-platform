@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "passed_count": 8,
+  "record_count": 8,
+  "records": [
+    {
+      "errors": [],
+      "kind": "decision_spec",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-routing-decision-spec.json"
+    },
+    {
+      "errors": [],
+      "kind": "capability_registry",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-capability-registry.json"
+    },
+    {
+      "errors": [],
+      "kind": "preflight",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-policy-preflight.json"
+    },
+    {
+      "errors": [],
+      "kind": "simulation",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-simulation-evidence.json"
+    },
+    {
+      "errors": [],
+      "kind": "decision_diff",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-decision-diff.json"
+    },
+    {
+      "errors": [],
+      "kind": "approval",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-approval-record.json"
+    },
+    {
+      "errors": [],
+      "kind": "case_evidence",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-case-evidence.json"
+    },
+    {
+      "errors": [],
+      "kind": "replay",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-replay-result.json"
+    }
+  ]
+}

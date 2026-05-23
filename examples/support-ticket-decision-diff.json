@@ -1,0 +1,12 @@
+{
+  "schema_version": "decision-diff/v1",
+  "diff_id": "diff-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "from_decision_version": "0.9.0",
+  "to_decision_version": "1.0.0",
+  "spec_changes": ["added urgent ticket routing rule"],
+  "capability_version_changes": [{"capability_id": "ticket-priority-normalizer", "from": "0.9.0", "to": "1.0.0"}],
+  "policy_impact": ["approval_required"],
+  "simulation_changes": ["3 changed outcomes in urgent-ticket-fixtures"],
+  "changed_outcome_count": 3
+}

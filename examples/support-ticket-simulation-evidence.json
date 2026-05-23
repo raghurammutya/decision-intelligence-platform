@@ -1,0 +1,14 @@
+{
+  "schema_version": "simulation-evidence/v1",
+  "simulation_run_id": "sim-support-ticket-routing-1",
+  "decision_id": "support-ticket-routing",
+  "decision_version": "1.0.0",
+  "baseline_decision_version": "0.9.0",
+  "case_set": "urgent-ticket-fixtures",
+  "sample_size": 25,
+  "changed_outcome_count": 3,
+  "policy_decisions": [{"preflight_id": "preflight-support-ticket-routing-1", "result": "approval_required"}],
+  "side_effects_requested": [{"side_effect_id": "queue-route", "executed": false}],
+  "cost_delta": {"currency": "USD", "amount": 0},
+  "decision_diff_ref": "examples/support-ticket-decision-diff.json"
+}
