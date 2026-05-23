@@ -17,9 +17,12 @@
   ],
   "runtime_execution_requested": false,
   "schema_version": "decision-diff/v1",
+  "simulation_case_count": 9,
   "simulation_changes": [
-    "3 changed outcomes in urgent-ticket-fixtures"
+    "3 changed outcomes in v0.4-pre-runtime-cases"
   ],
+  "simulation_computed": true,
+  "simulation_ref": "reports/trust-loop/computed-simulation-evidence.json",
   "spec_changes": [
     "decision_logic_changed",
     "risk_profile_changed",

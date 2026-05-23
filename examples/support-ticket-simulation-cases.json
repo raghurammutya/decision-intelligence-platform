@@ -1,0 +1,36 @@
+{
+  "case_set": "urgent-ticket-fixtures",
+  "cases": [
+    {
+      "case_id": "ticket-001",
+      "inputs": {
+        "priority": "urgent"
+      }
+    },
+    {
+      "case_id": "ticket-002",
+      "inputs": {
+        "priority": "normal"
+      }
+    },
+    {
+      "case_id": "ticket-003",
+      "inputs": {
+        "priority": "urgent"
+      }
+    },
+    {
+      "case_id": "ticket-004",
+      "inputs": {
+        "priority": "low"
+      }
+    },
+    {
+      "case_id": "ticket-005",
+      "inputs": {
+        "priority": "urgent"
+      }
+    }
+  ],
+  "schema_version": "simulation-case-set/v1"
+}

@@ -1,20 +1,25 @@
 {
-  "acceptance_id": "dip-mvp-acceptance-1",
   "blocked_claims": [
     "runtime integration is authorized",
     "production decision execution is authorized"
   ],
-  "case_evidence_complete": true,
+  "case_manifest_artifact_count": 13,
+  "case_manifest_observed": true,
   "case_manifest_valid": true,
   "computed_decision_diff_changed_outcomes": 3,
   "computed_decision_diff_observed": true,
   "computed_policy_preflight_observed": true,
+  "computed_policy_preflight_result": "approval_required",
   "computed_simulation_case_count": 9,
+  "computed_simulation_decision_shape_count": 2,
   "computed_simulation_domain_count": 2,
   "computed_simulation_observed": true,
   "production_decision_execution_authorized": false,
-  "replay_evidence_complete": true,
+  "release_acceptance_passed": true,
+  "release_version": "v0.4.0-pre",
   "runtime_integration_authorized": false,
-  "schema_version": "dip-mvp-acceptance/v1",
-  "trust_loop_complete": true
+  "schema_version": "dip-release-acceptance/v1",
+  "source_commit": "local-validation",
+  "validation_passed": true,
+  "validation_record_count": 9
 }

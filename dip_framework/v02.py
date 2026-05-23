@@ -1,4 +1,4 @@
-"""DIP v0.2 pre-runtime evidence builders."""
+"""DIP pre-runtime evidence builders."""
 
 from __future__ import annotations
 
@@ -16,8 +16,11 @@ ARTIFACTS = [
     ("baseline_decision_spec", "examples/support-ticket-routing-decision-spec-v0.9.0.json"),
     ("capability_registry", "examples/support-ticket-capability-registry.json"),
     ("policy_definitions", "examples/support-ticket-policy-definitions.json"),
+    ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
+    ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
+    ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
-    ("simulation", "examples/support-ticket-simulation-evidence.json"),
+    ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
     ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
     ("approval", "examples/support-ticket-approval-record.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
@@ -107,11 +110,90 @@ def _index_by_id(records: list[dict[str, Any]], key: str) -> dict[str, dict[str,
     return {str(record.get(key, "")): record for record in records if record.get(key)}
 
 
+def _support_ticket_route(spec: dict[str, Any], case: dict[str, Any]) -> str:
+    priority = str(case.get("inputs", {}).get("priority", "")).lower()
+    summary = str(spec.get("decision_logic", {}).get("summary", "")).lower()
+    if "urgent" in summary and priority == "urgent":
+        return "priority_queue"
+    return "standard_queue"
+
+
+def _engineering_review_readiness(spec: dict[str, Any], case: dict[str, Any]) -> str:
+    inputs = case.get("inputs", {})
+    if inputs.get("runtime_execution_requested") is True:
+        return "blocked_runtime_requested"
+    if inputs.get("admin_bypass_observed") is True:
+        return "hold_for_governance_review"
+    if inputs.get("computed_evidence_observed") is not True:
+        return "hold_for_missing_evidence"
+    if inputs.get("ci_passed") is not True:
+        return "hold_for_ci"
+    return "ready_for_independent_review"
+
+
+def compute_simulation(root: Path = ROOT) -> dict[str, Any]:
+    examples = root / "examples"
+    baseline = load_json(examples / "support-ticket-routing-decision-spec-v0.9.0.json")
+    current = load_json(examples / "support-ticket-routing-decision-spec.json")
+    support_cases = load_json(examples / "support-ticket-simulation-cases.json")
+    engineering_spec = load_json(examples / "engineering-review-readiness-decision-spec.json")
+    engineering_cases = load_json(examples / "engineering-review-readiness-cases.json")
+
+    support_results = []
+    changed_outcome_count = 0
+    for case in support_cases.get("cases", []):
+        baseline_output = _support_ticket_route(baseline, case)
+        current_output = _support_ticket_route(current, case)
+        changed = baseline_output != current_output
+        changed_outcome_count += 1 if changed else 0
+        support_results.append(
+            {
+                "case_id": case.get("case_id"),
+                "baseline_output": baseline_output,
+                "current_output": current_output,
+                "changed": changed,
+                "side_effects_executed": False,
+            }
+        )
+
+    engineering_results = []
+    for case in engineering_cases.get("cases", []):
+        engineering_results.append(
+            {
+                "case_id": case.get("case_id"),
+                "decision_output": _engineering_review_readiness(engineering_spec, case),
+                "side_effects_executed": False,
+            }
+        )
+
+    return {
+        "schema_version": "simulation-evidence/v1",
+        "simulation_run_id": "computed-sim-v0.4-pre-runtime-1",
+        "decision_id": "multi-decision-pre-runtime-review",
+        "decision_version": "v0.4.0-pre",
+        "baseline_decision_version": baseline.get("decision_version"),
+        "case_set": "v0.4-pre-runtime-cases",
+        "computed": True,
+        "case_count": len(support_results) + len(engineering_results),
+        "domain_count": 2,
+        "decision_shape_count": 2,
+        "changed_outcome_count": changed_outcome_count,
+        "support_ticket_results": support_results,
+        "engineering_review_results": engineering_results,
+        "policy_decisions": [{"preflight_id": "computed-preflight-support-ticket-routing-1", "result": "approval_required"}],
+        "side_effects_requested": [{"side_effect_id": "queue-route", "executed": False}],
+        "cost_delta": {"currency": "USD", "amount": 0},
+        "decision_diff_ref": "reports/trust-loop/computed-decision-diff.json",
+        "runtime_execution_requested": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def compute_decision_diff(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
     baseline = load_json(examples / "support-ticket-routing-decision-spec-v0.9.0.json")
     current = load_json(examples / "support-ticket-routing-decision-spec.json")
-    simulation = load_json(examples / "support-ticket-simulation-evidence.json")
+    simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
 
     spec_changes: list[str] = []
     if baseline.get("decision_logic") != current.get("decision_logic"):
@@ -151,6 +233,9 @@ def compute_decision_diff(root: Path = ROOT) -> dict[str, Any]:
         "policy_impact": policy_impact,
         "simulation_changes": [f"{changed_outcome_count} changed outcomes in {simulation.get('case_set')}"],
         "changed_outcome_count": changed_outcome_count,
+        "simulation_ref": "reports/trust-loop/computed-simulation-evidence.json",
+        "simulation_computed": simulation.get("computed") is True,
+        "simulation_case_count": simulation.get("case_count", 0),
         "runtime_execution_requested": False,
     }
 
@@ -189,6 +274,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
 def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     manifest_valid = verify_case_manifest(root, manifest)
@@ -200,6 +286,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "validation_record_count": validation["record_count"],
         "computed_policy_preflight_observed": preflight.get("computed") is True,
         "computed_policy_preflight_result": preflight.get("result"),
+        "computed_simulation_observed": simulation.get("computed") is True,
+        "computed_simulation_case_count": simulation.get("case_count", 0),
+        "computed_simulation_domain_count": simulation.get("domain_count", 0),
+        "computed_simulation_decision_shape_count": simulation.get("decision_shape_count", 0),
         "computed_decision_diff_observed": decision_diff.get("computed") is True,
         "computed_decision_diff_changed_outcomes": decision_diff.get("changed_outcome_count", 0),
         "case_manifest_observed": bool(manifest.get("manifest_id")),
@@ -209,7 +299,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
         and preflight.get("computed") is True
+        and simulation.get("computed") is True
         and decision_diff.get("computed") is True
+        and int(simulation.get("domain_count", 0) or 0) >= 2
+        and int(simulation.get("decision_shape_count", 0) or 0) >= 2
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -227,6 +320,10 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Validation passed: `{payload['validation_passed']}`",
         f"Computed policy preflight observed: `{payload['computed_policy_preflight_observed']}`",
         f"Computed policy preflight result: `{payload['computed_policy_preflight_result']}`",
+        f"Computed simulation observed: `{payload['computed_simulation_observed']}`",
+        f"Computed simulation cases: `{payload['computed_simulation_case_count']}`",
+        f"Computed simulation domains: `{payload['computed_simulation_domain_count']}`",
+        f"Computed simulation decision shapes: `{payload['computed_simulation_decision_shape_count']}`",
         f"Computed decision diff observed: `{payload['computed_decision_diff_observed']}`",
         f"Computed decision diff changed outcomes: `{payload['computed_decision_diff_changed_outcomes']}`",
         f"Case manifest valid: `{payload['case_manifest_valid']}`",
@@ -252,6 +349,8 @@ def write_v0_2_evidence(
     target = out or root / "reports" / "trust-loop"
     preflight = compute_policy_preflight(root)
     write_json(target / "computed-policy-preflight.json", preflight)
+    simulation = compute_simulation(root)
+    write_json(target / "computed-simulation-evidence.json", simulation)
     decision_diff = compute_decision_diff(root)
     write_json(target / "computed-decision-diff.json", decision_diff)
     manifest = build_case_manifest(root)
@@ -260,4 +359,10 @@ def write_v0_2_evidence(
     release = build_release_acceptance(root, version, source_commit)
     write_json(release_dir / "release-acceptance.json", release)
     write_release_acceptance_markdown(release_dir / "release-acceptance.md", release)
-    return {"preflight": preflight, "decision_diff": decision_diff, "manifest": manifest, "release": release}
+    return {
+        "preflight": preflight,
+        "simulation": simulation,
+        "decision_diff": decision_diff,
+        "manifest": manifest,
+        "release": release,
+    }

@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 10,
+  "artifact_count": 13,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -23,19 +23,34 @@
       "sha256": "a5d9b065a84220c74005240fec55200933d505eba3cea77d5f65ee51950009d5"
     },
     {
+      "artifact_type": "support_ticket_case_set",
+      "path": "examples/support-ticket-simulation-cases.json",
+      "sha256": "d100b9a3a6c66f86ec1c625c032ce709ee6b55941bd68b085786f525595a7fca"
+    },
+    {
+      "artifact_type": "engineering_decision_spec",
+      "path": "examples/engineering-review-readiness-decision-spec.json",
+      "sha256": "db513416c139fba34beed32605aa56b88aba7298623f4a04a28316b646fdec24"
+    },
+    {
+      "artifact_type": "engineering_case_set",
+      "path": "examples/engineering-review-readiness-cases.json",
+      "sha256": "2d56dbe2ab634c97de460e82fece019305112da728e41f39fb2dbd39db6ba0c8"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "121100862d63252f726174a9e3d31c37e8431cb290f1fc077400acb4626f25be"
     },
     {
       "artifact_type": "simulation",
-      "path": "examples/support-ticket-simulation-evidence.json",
-      "sha256": "050f5bbe78dc59c42ee624ee7987b8418e62c1a4b02f3a22dda6e27a72a15650"
+      "path": "reports/trust-loop/computed-simulation-evidence.json",
+      "sha256": "9a8e3c6cba94ba9f28d243d773e762e6c718601165e3ac7591813d0eda173eb9"
     },
     {
       "artifact_type": "decision_diff",
       "path": "reports/trust-loop/computed-decision-diff.json",
-      "sha256": "b995250bb7455405ff22e8dcf3ea7e2cd3271db22737defbae58b5f554c827ff"
+      "sha256": "0374a60451b943b2bdabcc23df403f5adc706af6a356479974edc02dee038fac"
     },
     {
       "artifact_type": "approval",
