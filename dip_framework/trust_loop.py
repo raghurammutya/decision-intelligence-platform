@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v0.5.0-pre")
+    write_v0_2_evidence(root, version="v0.6.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -26,6 +26,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     computed_decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     case_manifest = load_json(root / "reports/trust-loop/case-manifest.json")
     durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
+    approval_authority = load_json(root / "reports/trust-loop/approval-authority.json")
     trust_loop_run = {
         "schema_version": "trust-loop-run/v1",
         "run_id": "trust-loop-support-ticket-routing-1",
@@ -39,6 +40,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "compute_decision_diff",
             "write_durable_case_manifest",
             "bind_approval_to_manifest",
+            "evaluate_identity_rbac_authority",
             "write_case_evidence",
             "replay_from_manifest",
         ],
@@ -65,6 +67,9 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "replay_evidence_complete": replay_result.get("manifest_replay_valid") is True,
         "approval_bound_to_manifest": approval_record.get("approval_bound_to_manifest") is True,
         "approval_role_binding_valid": approval_record.get("role_binding_valid") is True,
+        "approval_authority_evaluated": approval_authority.get("computed") is True,
+        "approval_authority_valid": approval_authority.get("approval_authority_valid") is True,
+        "external_identity_provider_observed": approval_authority.get("external_identity_provider_observed") is True,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "blocked_claims": [
@@ -81,6 +86,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "case_manifest": case_manifest,
         "durable_manifest": durable_manifest,
         "approval_record": approval_record,
+        "approval_authority": approval_authority,
         "replay_result": replay_result,
         "trust_loop_run": trust_loop_run,
         "acceptance": acceptance,
@@ -97,6 +103,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "case-manifest.json", payload["case_manifest"])
     write_json(out / "durable-case-manifest.json", payload["durable_manifest"])
     write_json(out / "approval-record.json", payload["approval_record"])
+    write_json(out / "approval-authority.json", payload["approval_authority"])
     write_json(out / "replay-result.json", payload["replay_result"])
     write_json(out / "trust-loop-run.json", payload["trust_loop_run"])
     write_json(out / "dip-mvp-acceptance.json", payload["acceptance"])

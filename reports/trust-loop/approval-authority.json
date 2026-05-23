@@ -1,0 +1,33 @@
+{
+  "ai_self_approval_blocked": true,
+  "approval_authority_valid": true,
+  "approver_identity": "acct-support-platform-owner-001",
+  "approver_subject": "support-platform-owner@example.invalid",
+  "case_manifest_hash": "b5765b29a5815d1049a778cf8d27c1fc97b71191d44d288ef046e97077460f3e",
+  "computed": true,
+  "decision_id": "support-ticket-routing",
+  "decision_scope_authorized": true,
+  "evaluation_id": "approval-authority-support-ticket-routing-1",
+  "external_identity_provider_observed": false,
+  "identity_active": true,
+  "identity_not_expired": true,
+  "identity_roles": [
+    "support-platform-owner"
+  ],
+  "matching_roles": [
+    "support-platform-owner"
+  ],
+  "mfa_satisfied": true,
+  "production_decision_execution_authorized": false,
+  "registry_hash": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4",
+  "registry_id": "dip-local-identity-rbac",
+  "registry_version": "0.6.0-pre",
+  "required_approver_roles": [
+    "support-platform-owner"
+  ],
+  "risk_tier": 2,
+  "role_authorized": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "approval-authority-evaluation/v1",
+  "source_boundary": "versioned_local_registry_not_external_idp"
+}
