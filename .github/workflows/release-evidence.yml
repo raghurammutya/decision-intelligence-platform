@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -38,3 +39,12 @@ jobs:
         run: |
           version="${{ github.event.inputs.version || github.ref_name }}"
           python3 -m dip_framework release-pack --version "$version" --source-commit "${{ github.sha }}" --json
+
+      - name: Upload release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dip-release-evidence-${{ github.event.inputs.version || github.ref_name }}
+          path: |
+            reports/release/${{ github.event.inputs.version || github.ref_name }}/release-acceptance.json
+            reports/release/${{ github.event.inputs.version || github.ref_name }}/release-acceptance.md
+          if-no-files-found: error
