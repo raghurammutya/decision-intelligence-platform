@@ -25,7 +25,7 @@
     {
       "artifact_type": "identity_rbac_registry",
       "path": "examples/identity-rbac-registry.json",
-      "sha256": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4"
+      "sha256": "888b46ebd9b8396ab58b09a416945245416cd1bc7bcbaed79934e0225e71d39c"
     },
     {
       "artifact_type": "repository_governance_policy",
@@ -85,11 +85,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "3f0d1c2b34d7ac5dd7a565d5a42c0b2b897222c4d1be259e8002d335d627f9de",
+  "manifest_hash": "d4c70eeb4aae5dc9cd8d8b12e810a59ae71ebd61e06c229b450c2d46935f0c6a",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "1439dc146d2844a69a446f96dce6d4d34646ffc446350f77eefffd54efc74a81",
+  "parent_manifest_hash": "a71d65532e0694049fc9c6b3d9c1036604e7f8259b290ae4f37b9ff204dd40eb",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

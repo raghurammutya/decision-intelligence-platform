@@ -158,6 +158,7 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(authority["mfa_satisfied"])
         self.assertTrue(authority["decision_scope_authorized"])
         self.assertTrue(authority["ai_self_approval_blocked"])
+        self.assertEqual(authority["approver_subject"], "Raghurammutya@gmail.com")
         self.assertFalse(authority["external_identity_provider_observed"])
         self.assertTrue(result["release"]["approval_authority_evaluated"])
         self.assertTrue(result["release"]["approval_authority_valid"])

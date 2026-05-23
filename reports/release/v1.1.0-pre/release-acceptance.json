@@ -31,7 +31,7 @@
   "computed_simulation_observed": true,
   "conversation_resolution_required": true,
   "conversation_resolution_required_observed": true,
-  "durable_case_manifest_hash": "3f0d1c2b34d7ac5dd7a565d5a42c0b2b897222c4d1be259e8002d335d627f9de",
+  "durable_case_manifest_hash": "d4c70eeb4aae5dc9cd8d8b12e810a59ae71ebd61e06c229b450c2d46935f0c6a",
   "durable_case_manifest_observed": true,
   "durable_case_manifest_valid": true,
   "durable_evidence_store_policy_observed": true,

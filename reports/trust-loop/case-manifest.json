@@ -25,7 +25,7 @@
     {
       "artifact_type": "identity_rbac_registry",
       "path": "examples/identity-rbac-registry.json",
-      "sha256": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4"
+      "sha256": "888b46ebd9b8396ab58b09a416945245416cd1bc7bcbaed79934e0225e71d39c"
     },
     {
       "artifact_type": "repository_governance_policy",
