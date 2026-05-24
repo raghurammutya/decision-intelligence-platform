@@ -1,0 +1,19 @@
+{
+  "approval_required": true,
+  "blocked_claim": "runtime shared-context exchange is blocked until controlled runtime pilot is authorized",
+  "computed": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "shared-context-runtime-governance-v8.0-1",
+  "freshness_rules_declared": true,
+  "hidden_shared_state_allowed": false,
+  "masking_rules_declared": true,
+  "policy_decision_evidence_declared": true,
+  "production_decision_execution_authorized": false,
+  "purpose_declared": true,
+  "runtime_context_exchange_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "shared-context-runtime-governance/v1",
+  "shared_context_runtime_governance_complete": true,
+  "source_lineage_declared": true,
+  "ttl_declared": true
+}

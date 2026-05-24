@@ -1,0 +1,19 @@
+{
+  "append_only_valid": true,
+  "audit_export_valid": true,
+  "backup_restore_contract_defined": true,
+  "blocked_claim": "production durable case store backend is not observed",
+  "computed": true,
+  "content_addressed_records_valid": true,
+  "evaluation_id": "production-durable-case-store-v6.3-1",
+  "manifest_chain_valid": true,
+  "production_decision_execution_authorized": false,
+  "production_durable_case_store_contract_complete": true,
+  "production_durable_case_store_ready": false,
+  "production_storage_backend_observed": false,
+  "replay_export_valid": true,
+  "retention_policy_observed": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "production-durable-case-store-readiness/v1",
+  "tenant_namespace_isolation_required": true
+}

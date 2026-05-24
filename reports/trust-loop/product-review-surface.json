@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 34,
+  "surface_count": 42,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -172,6 +172,46 @@
     {
       "id": "platform_hardening_assessment",
       "state": "assessment_complete_runtime_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "live_identity_authority",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "live_decision_approval_provider",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "production_durable_case_store_readiness",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "production_promotion_chain_readiness",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "controlled_runtime_pilot_admission",
+      "state": "authority_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "marketplace_runtime_governance",
+      "state": "runtime_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "shared_context_runtime_governance",
+      "state": "runtime_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "production_authority_readiness_review",
+      "state": "authority_blocked",
       "summary": "False"
     },
     {

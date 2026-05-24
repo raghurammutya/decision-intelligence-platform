@@ -225,7 +225,7 @@ runtime authority:
 ## v4.1-v6.0 Readiness Gates
 
 ```bash
-python3 -m dip_framework release-pack --version v6.0.0-pre
+python3 -m dip_framework release-pack --version v9.0.0-pre
 ```
 
 v4.1 through v6.0 complete the next readiness sequence without granting hidden
@@ -245,3 +245,30 @@ runtime authority:
   authority blocked until all live prerequisites pass.
 - v6.0 records platform-hardening assessment evidence while keeping production
   readiness false.
+
+## v6.1-v9.0 Production Authority Readiness Gates
+
+```bash
+python3 -m dip_framework release-pack --version v9.0.0-pre
+```
+
+v6.1 through v9.0 complete the production-readiness review sequence without
+granting production decision authority:
+
+- v6.1 records live identity authority readiness and keeps authority blocked
+  while live external IdP/MFA evidence is not observed.
+- v6.2 records live decision approval provider readiness and keeps approval
+  readiness blocked while no live provider is observed.
+- v6.3 records production durable case-store readiness and keeps production
+  storage readiness blocked while no live backend is observed.
+- v6.4 records production promotion-chain readiness and keeps production
+  promotion blocked while no prod deployment has executed.
+- v7.0 records controlled-runtime pilot admission and keeps execution blocked
+  until live identity, live approval, live case store, and promotion evidence
+  pass.
+- v7.5 records marketplace runtime governance and keeps marketplace invocation
+  blocked until controlled runtime is authorized.
+- v8.0 records shared-context runtime governance and keeps runtime context
+  exchange blocked until controlled runtime is authorized.
+- v9.0 records production authority readiness review and keeps production
+  decision authority at `0%`.

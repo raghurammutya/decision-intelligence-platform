@@ -1,0 +1,18 @@
+{
+  "audit_trail_required": true,
+  "blocked_claim": "live external IdP authentication and MFA-backed identity authority are not observed",
+  "computed": true,
+  "evaluation_id": "live-identity-authority-v6.1-1",
+  "expiry_claim_required": true,
+  "live_external_idp_authenticated": false,
+  "live_identity_authority_contract_complete": true,
+  "live_identity_authority_ready": false,
+  "mfa_claim_observed": false,
+  "permission_sufficient": true,
+  "production_decision_execution_authorized": false,
+  "provider": "github",
+  "role_scope_authorized": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "live-identity-authority/v1",
+  "subject": "raghurammutya"
+}

@@ -1,0 +1,38 @@
+{
+  "audit_export_required": true,
+  "backup_restore_required": true,
+  "blocked_reasons": [
+    "live_identity_authority_ready",
+    "live_decision_approval_provider_ready",
+    "production_durable_case_store_ready",
+    "production_promotion_ready",
+    "controlled_runtime_pilot_authorized",
+    "marketplace_runtime_invocation_authorized",
+    "runtime_context_exchange_authorized",
+    "platform_production_ready"
+  ],
+  "break_glass_policy_required": true,
+  "compliance_reporting_required": true,
+  "computed": true,
+  "evaluation_id": "production-authority-readiness-v9.0-1",
+  "incident_response_required": true,
+  "production_authority_readiness_review_complete": true,
+  "production_decision_authority_granted": false,
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "readiness_checks": {
+    "controlled_runtime_pilot_authorized": false,
+    "live_decision_approval_provider_ready": false,
+    "live_identity_authority_ready": false,
+    "marketplace_runtime_invocation_authorized": false,
+    "platform_production_ready": false,
+    "production_durable_case_store_ready": false,
+    "production_promotion_ready": false,
+    "runtime_context_exchange_authorized": false
+  },
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "production-authority-readiness-review/v1",
+  "slo_required": true,
+  "tenant_isolation_required": true
+}

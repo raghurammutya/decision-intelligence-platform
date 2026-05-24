@@ -1,0 +1,18 @@
+{
+  "ai_approval_allowed": false,
+  "approval_audit_export_required": true,
+  "approval_decision_evidence_complete": true,
+  "approval_denial_path_defined": false,
+  "approval_expiry_required": true,
+  "approval_request_evidence_complete": true,
+  "approval_revocation_path_defined": false,
+  "blocked_claim": "live external decision approval provider is not observed",
+  "computed": true,
+  "evaluation_id": "live-decision-approval-provider-v6.2-1",
+  "live_approval_provider_observed": false,
+  "live_decision_approval_provider_contract_complete": true,
+  "live_decision_approval_provider_ready": false,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "live-decision-approval-provider/v1"
+}

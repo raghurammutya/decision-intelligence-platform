@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v6.0.0-pre")
+    write_v0_2_evidence(root, version="v9.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -58,6 +58,14 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     governed_advisory_runtime = load_json(root / "reports/trust-loop/governed-advisory-runtime.json")
     controlled_runtime_gate = load_json(root / "reports/trust-loop/controlled-runtime-execution-gate.json")
     platform_hardening = load_json(root / "reports/trust-loop/platform-hardening-assessment.json")
+    live_identity_authority = load_json(root / "reports/trust-loop/live-identity-authority.json")
+    live_decision_approval = load_json(root / "reports/trust-loop/live-decision-approval-provider.json")
+    production_case_store_readiness = load_json(root / "reports/trust-loop/production-durable-case-store-readiness.json")
+    production_promotion_readiness = load_json(root / "reports/trust-loop/production-promotion-chain-readiness.json")
+    controlled_runtime_pilot = load_json(root / "reports/trust-loop/controlled-runtime-pilot-admission.json")
+    marketplace_runtime = load_json(root / "reports/trust-loop/marketplace-runtime-governance.json")
+    shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
+    production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -106,6 +114,14 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_governed_advisory_runtime",
             "evaluate_controlled_runtime_execution_gate",
             "evaluate_platform_hardening_assessment",
+            "evaluate_live_identity_authority",
+            "evaluate_live_decision_approval_provider",
+            "evaluate_production_durable_case_store_readiness",
+            "evaluate_production_promotion_chain_readiness",
+            "evaluate_controlled_runtime_pilot_admission",
+            "evaluate_marketplace_runtime_governance",
+            "evaluate_shared_context_runtime_governance",
+            "evaluate_production_authority_readiness_review",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -286,6 +302,71 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         )
         is True,
         "v6_0_platform_production_ready": platform_hardening.get("platform_production_ready") is True,
+        "v6_1_live_identity_authority_contract_complete": live_identity_authority.get(
+            "live_identity_authority_contract_complete"
+        )
+        is True,
+        "v6_1_live_identity_authority_ready": live_identity_authority.get("live_identity_authority_ready") is True,
+        "v6_1_mfa_claim_observed": live_identity_authority.get("mfa_claim_observed") is True,
+        "v6_2_live_decision_approval_provider_contract_complete": live_decision_approval.get(
+            "live_decision_approval_provider_contract_complete"
+        )
+        is True,
+        "v6_2_live_decision_approval_provider_ready": live_decision_approval.get(
+            "live_decision_approval_provider_ready"
+        )
+        is True,
+        "v6_2_ai_approval_allowed": live_decision_approval.get("ai_approval_allowed") is True,
+        "v6_3_production_durable_case_store_contract_complete": production_case_store_readiness.get(
+            "production_durable_case_store_contract_complete"
+        )
+        is True,
+        "v6_3_production_durable_case_store_ready": production_case_store_readiness.get(
+            "production_durable_case_store_ready"
+        )
+        is True,
+        "v6_4_production_promotion_chain_contract_complete": production_promotion_readiness.get(
+            "production_promotion_chain_contract_complete"
+        )
+        is True,
+        "v6_4_production_promotion_ready": production_promotion_readiness.get("production_promotion_ready") is True,
+        "v7_0_controlled_runtime_pilot_admission_complete": controlled_runtime_pilot.get(
+            "controlled_runtime_pilot_admission_complete"
+        )
+        is True,
+        "v7_0_controlled_runtime_pilot_authorized": controlled_runtime_pilot.get(
+            "controlled_runtime_pilot_authorized"
+        )
+        is True,
+        "v7_5_marketplace_runtime_governance_complete": marketplace_runtime.get(
+            "marketplace_runtime_governance_complete"
+        )
+        is True,
+        "v7_5_marketplace_runtime_invocation_authorized": marketplace_runtime.get(
+            "marketplace_runtime_invocation_authorized"
+        )
+        is True,
+        "v7_5_unrestricted_marketplace_execution_allowed": marketplace_runtime.get(
+            "unrestricted_marketplace_execution_allowed"
+        )
+        is True,
+        "v8_0_shared_context_runtime_governance_complete": shared_context_runtime.get(
+            "shared_context_runtime_governance_complete"
+        )
+        is True,
+        "v8_0_runtime_context_exchange_authorized": shared_context_runtime.get(
+            "runtime_context_exchange_authorized"
+        )
+        is True,
+        "v8_0_direct_database_access_allowed": shared_context_runtime.get("direct_database_access_allowed") is True,
+        "v9_0_production_authority_readiness_review_complete": production_authority.get(
+            "production_authority_readiness_review_complete"
+        )
+        is True,
+        "v9_0_production_decision_authority_granted": production_authority.get(
+            "production_decision_authority_granted"
+        )
+        is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -306,6 +387,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "production case store live backend is ready",
             "controlled runtime execution is authorized",
             "platform production readiness is complete",
+            "live decision approval provider is ready",
+            "production promotion chain is ready",
+            "controlled runtime pilot is authorized",
+            "marketplace runtime invocation is authorized",
+            "shared context runtime exchange is authorized",
+            "production decision authority is granted",
         ],
     }
     return {
@@ -349,6 +436,14 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "governed_advisory_runtime": governed_advisory_runtime,
         "controlled_runtime_gate": controlled_runtime_gate,
         "platform_hardening": platform_hardening,
+        "live_identity_authority": live_identity_authority,
+        "live_decision_approval": live_decision_approval,
+        "production_case_store_readiness": production_case_store_readiness,
+        "production_promotion_readiness": production_promotion_readiness,
+        "controlled_runtime_pilot": controlled_runtime_pilot,
+        "marketplace_runtime": marketplace_runtime,
+        "shared_context_runtime": shared_context_runtime,
+        "production_authority": production_authority,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,
@@ -392,6 +487,21 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "runtime-control-plane.json", payload["runtime_control_plane"])
     write_json(out / "advisory-runtime-pilot.json", payload["advisory_pilot"])
     write_json(out / "limited-runtime-authority-gate.json", payload["runtime_authority_gate"])
+    write_json(out / "live-identity-evidence-gate.json", payload["live_identity_gate"])
+    write_json(out / "live-approval-provider-gate.json", payload["live_approval_gate"])
+    write_json(out / "production-case-store-gate.json", payload["production_case_store_gate"])
+    write_json(out / "release-promotion-execution-gate.json", payload["promotion_execution_gate"])
+    write_json(out / "governed-advisory-runtime.json", payload["governed_advisory_runtime"])
+    write_json(out / "controlled-runtime-execution-gate.json", payload["controlled_runtime_gate"])
+    write_json(out / "platform-hardening-assessment.json", payload["platform_hardening"])
+    write_json(out / "live-identity-authority.json", payload["live_identity_authority"])
+    write_json(out / "live-decision-approval-provider.json", payload["live_decision_approval"])
+    write_json(out / "production-durable-case-store-readiness.json", payload["production_case_store_readiness"])
+    write_json(out / "production-promotion-chain-readiness.json", payload["production_promotion_readiness"])
+    write_json(out / "controlled-runtime-pilot-admission.json", payload["controlled_runtime_pilot"])
+    write_json(out / "marketplace-runtime-governance.json", payload["marketplace_runtime"])
+    write_json(out / "shared-context-runtime-governance.json", payload["shared_context_runtime"])
+    write_json(out / "production-authority-readiness-review.json", payload["production_authority"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
     write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])

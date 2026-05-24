@@ -1,0 +1,33 @@
+{
+  "authority_prerequisites": {
+    "controlled_runtime_execution_gate_complete": true,
+    "cost_accounting_defined": true,
+    "kill_switch_defined": true,
+    "live_decision_approval_provider_ready": false,
+    "live_identity_authority_ready": false,
+    "observability_trace_defined": true,
+    "production_durable_case_store_ready": false,
+    "production_promotion_ready": false
+  },
+  "blocked_reasons": [
+    "live_identity_authority_ready",
+    "live_decision_approval_provider_ready",
+    "production_durable_case_store_ready",
+    "production_promotion_ready"
+  ],
+  "computed": true,
+  "controlled_runtime_pilot_admission_complete": true,
+  "controlled_runtime_pilot_authorized": false,
+  "cost_limits_required": true,
+  "evaluation_id": "controlled-runtime-pilot-v7.0-1",
+  "kill_switch_required": true,
+  "lineage_required": true,
+  "observability_required": true,
+  "pilot_scope": "single_low_risk_decision_domain",
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "rollback_required": true,
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "controlled-runtime-pilot-admission/v1"
+}
