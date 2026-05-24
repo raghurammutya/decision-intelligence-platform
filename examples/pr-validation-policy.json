@@ -1,0 +1,30 @@
+{
+  "contract_version": "47.0.0",
+  "modes": [
+    {
+      "mode": "pull_request",
+      "requires_release_artifact": false,
+      "required_checks": [
+        "contract_validation",
+        "trust_loop_generation",
+        "unit_tests"
+      ]
+    },
+    {
+      "mode": "release",
+      "requires_release_artifact": true,
+      "required_checks": [
+        "contract_validation",
+        "trust_loop_generation",
+        "unit_tests",
+        "release_acceptance",
+        "artifact_upload"
+      ]
+    }
+  ],
+  "pr_validation_policy_id": "dip-pr-validation-policy",
+  "production_decision_execution_authorized": false,
+  "release_acceptance_required_for_pr": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "pr-validation-policy/v1"
+}

@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 85,
+  "artifact_count": 90,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -368,6 +368,31 @@
       "sha256": "2b0a83628235bbb7aadbd5649c4a28fe3fccc44018d63b15108b949219a73fe5"
     },
     {
+      "artifact_type": "repository_governance_evidence_pack",
+      "path": "examples/repository-governance-evidence-pack.json",
+      "sha256": "22062ec139a5d44f2a07b4a712e93805d3e0bd7ef9c2da82febcc40d013ae7b2"
+    },
+    {
+      "artifact_type": "pr_validation_policy",
+      "path": "examples/pr-validation-policy.json",
+      "sha256": "01d5cecadc328eac9c2564cfc8a8a260b0bc157c9a1305f1b9aafa02bdaf4ce3"
+    },
+    {
+      "artifact_type": "governance_exception_register",
+      "path": "examples/governance-exception-register.json",
+      "sha256": "d88e38fa61ef12c16f82be897f72ade10b0bb20c20b2fda08715c99571a09e7e"
+    },
+    {
+      "artifact_type": "edi_observer_ingestion_contract",
+      "path": "examples/edi-observer-ingestion-contract.json",
+      "sha256": "c0c1d70875f9bd05759caf22ec2c73fd0a3b7145eb5612a1c5f8f8171407af48"
+    },
+    {
+      "artifact_type": "platform_governance_closure_pack",
+      "path": "examples/platform-governance-closure-pack.json",
+      "sha256": "8d7d08acfe3df79c3cff494d51187b82ea32c3e03a1c77f8c97971c4154e2f76"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "16068013badb74ff1e0c2052a27cb6038f515282cee6092c741f14ade3898298"
@@ -430,11 +455,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "e248a53741c4b8e00b1d002b42896273bec8193edf1c4bb11e9d6f24fe9e31c2",
+  "manifest_hash": "56d35fbec7e968d81608eb8756c7a005c0299c0c4835c48ba68c42fa314e80a2",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "39f2dcfc5afdbd38667d8d464ebb020695b105f38b3e3979178787b1cd4fe7e4",
+  "parent_manifest_hash": "cdf4e28fe7b9bd6646642b66271ebcfe1c258f4779c180204dc51bd3dae19d66",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

@@ -1,0 +1,22 @@
+{
+  "architecture_contract_complete": true,
+  "closure_gate_complete_count": 4,
+  "closure_gate_count": 4,
+  "closure_gates": {
+    "edi_observer_ingestion_contract_valid": true,
+    "governance_exception_register_valid": true,
+    "pr_validation_policy_valid": true,
+    "repository_governance_evidence_pack_valid": true
+  },
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v50.0-platform-governance-closure-pack-1",
+  "github_governance_complete": true,
+  "platform_governance_closure_pack_valid": true,
+  "production_decision_execution_authorized": false,
+  "release_evidence_complete": true,
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "platform-governance-closure-pack-evaluation/v1",
+  "unsafe_claims_visible": true
+}

@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 61,
-  "record_count": 61,
+  "passed_count": 66,
+  "record_count": 66,
   "records": [
     {
       "errors": [],
@@ -368,6 +368,36 @@
       "kind": "platform_operator_readiness_pack_contract",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/platform-operator-readiness-pack-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "repository_governance_evidence_pack",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/repository-governance-evidence-pack.json"
+    },
+    {
+      "errors": [],
+      "kind": "pr_validation_policy",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/pr-validation-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_exception_register",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-exception-register.json"
+    },
+    {
+      "errors": [],
+      "kind": "edi_observer_ingestion_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/edi-observer-ingestion-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "platform_governance_closure_pack",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/platform-governance-closure-pack.json"
     }
   ]
 }

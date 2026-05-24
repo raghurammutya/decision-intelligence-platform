@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 85,
+  "artifact_count": 90,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -366,6 +366,31 @@
       "artifact_type": "platform_operator_readiness_pack_contract",
       "path": "examples/platform-operator-readiness-pack-contract.json",
       "sha256": "2b0a83628235bbb7aadbd5649c4a28fe3fccc44018d63b15108b949219a73fe5"
+    },
+    {
+      "artifact_type": "repository_governance_evidence_pack",
+      "path": "examples/repository-governance-evidence-pack.json",
+      "sha256": "22062ec139a5d44f2a07b4a712e93805d3e0bd7ef9c2da82febcc40d013ae7b2"
+    },
+    {
+      "artifact_type": "pr_validation_policy",
+      "path": "examples/pr-validation-policy.json",
+      "sha256": "01d5cecadc328eac9c2564cfc8a8a260b0bc157c9a1305f1b9aafa02bdaf4ce3"
+    },
+    {
+      "artifact_type": "governance_exception_register",
+      "path": "examples/governance-exception-register.json",
+      "sha256": "d88e38fa61ef12c16f82be897f72ade10b0bb20c20b2fda08715c99571a09e7e"
+    },
+    {
+      "artifact_type": "edi_observer_ingestion_contract",
+      "path": "examples/edi-observer-ingestion-contract.json",
+      "sha256": "c0c1d70875f9bd05759caf22ec2c73fd0a3b7145eb5612a1c5f8f8171407af48"
+    },
+    {
+      "artifact_type": "platform_governance_closure_pack",
+      "path": "examples/platform-governance-closure-pack.json",
+      "sha256": "8d7d08acfe3df79c3cff494d51187b82ea32c3e03a1c77f8c97971c4154e2f76"
     },
     {
       "artifact_type": "policy_preflight",

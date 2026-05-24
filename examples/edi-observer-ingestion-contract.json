@@ -1,0 +1,16 @@
+{
+  "contract_version": "49.0.0",
+  "edi_is_authority": false,
+  "edi_observer_ingestion_id": "dip-edi-observer-ingestion",
+  "ingested_evidence_types": [
+    "release_artifact",
+    "ci_run",
+    "branch_protection",
+    "security_policy",
+    "governance_exception"
+  ],
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "edi-observer-ingestion-contract/v1",
+  "source_of_truth": "dip_repository_evidence"
+}

@@ -97,6 +97,11 @@
     "evaluate_entitlement_usage_gate_contract",
     "evaluate_integration_certification_ux_contract",
     "evaluate_platform_operator_readiness_pack",
+    "evaluate_repository_governance_evidence_pack",
+    "evaluate_pr_validation_policy",
+    "evaluate_governance_exception_register",
+    "evaluate_edi_observer_ingestion_contract",
+    "evaluate_platform_governance_closure_pack",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"
@@ -106,5 +111,10 @@
   "replay_result_ref": "replay-result.json",
   "run_id": "trust-loop-support-ticket-routing-1",
   "runtime_execution_requested": false,
-  "schema_version": "trust-loop-run/v1"
+  "schema_version": "trust-loop-run/v1",
+  "v46_repository_governance_evidence_pack_valid": true,
+  "v47_pr_validation_policy_valid": true,
+  "v48_governance_exception_register_valid": true,
+  "v49_edi_observer_ingestion_contract_valid": true,
+  "v50_platform_governance_closure_pack_valid": true
 }

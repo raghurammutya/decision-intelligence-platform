@@ -1,0 +1,24 @@
+{
+  "actions_allowlist_observed": true,
+  "branch_protection": {
+    "admin_enforcement": true,
+    "codeowner_review": true,
+    "conversation_resolution": true,
+    "deletions_blocked": true,
+    "force_pushes_blocked": true,
+    "required_approving_review_count": 1,
+    "required_status_checks": [
+      "validate"
+    ],
+    "strict_status_checks": true
+  },
+  "contract_version": "46.0.0",
+  "dependabot_enabled": true,
+  "governance_evidence_pack_id": "dip-repository-governance-evidence-pack",
+  "open_dependabot_alert_count": 0,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "repository-governance-evidence-pack/v1",
+  "security_policy_active": true,
+  "single_maintainer_exception_visible": true
+}

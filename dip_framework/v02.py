@@ -90,6 +90,11 @@ ARTIFACTS = [
     ("entitlement_usage_gate_contract", "examples/entitlement-usage-gate-contract.json"),
     ("integration_certification_ux_contract", "examples/integration-certification-ux-contract.json"),
     ("platform_operator_readiness_pack_contract", "examples/platform-operator-readiness-pack-contract.json"),
+    ("repository_governance_evidence_pack", "examples/repository-governance-evidence-pack.json"),
+    ("pr_validation_policy", "examples/pr-validation-policy.json"),
+    ("governance_exception_register", "examples/governance-exception-register.json"),
+    ("edi_observer_ingestion_contract", "examples/edi-observer-ingestion-contract.json"),
+    ("platform_governance_closure_pack", "examples/platform-governance-closure-pack.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -3610,6 +3615,154 @@ def evaluate_platform_operator_readiness_pack(root: Path = ROOT) -> dict[str, An
     }
 
 
+def evaluate_repository_governance_evidence_pack(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/repository-governance-evidence-pack.json")
+    result = validate_file(
+        "repository_governance_evidence_pack",
+        root / "examples/repository-governance-evidence-pack.json",
+    )
+    protection = contract.get("branch_protection", {})
+    return {
+        "schema_version": "repository-governance-evidence-pack-evaluation/v1",
+        "evaluation_id": "v46.0-repository-governance-evidence-pack-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "admin_enforcement_observed": protection.get("admin_enforcement") is True,
+        "strict_status_checks_observed": protection.get("strict_status_checks") is True,
+        "required_status_check_count": len(protection.get("required_status_checks", [])),
+        "required_approving_review_count": int(protection.get("required_approving_review_count", 0) or 0),
+        "codeowner_review_observed": protection.get("codeowner_review") is True,
+        "conversation_resolution_observed": protection.get("conversation_resolution") is True,
+        "force_pushes_blocked": protection.get("force_pushes_blocked") is True,
+        "deletions_blocked": protection.get("deletions_blocked") is True,
+        "security_policy_active": contract.get("security_policy_active") is True,
+        "dependabot_enabled": contract.get("dependabot_enabled") is True,
+        "actions_allowlist_observed": contract.get("actions_allowlist_observed") is True,
+        "single_maintainer_exception_visible": contract.get("single_maintainer_exception_visible") is True,
+        "open_dependabot_alert_count": int(contract.get("open_dependabot_alert_count", 0) or 0),
+        "repository_governance_evidence_pack_valid": result.get("passed") is True
+        and protection.get("admin_enforcement") is True
+        and "validate" in protection.get("required_status_checks", [])
+        and protection.get("codeowner_review") is True
+        and protection.get("conversation_resolution") is True
+        and contract.get("security_policy_active") is True
+        and contract.get("dependabot_enabled") is True
+        and contract.get("actions_allowlist_observed") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_pr_validation_policy(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/pr-validation-policy.json")
+    result = validate_file("pr_validation_policy", root / "examples/pr-validation-policy.json")
+    modes = {record.get("mode"): record for record in contract.get("modes", [])}
+    pr_mode = modes.get("pull_request", {})
+    release_mode = modes.get("release", {})
+    return {
+        "schema_version": "pr-validation-policy-evaluation/v1",
+        "evaluation_id": "v47.0-pr-validation-policy-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "mode_count": len(modes),
+        "pr_requires_release_artifact": pr_mode.get("requires_release_artifact") is True,
+        "release_requires_release_artifact": release_mode.get("requires_release_artifact") is True,
+        "release_acceptance_required_for_pr": contract.get("release_acceptance_required_for_pr") is True,
+        "pr_validation_policy_valid": result.get("passed") is True
+        and pr_mode.get("requires_release_artifact") is False
+        and release_mode.get("requires_release_artifact") is True
+        and contract.get("release_acceptance_required_for_pr") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_governance_exception_register(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/governance-exception-register.json")
+    result = validate_file("governance_exception_register", root / "examples/governance-exception-register.json")
+    exceptions = contract.get("exceptions", [])
+    return {
+        "schema_version": "governance-exception-register-evaluation/v1",
+        "evaluation_id": "v48.0-governance-exception-register-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "exception_count": len(exceptions),
+        "controls_restored_count": len([item for item in exceptions if item.get("controls_restored") is True]),
+        "runtime_authority_granted_count": len(
+            [item for item in exceptions if item.get("runtime_authority_granted") is True]
+        ),
+        "governance_exception_register_valid": result.get("passed") is True
+        and len(exceptions) >= 2
+        and all(item.get("controls_restored") is True for item in exceptions)
+        and all(item.get("runtime_authority_granted") is False for item in exceptions),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_edi_observer_ingestion_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/edi-observer-ingestion-contract.json")
+    result = validate_file(
+        "edi_observer_ingestion_contract",
+        root / "examples/edi-observer-ingestion-contract.json",
+    )
+    return {
+        "schema_version": "edi-observer-ingestion-contract-evaluation/v1",
+        "evaluation_id": "v49.0-edi-observer-ingestion-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "ingested_evidence_type_count": len(contract.get("ingested_evidence_types", [])),
+        "edi_is_authority": contract.get("edi_is_authority") is True,
+        "source_of_truth": contract.get("source_of_truth"),
+        "edi_observer_ingestion_contract_valid": result.get("passed") is True
+        and contract.get("source_of_truth") == "dip_repository_evidence"
+        and contract.get("edi_is_authority") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_platform_governance_closure_pack(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/platform-governance-closure-pack.json")
+    result = validate_file(
+        "platform_governance_closure_pack",
+        root / "examples/platform-governance-closure-pack.json",
+    )
+    v46 = load_json(root / "reports/trust-loop/repository-governance-evidence-pack.json")
+    v47 = load_json(root / "reports/trust-loop/pr-validation-policy.json")
+    v48 = load_json(root / "reports/trust-loop/governance-exception-register.json")
+    v49 = load_json(root / "reports/trust-loop/edi-observer-ingestion-contract.json")
+    gates = {
+        "repository_governance_evidence_pack_valid": v46.get("repository_governance_evidence_pack_valid")
+        is True,
+        "pr_validation_policy_valid": v47.get("pr_validation_policy_valid") is True,
+        "governance_exception_register_valid": v48.get("governance_exception_register_valid") is True,
+        "edi_observer_ingestion_contract_valid": v49.get("edi_observer_ingestion_contract_valid") is True,
+    }
+    return {
+        "schema_version": "platform-governance-closure-pack-evaluation/v1",
+        "evaluation_id": "v50.0-platform-governance-closure-pack-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "architecture_contract_complete": contract.get("architecture_contract_complete") is True,
+        "github_governance_complete": contract.get("github_governance_complete") is True,
+        "release_evidence_complete": contract.get("release_evidence_complete") is True,
+        "unsafe_claims_visible": contract.get("unsafe_claims_visible") is True,
+        "runtime_remains_blocked": contract.get("runtime_remains_blocked") is True,
+        "platform_governance_closure_pack_valid": result.get("passed") is True
+        and all(gates.values())
+        and contract.get("architecture_contract_complete") is True
+        and contract.get("github_governance_complete") is True
+        and contract.get("release_evidence_complete") is True
+        and contract.get("runtime_remains_blocked") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -4417,6 +4570,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     entitlement_usage = load_json(root / "reports/trust-loop/entitlement-usage-gate-contract.json")
     integration_certification_ux = load_json(root / "reports/trust-loop/integration-certification-ux-contract.json")
     platform_operator_readiness = load_json(root / "reports/trust-loop/platform-operator-readiness-pack.json")
+    repository_governance_evidence_pack = load_json(root / "reports/trust-loop/repository-governance-evidence-pack.json")
+    pr_validation_policy = load_json(root / "reports/trust-loop/pr-validation-policy.json")
+    governance_exception_register = load_json(root / "reports/trust-loop/governance-exception-register.json")
+    edi_observer_ingestion = load_json(root / "reports/trust-loop/edi-observer-ingestion-contract.json")
+    platform_governance_closure = load_json(root / "reports/trust-loop/platform-governance-closure-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -5277,6 +5435,53 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         "v45_0_runtime_remains_blocked": platform_operator_readiness.get("runtime_remains_blocked") is True,
         "v45_0_closure_gate_complete_count": platform_operator_readiness.get("closure_gate_complete_count", 0),
         "v45_0_closure_gate_count": platform_operator_readiness.get("closure_gate_count", 0),
+        "v46_0_repository_governance_evidence_pack_valid": repository_governance_evidence_pack.get(
+            "repository_governance_evidence_pack_valid"
+        )
+        is True,
+        "v46_0_security_policy_active": repository_governance_evidence_pack.get("security_policy_active") is True,
+        "v46_0_dependabot_enabled": repository_governance_evidence_pack.get("dependabot_enabled") is True,
+        "v46_0_actions_allowlist_observed": repository_governance_evidence_pack.get(
+            "actions_allowlist_observed"
+        )
+        is True,
+        "v46_0_open_dependabot_alert_count": repository_governance_evidence_pack.get(
+            "open_dependabot_alert_count", 0
+        ),
+        "v47_0_pr_validation_policy_valid": pr_validation_policy.get("pr_validation_policy_valid") is True,
+        "v47_0_pr_requires_release_artifact": pr_validation_policy.get("pr_requires_release_artifact") is True,
+        "v47_0_release_requires_release_artifact": pr_validation_policy.get(
+            "release_requires_release_artifact"
+        )
+        is True,
+        "v47_0_release_acceptance_required_for_pr": pr_validation_policy.get(
+            "release_acceptance_required_for_pr"
+        )
+        is True,
+        "v48_0_governance_exception_register_valid": governance_exception_register.get(
+            "governance_exception_register_valid"
+        )
+        is True,
+        "v48_0_exception_count": governance_exception_register.get("exception_count", 0),
+        "v48_0_controls_restored_count": governance_exception_register.get("controls_restored_count", 0),
+        "v48_0_runtime_authority_granted_count": governance_exception_register.get(
+            "runtime_authority_granted_count", 0
+        ),
+        "v49_0_edi_observer_ingestion_contract_valid": edi_observer_ingestion.get(
+            "edi_observer_ingestion_contract_valid"
+        )
+        is True,
+        "v49_0_edi_is_authority": edi_observer_ingestion.get("edi_is_authority") is True,
+        "v49_0_ingested_evidence_type_count": edi_observer_ingestion.get("ingested_evidence_type_count", 0),
+        "v50_0_platform_governance_closure_pack_valid": platform_governance_closure.get(
+            "platform_governance_closure_pack_valid"
+        )
+        is True,
+        "v50_0_runtime_remains_blocked": platform_governance_closure.get("runtime_remains_blocked") is True,
+        "v50_0_closure_gate_complete_count": platform_governance_closure.get(
+            "closure_gate_complete_count", 0
+        ),
+        "v50_0_closure_gate_count": platform_governance_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -5545,6 +5750,19 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and platform_operator_readiness.get("platform_operator_readiness_pack_valid") is True
         and platform_operator_readiness.get("runtime_remains_blocked") is True
         and platform_operator_readiness.get("unsafe_claims_visible") is True
+        and repository_governance_evidence_pack.get("repository_governance_evidence_pack_valid") is True
+        and repository_governance_evidence_pack.get("security_policy_active") is True
+        and repository_governance_evidence_pack.get("dependabot_enabled") is True
+        and repository_governance_evidence_pack.get("actions_allowlist_observed") is True
+        and pr_validation_policy.get("pr_validation_policy_valid") is True
+        and pr_validation_policy.get("pr_requires_release_artifact") is False
+        and pr_validation_policy.get("release_requires_release_artifact") is True
+        and governance_exception_register.get("governance_exception_register_valid") is True
+        and governance_exception_register.get("runtime_authority_granted_count", 1) == 0
+        and edi_observer_ingestion.get("edi_observer_ingestion_contract_valid") is True
+        and edi_observer_ingestion.get("edi_is_authority") is False
+        and platform_governance_closure.get("platform_governance_closure_pack_valid") is True
+        and platform_governance_closure.get("runtime_remains_blocked") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -6030,6 +6248,25 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v45.0 unsafe claims visible: `{payload['v45_0_unsafe_claims_visible']}`",
         f"v45.0 runtime remains blocked: `{payload['v45_0_runtime_remains_blocked']}`",
         f"v45.0 closure gates complete: `{payload['v45_0_closure_gate_complete_count']}/{payload['v45_0_closure_gate_count']}`",
+        f"v46.0 repository governance evidence pack valid: `{payload['v46_0_repository_governance_evidence_pack_valid']}`",
+        f"v46.0 security policy active: `{payload['v46_0_security_policy_active']}`",
+        f"v46.0 Dependabot enabled: `{payload['v46_0_dependabot_enabled']}`",
+        f"v46.0 Actions allowlist observed: `{payload['v46_0_actions_allowlist_observed']}`",
+        f"v46.0 open Dependabot alerts: `{payload['v46_0_open_dependabot_alert_count']}`",
+        f"v47.0 PR validation policy valid: `{payload['v47_0_pr_validation_policy_valid']}`",
+        f"v47.0 PR requires release artifact: `{payload['v47_0_pr_requires_release_artifact']}`",
+        f"v47.0 release requires release artifact: `{payload['v47_0_release_requires_release_artifact']}`",
+        f"v47.0 release acceptance required for PR: `{payload['v47_0_release_acceptance_required_for_pr']}`",
+        f"v48.0 governance exception register valid: `{payload['v48_0_governance_exception_register_valid']}`",
+        f"v48.0 exceptions: `{payload['v48_0_exception_count']}`",
+        f"v48.0 controls restored: `{payload['v48_0_controls_restored_count']}`",
+        f"v48.0 runtime authority granted count: `{payload['v48_0_runtime_authority_granted_count']}`",
+        f"v49.0 EDI observer ingestion valid: `{payload['v49_0_edi_observer_ingestion_contract_valid']}`",
+        f"v49.0 EDI is authority: `{payload['v49_0_edi_is_authority']}`",
+        f"v49.0 ingested evidence types: `{payload['v49_0_ingested_evidence_type_count']}`",
+        f"v50.0 platform governance closure valid: `{payload['v50_0_platform_governance_closure_pack_valid']}`",
+        f"v50.0 runtime remains blocked: `{payload['v50_0_runtime_remains_blocked']}`",
+        f"v50.0 closure gates complete: `{payload['v50_0_closure_gate_complete_count']}/{payload['v50_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -6248,6 +6485,16 @@ def write_v0_2_evidence(
     write_json(target / "integration-certification-ux-contract.json", integration_certification_ux)
     platform_operator_readiness = evaluate_platform_operator_readiness_pack(root)
     write_json(target / "platform-operator-readiness-pack.json", platform_operator_readiness)
+    repository_governance_evidence_pack = evaluate_repository_governance_evidence_pack(root)
+    write_json(target / "repository-governance-evidence-pack.json", repository_governance_evidence_pack)
+    pr_validation_policy = evaluate_pr_validation_policy(root)
+    write_json(target / "pr-validation-policy.json", pr_validation_policy)
+    governance_exception_register = evaluate_governance_exception_register(root)
+    write_json(target / "governance-exception-register.json", governance_exception_register)
+    edi_observer_ingestion = evaluate_edi_observer_ingestion_contract(root)
+    write_json(target / "edi-observer-ingestion-contract.json", edi_observer_ingestion)
+    platform_governance_closure = evaluate_platform_governance_closure_pack(root)
+    write_json(target / "platform-governance-closure-pack.json", platform_governance_closure)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -6346,6 +6593,11 @@ def write_v0_2_evidence(
         "entitlement_usage": entitlement_usage,
         "integration_certification_ux": integration_certification_ux,
         "platform_operator_readiness": platform_operator_readiness,
+        "repository_governance_evidence_pack": repository_governance_evidence_pack,
+        "pr_validation_policy": pr_validation_policy,
+        "governance_exception_register": governance_exception_register,
+        "edi_observer_ingestion": edi_observer_ingestion,
+        "platform_governance_closure": platform_governance_closure,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

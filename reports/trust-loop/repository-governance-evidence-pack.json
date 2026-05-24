@@ -1,0 +1,22 @@
+{
+  "actions_allowlist_observed": true,
+  "admin_enforcement_observed": true,
+  "codeowner_review_observed": true,
+  "computed": true,
+  "contract_valid": true,
+  "conversation_resolution_observed": true,
+  "deletions_blocked": true,
+  "dependabot_enabled": true,
+  "evaluation_id": "v46.0-repository-governance-evidence-pack-1",
+  "force_pushes_blocked": true,
+  "open_dependabot_alert_count": 0,
+  "production_decision_execution_authorized": false,
+  "repository_governance_evidence_pack_valid": true,
+  "required_approving_review_count": 1,
+  "required_status_check_count": 1,
+  "runtime_integration_authorized": false,
+  "schema_version": "repository-governance-evidence-pack-evaluation/v1",
+  "security_policy_active": true,
+  "single_maintainer_exception_visible": true,
+  "strict_status_checks_observed": true
+}

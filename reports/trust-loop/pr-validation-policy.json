@@ -1,0 +1,13 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v47.0-pr-validation-policy-1",
+  "mode_count": 2,
+  "pr_requires_release_artifact": false,
+  "pr_validation_policy_valid": true,
+  "production_decision_execution_authorized": false,
+  "release_acceptance_required_for_pr": false,
+  "release_requires_release_artifact": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "pr-validation-policy-evaluation/v1"
+}

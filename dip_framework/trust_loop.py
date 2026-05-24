@@ -114,6 +114,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     entitlement_usage = load_json(root / "reports/trust-loop/entitlement-usage-gate-contract.json")
     integration_certification_ux = load_json(root / "reports/trust-loop/integration-certification-ux-contract.json")
     platform_operator_readiness = load_json(root / "reports/trust-loop/platform-operator-readiness-pack.json")
+    repository_governance_evidence_pack = load_json(root / "reports/trust-loop/repository-governance-evidence-pack.json")
+    pr_validation_policy = load_json(root / "reports/trust-loop/pr-validation-policy.json")
+    governance_exception_register = load_json(root / "reports/trust-loop/governance-exception-register.json")
+    edi_observer_ingestion = load_json(root / "reports/trust-loop/edi-observer-ingestion-contract.json")
+    platform_governance_closure = load_json(root / "reports/trust-loop/platform-governance-closure-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -218,6 +223,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_entitlement_usage_gate_contract",
             "evaluate_integration_certification_ux_contract",
             "evaluate_platform_operator_readiness_pack",
+            "evaluate_repository_governance_evidence_pack",
+            "evaluate_pr_validation_policy",
+            "evaluate_governance_exception_register",
+            "evaluate_edi_observer_ingestion_contract",
+            "evaluate_platform_governance_closure_pack",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -225,6 +235,23 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "runtime_execution_requested": False,
         "case_evidence_ref": "case-evidence.json",
         "replay_result_ref": "replay-result.json",
+        "v46_repository_governance_evidence_pack_valid": repository_governance_evidence_pack.get(
+            "repository_governance_evidence_pack_valid"
+        )
+        is True,
+        "v47_pr_validation_policy_valid": pr_validation_policy.get("pr_validation_policy_valid") is True,
+        "v48_governance_exception_register_valid": governance_exception_register.get(
+            "governance_exception_register_valid"
+        )
+        is True,
+        "v49_edi_observer_ingestion_contract_valid": edi_observer_ingestion.get(
+            "edi_observer_ingestion_contract_valid"
+        )
+        is True,
+        "v50_platform_governance_closure_pack_valid": platform_governance_closure.get(
+            "platform_governance_closure_pack_valid"
+        )
+        is True,
     }
     acceptance = {
         "schema_version": "dip-mvp-acceptance/v1",

@@ -28,5 +28,13 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate DIP
+      - name: Validate DIP pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 -m dip_framework validate
+          python3 -m dip_framework trust-loop --out reports/trust-loop
+          python3 -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Validate DIP release path
+        if: github.event_name != 'pull_request'
         run: ./scripts/validate.sh

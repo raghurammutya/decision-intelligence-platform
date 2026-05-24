@@ -1,0 +1,12 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "controls_restored_count": 2,
+  "evaluation_id": "v48.0-governance-exception-register-1",
+  "exception_count": 2,
+  "governance_exception_register_valid": true,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_granted_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-exception-register-evaluation/v1"
+}

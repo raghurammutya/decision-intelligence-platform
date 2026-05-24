@@ -1,0 +1,12 @@
+{
+  "architecture_contract_complete": true,
+  "contract_version": "50.0.0",
+  "github_governance_complete": true,
+  "platform_governance_closure_id": "dip-platform-governance-closure-pack",
+  "production_decision_execution_authorized": false,
+  "release_evidence_complete": true,
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "platform-governance-closure-pack/v1",
+  "unsafe_claims_visible": true
+}

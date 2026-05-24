@@ -1067,6 +1067,31 @@ Required evidence:
 - v45.0 platform operator readiness pack requires v41-v44 to pass, keeps unsafe
   claims visible, and keeps runtime blocked.
 
+### v46.0-v50.0 Platform Governance Closure
+
+Status: complete on `v50.0.0-pre` as governance evidence and contract closure,
+not as runtime readiness.
+
+Purpose: close the new architecture's safe GitHub and governance baseline
+without certifying shared services, selecting production infrastructure, or
+granting runtime authority.
+
+Required evidence:
+
+- v46.0 repository governance evidence pack records branch protection, required
+  `validate`, CODEOWNER review, conversation resolution, security policy,
+  Dependabot, Actions allowlist, and the visible single-maintainer exception.
+- v47.0 PR validation policy separates pull-request validation from release
+  acceptance. PRs validate contracts, trust-loop generation, and tests; release
+  acceptance remains required for release/tag evidence.
+- v48.0 governance exception register records direct-update exceptions, required
+  controls, restored protections, validation evidence, and explicitly blocks
+  runtime authority.
+- v49.0 EDI observer ingestion contract keeps DIP repository evidence as source
+  of truth. EDI observes and reports; it does not become DIP authority.
+- v50.0 platform governance closure pack requires v46-v49 to pass, keeps unsafe
+  claims visible, and keeps runtime blocked.
+
 ## Completion Gate
 
 The current phase is complete only if:

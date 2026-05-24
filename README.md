@@ -90,10 +90,10 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
-## v11.0-v45.0 API-First Platform Foundation
+## v11.0-v50.0 API-First Platform Foundation
 
 ```bash
-python3 -m dip_framework release-pack --version v45.0.0-pre
+python3 -m dip_framework release-pack --version v50.0.0-pre
 ```
 
 v11.0 adds the API-first modular platform architecture, product-pack registry,
@@ -124,13 +124,17 @@ workspace contracts. v40.0 adds the usability acceptance pack. v41.0 adds
 evidence retention and legal hold contracts. v42.0 adds tenant/workspace
 boundary contracts. v43.0 adds entitlement and usage gate contracts. v44.0 adds
 integration certification UX contracts. v45.0 adds the platform operator
-readiness pack. These releases remain contract and evidence foundation only: no
-service is certified for runtime use, no product pack has runtime authority, no
-product can use direct database access, WebSocket is not authoritative, no
-production governance-store backend is selected, dashboard projections are not
-source of truth, review queues do not automate approval, replay workspaces do
-not execute side effects, billing integration is not enabled, live multi-tenant
-enforcement is not claimed, and production decision execution remains blocked.
+readiness pack. v46.0 adds repository governance evidence. v47.0 separates PR
+validation from release-artifact validation. v48.0 adds a governance exception
+register. v49.0 defines EDI observer ingestion without making EDI authority.
+v50.0 adds the platform governance closure pack. These releases remain contract
+and evidence foundation only: no service is certified for runtime use, no
+product pack has runtime authority, no product can use direct database access,
+WebSocket is not authoritative, no production governance-store backend is
+selected, dashboard projections are not source of truth, review queues do not
+automate approval, replay workspaces do not execute side effects, billing
+integration is not enabled, live multi-tenant enforcement is not claimed, EDI is
+not the platform authority, and production decision execution remains blocked.
 
 ## v2.1 Governance Exception and Schema Stability
 

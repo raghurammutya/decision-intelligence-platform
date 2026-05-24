@@ -95,6 +95,11 @@ from dip_framework.v02 import (
     evaluate_entitlement_usage_gate_contract,
     evaluate_integration_certification_ux_contract,
     evaluate_platform_operator_readiness_pack,
+    evaluate_repository_governance_evidence_pack,
+    evaluate_pr_validation_policy,
+    evaluate_governance_exception_register,
+    evaluate_edi_observer_ingestion_contract,
+    evaluate_platform_governance_closure_pack,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1329,6 +1334,49 @@ class TrustLoopTests(unittest.TestCase):
         self.assertEqual(result["release"]["v44_0_runtime_invocation_allowed_count"], 0)
         self.assertTrue(result["release"]["v45_0_platform_operator_readiness_pack_valid"])
         self.assertTrue(result["release"]["v45_0_runtime_remains_blocked"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v50_platform_governance_closure_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v50.0.0-pre")
+
+        repository = evaluate_repository_governance_evidence_pack(ROOT)
+        pr_policy = evaluate_pr_validation_policy(ROOT)
+        exceptions = evaluate_governance_exception_register(ROOT)
+        edi = evaluate_edi_observer_ingestion_contract(ROOT)
+        closure = evaluate_platform_governance_closure_pack(ROOT)
+
+        self.assertTrue(repository["repository_governance_evidence_pack_valid"])
+        self.assertTrue(repository["security_policy_active"])
+        self.assertTrue(repository["dependabot_enabled"])
+        self.assertTrue(repository["actions_allowlist_observed"])
+        self.assertTrue(pr_policy["pr_validation_policy_valid"])
+        self.assertFalse(pr_policy["pr_requires_release_artifact"])
+        self.assertTrue(pr_policy["release_requires_release_artifact"])
+        self.assertFalse(pr_policy["release_acceptance_required_for_pr"])
+        self.assertTrue(exceptions["governance_exception_register_valid"])
+        self.assertGreaterEqual(exceptions["exception_count"], 2)
+        self.assertEqual(exceptions["runtime_authority_granted_count"], 0)
+        self.assertTrue(edi["edi_observer_ingestion_contract_valid"])
+        self.assertFalse(edi["edi_is_authority"])
+        self.assertTrue(closure["platform_governance_closure_pack_valid"])
+        self.assertTrue(closure["runtime_remains_blocked"])
+        self.assertFalse(closure["runtime_integration_authorized"])
+        self.assertFalse(closure["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["v46_0_repository_governance_evidence_pack_valid"])
+        self.assertTrue(result["release"]["v46_0_security_policy_active"])
+        self.assertTrue(result["release"]["v46_0_dependabot_enabled"])
+        self.assertTrue(result["release"]["v47_0_pr_validation_policy_valid"])
+        self.assertFalse(result["release"]["v47_0_pr_requires_release_artifact"])
+        self.assertTrue(result["release"]["v47_0_release_requires_release_artifact"])
+        self.assertFalse(result["release"]["v47_0_release_acceptance_required_for_pr"])
+        self.assertTrue(result["release"]["v48_0_governance_exception_register_valid"])
+        self.assertEqual(result["release"]["v48_0_runtime_authority_granted_count"], 0)
+        self.assertTrue(result["release"]["v49_0_edi_observer_ingestion_contract_valid"])
+        self.assertFalse(result["release"]["v49_0_edi_is_authority"])
+        self.assertTrue(result["release"]["v50_0_platform_governance_closure_pack_valid"])
+        self.assertTrue(result["release"]["v50_0_runtime_remains_blocked"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `85`
+Case manifest artifacts: `90`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -408,6 +408,25 @@ v45.0 readiness sections: `6`
 v45.0 unsafe claims visible: `True`
 v45.0 runtime remains blocked: `True`
 v45.0 closure gates complete: `4/4`
+v46.0 repository governance evidence pack valid: `True`
+v46.0 security policy active: `True`
+v46.0 Dependabot enabled: `True`
+v46.0 Actions allowlist observed: `True`
+v46.0 open Dependabot alerts: `0`
+v47.0 PR validation policy valid: `True`
+v47.0 PR requires release artifact: `False`
+v47.0 release requires release artifact: `True`
+v47.0 release acceptance required for PR: `False`
+v48.0 governance exception register valid: `True`
+v48.0 exceptions: `2`
+v48.0 controls restored: `2`
+v48.0 runtime authority granted count: `0`
+v49.0 EDI observer ingestion valid: `True`
+v49.0 EDI is authority: `False`
+v49.0 ingested evidence types: `5`
+v50.0 platform governance closure valid: `True`
+v50.0 runtime remains blocked: `True`
+v50.0 closure gates complete: `4/4`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`

@@ -1,0 +1,12 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "edi_is_authority": false,
+  "edi_observer_ingestion_contract_valid": true,
+  "evaluation_id": "v49.0-edi-observer-ingestion-contract-1",
+  "ingested_evidence_type_count": 5,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "edi-observer-ingestion-contract-evaluation/v1",
+  "source_of_truth": "dip_repository_evidence"
+}

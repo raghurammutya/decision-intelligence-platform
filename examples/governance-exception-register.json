@@ -1,0 +1,35 @@
+{
+  "contract_version": "48.0.0",
+  "exception_register_id": "dip-governance-exception-register",
+  "exceptions": [
+    {
+      "affected_ref": "main",
+      "controls_restored": true,
+      "exception_id": "single-maintainer-direct-push-v45",
+      "reason": "single GitHub maintainer cannot satisfy independent approval",
+      "required_evidence": [
+        "local_validation",
+        "ci_success",
+        "branch_protection_before_after",
+        "release_evidence"
+      ],
+      "runtime_authority_granted": false
+    },
+    {
+      "affected_ref": "main",
+      "controls_restored": true,
+      "exception_id": "single-maintainer-direct-push-github-audit",
+      "reason": "DIP GitHub governance cleanup required before second reviewer exists",
+      "required_evidence": [
+        "local_validation",
+        "ci_success",
+        "security_policy_active",
+        "branch_protection_restored"
+      ],
+      "runtime_authority_granted": false
+    }
+  ],
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-exception-register/v1"
+}

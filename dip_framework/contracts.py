@@ -768,6 +768,58 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "repository_governance_evidence_pack": [
+        "schema_version",
+        "governance_evidence_pack_id",
+        "contract_version",
+        "branch_protection",
+        "security_policy_active",
+        "dependabot_enabled",
+        "actions_allowlist_observed",
+        "single_maintainer_exception_visible",
+        "open_dependabot_alert_count",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "pr_validation_policy": [
+        "schema_version",
+        "pr_validation_policy_id",
+        "contract_version",
+        "modes",
+        "release_acceptance_required_for_pr",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_exception_register": [
+        "schema_version",
+        "exception_register_id",
+        "contract_version",
+        "exceptions",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "edi_observer_ingestion_contract": [
+        "schema_version",
+        "edi_observer_ingestion_id",
+        "contract_version",
+        "source_of_truth",
+        "edi_is_authority",
+        "ingested_evidence_types",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "platform_governance_closure_pack": [
+        "schema_version",
+        "platform_governance_closure_id",
+        "contract_version",
+        "architecture_contract_complete",
+        "github_governance_complete",
+        "release_evidence_complete",
+        "unsafe_claims_visible",
+        "runtime_remains_blocked",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1910,6 +1962,90 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("operator readiness pack cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("operator readiness pack cannot authorize production decisions")
+    if kind == "repository_governance_evidence_pack":
+        protection = payload.get("branch_protection", {})
+        if protection.get("admin_enforcement") is not True:
+            errors.append("repository governance evidence must observe admin enforcement")
+        if protection.get("strict_status_checks") is not True:
+            errors.append("repository governance evidence must observe strict status checks")
+        if "validate" not in protection.get("required_status_checks", []):
+            errors.append("repository governance evidence must require validate")
+        if int(protection.get("required_approving_review_count", 0) or 0) < 1:
+            errors.append("repository governance evidence must observe at least one review")
+        if protection.get("codeowner_review") is not True:
+            errors.append("repository governance evidence must observe CODEOWNER review")
+        if protection.get("conversation_resolution") is not True:
+            errors.append("repository governance evidence must observe conversation resolution")
+        if protection.get("force_pushes_blocked") is not True:
+            errors.append("repository governance evidence must block force pushes")
+        if protection.get("deletions_blocked") is not True:
+            errors.append("repository governance evidence must block deletions")
+        if payload.get("security_policy_active") is not True:
+            errors.append("repository governance evidence must observe security policy")
+        if payload.get("dependabot_enabled") is not True:
+            errors.append("repository governance evidence must observe Dependabot")
+        if payload.get("actions_allowlist_observed") is not True:
+            errors.append("repository governance evidence must observe Actions allowlist")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("repository governance evidence cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("repository governance evidence cannot authorize production decisions")
+    if kind == "pr_validation_policy":
+        modes = {record.get("mode"): record for record in payload.get("modes", [])}
+        if "pull_request" not in modes or "release" not in modes:
+            errors.append("PR validation policy must define pull_request and release modes")
+        if modes.get("pull_request", {}).get("requires_release_artifact") is not False:
+            errors.append("PR validation cannot require release artifacts")
+        if modes.get("release", {}).get("requires_release_artifact") is not True:
+            errors.append("release validation must require release artifacts")
+        if payload.get("release_acceptance_required_for_pr") is not False:
+            errors.append("release acceptance must not be required for PR validation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("PR validation policy cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("PR validation policy cannot authorize production decisions")
+    if kind == "governance_exception_register":
+        exceptions = payload.get("exceptions", [])
+        if len(exceptions) < 2:
+            errors.append("governance exception register must include observed exceptions")
+        for exception in exceptions:
+            if exception.get("controls_restored") is not True:
+                errors.append(f"governance exception {exception.get('exception_id')} must restore controls")
+            if exception.get("runtime_authority_granted") is not False:
+                errors.append(f"governance exception {exception.get('exception_id')} cannot grant runtime")
+            if len(exception.get("required_evidence", [])) < 3:
+                errors.append(f"governance exception {exception.get('exception_id')} needs evidence")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("governance exception register cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("governance exception register cannot authorize production decisions")
+    if kind == "edi_observer_ingestion_contract":
+        required = {"release_artifact", "ci_run", "branch_protection", "security_policy", "governance_exception"}
+        if payload.get("source_of_truth") != "dip_repository_evidence":
+            errors.append("EDI observer ingestion must keep DIP repo evidence as source of truth")
+        if payload.get("edi_is_authority") is not False:
+            errors.append("EDI observer cannot be DIP authority")
+        if not required.issubset(set(payload.get("ingested_evidence_types", []))):
+            errors.append("EDI observer ingestion missing required evidence types")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("EDI observer ingestion cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("EDI observer ingestion cannot authorize production decisions")
+    if kind == "platform_governance_closure_pack":
+        if payload.get("architecture_contract_complete") is not True:
+            errors.append("platform governance closure must include architecture contracts")
+        if payload.get("github_governance_complete") is not True:
+            errors.append("platform governance closure must include GitHub governance")
+        if payload.get("release_evidence_complete") is not True:
+            errors.append("platform governance closure must include release evidence")
+        if payload.get("unsafe_claims_visible") is not True:
+            errors.append("platform governance closure must expose unsafe claims")
+        if payload.get("runtime_remains_blocked") is not True:
+            errors.append("platform governance closure must keep runtime blocked")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("platform governance closure cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("platform governance closure cannot authorize production decisions")
     return errors
 
 
@@ -1983,6 +2119,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "entitlement_usage_gate_contract": examples / "entitlement-usage-gate-contract.json",
         "integration_certification_ux_contract": examples / "integration-certification-ux-contract.json",
         "platform_operator_readiness_pack_contract": examples / "platform-operator-readiness-pack-contract.json",
+        "repository_governance_evidence_pack": examples / "repository-governance-evidence-pack.json",
+        "pr_validation_policy": examples / "pr-validation-policy.json",
+        "governance_exception_register": examples / "governance-exception-register.json",
+        "edi_observer_ingestion_contract": examples / "edi-observer-ingestion-contract.json",
+        "platform_governance_closure_pack": examples / "platform-governance-closure-pack.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

@@ -3,7 +3,7 @@
   "build_run_id_observed": true,
   "computed": true,
   "evaluation_id": "release-promotion-chain-v2.9-pre-runtime-1",
-  "immutable_artifact_digest": "sha256:636602d0f881e130bc7b3313fcbaba3767beb4a62cf950e96a9a5f7a7835f366",
+  "immutable_artifact_digest": "sha256:d97d5ef27307387f9a4d5fc66543c25021c2270ba94e415e5f2d6efb47e69a0d",
   "immutable_artifact_digest_observed": true,
   "independent_human_review_observed": false,
   "prod_deployment_executed": false,
