@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 30,
+  "artifact_count": 32,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -55,12 +55,17 @@
     {
       "artifact_type": "schema_stability_policy",
       "path": "examples/schema-stability-policy.json",
-      "sha256": "9948bc5e8fede7c7d68dcedbf204216a1803df648ca6b34c0d3f9b3de07416d1"
+      "sha256": "c66fd7d705c4f928978ab1a6745fdeb923f99e69b2eb60775588fed79914d776"
     },
     {
       "artifact_type": "external_approval_boundary",
       "path": "examples/external-approval-boundary.json",
       "sha256": "d865321915a59c25392bf4ef8738d59e5588667c236dafe4eaa39a170b5d02a6"
+    },
+    {
+      "artifact_type": "durable_case_store_adapter",
+      "path": "examples/durable-case-store-adapter.json",
+      "sha256": "2e214bc8d674cf3de866b9bed5953fe4d4f3567e7211504b2416a458c880ebe3"
     },
     {
       "artifact_type": "negative_decision_spec_fixture",
@@ -76,6 +81,11 @@
       "artifact_type": "negative_external_approval_fixture",
       "path": "examples/negative/external-approval-github-review-as-decision-approval.json",
       "sha256": "01cf4f5032e293c63417229710d14cbda2f8f9bca38a58dabdffce134ce7c014"
+    },
+    {
+      "artifact_type": "negative_durable_case_store_adapter",
+      "path": "examples/negative/durable-case-store-mutable-adapter.json",
+      "sha256": "1be52a4041cb241cdcc61e5aa770191834229d28fe995e3d5a278efbb40434df"
     },
     {
       "artifact_type": "support_ticket_case_set",
@@ -140,7 +150,7 @@
     {
       "artifact_type": "schema_stability",
       "path": "reports/trust-loop/schema-stability.json",
-      "sha256": "933479149f1ce60ca5ff694c9845bca97ad532053e88a10b14cbded8fcb292bc"
+      "sha256": "c6a1d163f2dee9a70bf069fef992c1e81640005fe0e0233e05e150486615fa80"
     },
     {
       "artifact_type": "external_approval_boundary",
@@ -155,11 +165,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "369aa7ce0b4c3dd0cc31549050049037c1394d83b1260cde2974aa95de71d1dc",
+  "manifest_hash": "20333b38c11049554e7576ef78313bced616f086e6048537ae683a561dda2f48",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "5937dff304a1416a397d78adfd3716126e7bb6e02f88a5cf3756b852cac7aeb9",
+  "parent_manifest_hash": "6e9deefdd30ec213a212122d63baecee4149d191757d6a95a370347da762baa3",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }
