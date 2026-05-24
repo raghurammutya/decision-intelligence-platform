@@ -193,6 +193,27 @@ Required evidence:
 - production storage backend remains unobserved
 - runtime and production authority remain blocked
 
+### v2.4 Evidence Store Adapter Parity
+
+Purpose: prove the durable case store adapter contract covers the concrete
+pre-runtime operations needed by review, replay, and audit workflows.
+
+This is not a production storage adapter. It computes operation parity from the
+contract and committed evidence without invoking a runtime backend.
+
+Required evidence:
+
+- append case record operation declared and evidence-bound
+- read case record operation declared and evidence-bound
+- verify manifest chain operation declared and evidence-bound
+- export replay pack operation declared and evidence-bound
+- export audit pack operation declared and evidence-bound
+- update/delete/manifest overwrite operations denied
+- negative fixtures cover missing hash chain, delete-enabled behavior, and weak retention
+- production storage backend remains unobserved
+- runtime backend remains uninvoked
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

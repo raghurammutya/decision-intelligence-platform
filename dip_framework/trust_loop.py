@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.3.0-pre")
+    write_v0_2_evidence(root, version="v2.4.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -37,6 +37,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
+    adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -63,6 +64,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_schema_stability",
             "evaluate_external_approval_boundary",
             "evaluate_durable_case_store_adapter",
+            "evaluate_evidence_store_adapter_parity",
             "assess_runtime_readiness",
             "materialize_product_review_surface",
             "write_case_evidence",
@@ -126,6 +128,9 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "durable_case_store_adapter_valid": durable_adapter.get("adapter_boundary_valid") is True,
         "adapter_production_storage_backend_observed": durable_adapter.get("production_storage_backend_observed")
         is True,
+        "evidence_store_adapter_parity_observed": adapter_parity.get("computed") is True,
+        "evidence_store_adapter_parity_valid": adapter_parity.get("adapter_parity_valid") is True,
+        "adapter_runtime_backend_invoked": adapter_parity.get("runtime_backend_invoked") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -160,6 +165,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "schema_stability": schema_stability,
         "external_approval": external_approval,
         "durable_adapter": durable_adapter,
+        "adapter_parity": adapter_parity,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,
@@ -189,6 +195,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "schema-stability.json", payload["schema_stability"])
     write_json(out / "external-approval-boundary.json", payload["external_approval"])
     write_json(out / "durable-case-store-adapter.json", payload["durable_adapter"])
+    write_json(out / "evidence-store-adapter-parity.json", payload["adapter_parity"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
     write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])

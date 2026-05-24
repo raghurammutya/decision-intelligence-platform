@@ -19,6 +19,7 @@
     "evaluate_schema_stability",
     "evaluate_external_approval_boundary",
     "evaluate_durable_case_store_adapter",
+    "evaluate_evidence_store_adapter_parity",
     "assess_runtime_readiness",
     "materialize_product_review_surface",
     "write_case_evidence",

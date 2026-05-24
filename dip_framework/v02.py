@@ -33,6 +33,9 @@ ARTIFACTS = [
         "examples/negative/external-approval-github-review-as-decision-approval.json",
     ),
     ("negative_durable_case_store_adapter", "examples/negative/durable-case-store-mutable-adapter.json"),
+    ("negative_durable_case_store_missing_hash_chain", "examples/negative/durable-case-store-missing-hash-chain.json"),
+    ("negative_durable_case_store_delete_enabled", "examples/negative/durable-case-store-delete-enabled.json"),
+    ("negative_durable_case_store_weak_retention", "examples/negative/durable-case-store-weak-retention.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -742,6 +745,114 @@ def evaluate_durable_case_store_adapter(
     }
 
 
+def evaluate_evidence_store_adapter_parity(
+    root: Path = ROOT,
+    durable_manifest: dict[str, Any] | None = None,
+    replay: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    adapter = load_json(root / "examples/durable-case-store-adapter.json")
+    manifest = durable_manifest or {}
+    replay_result = replay or {}
+    required_operations = set(adapter.get("required_operations", []))
+    denied_operations = set(adapter.get("denied_operations", []))
+    operation_records = [
+        {
+            "operation": "append_case_record",
+            "contract_declared": "append_case_record" in required_operations
+            and adapter.get("append_only_writes_required") is True,
+            "evidence_ref": "reports/trust-loop/durable-case-manifest.json",
+            "evidence_valid": bool(manifest.get("manifest_hash")) and manifest.get("append_only_required") is True,
+            "side_effects_executed": False,
+        },
+        {
+            "operation": "read_case_record",
+            "contract_declared": "read_case_record" in required_operations,
+            "evidence_ref": "reports/trust-loop/case-evidence.json",
+            "evidence_valid": bool(manifest.get("case_id")) and int(manifest.get("artifact_count", 0) or 0) > 0,
+            "side_effects_executed": False,
+        },
+        {
+            "operation": "verify_manifest_chain",
+            "contract_declared": "verify_manifest_chain" in required_operations
+            and adapter.get("manifest_hash_chain_required") is True,
+            "evidence_ref": "reports/trust-loop/durable-case-manifest.json",
+            "evidence_valid": bool(manifest.get("parent_manifest_hash")) and manifest.get("chain_valid") is True,
+            "side_effects_executed": False,
+        },
+        {
+            "operation": "export_replay_pack",
+            "contract_declared": "export_replay_pack" in required_operations
+            and adapter.get("replay_export_required") is True,
+            "evidence_ref": "reports/trust-loop/replay-result.json",
+            "evidence_valid": replay_result.get("manifest_replay_valid") is True,
+            "side_effects_executed": False,
+        },
+        {
+            "operation": "export_audit_pack",
+            "contract_declared": "export_audit_pack" in required_operations
+            and adapter.get("audit_export_required") is True,
+            "evidence_ref": "reports/release",
+            "evidence_valid": bool(manifest.get("manifest_hash")),
+            "side_effects_executed": False,
+        },
+    ]
+    denied_records = [
+        {
+            "operation": operation,
+            "contract_denied": operation in denied_operations,
+            "mutation_blocked": adapter.get("delete_denied_required") is True
+            and adapter.get("mutation_detection_required") is True,
+            "side_effects_executed": False,
+        }
+        for operation in ["update_case_record", "delete_case_record", "overwrite_manifest_hash"]
+    ]
+    return {
+        "schema_version": "evidence-store-adapter-parity/v1",
+        "evaluation_id": "evidence-store-adapter-parity-v2.4-pre-runtime-1",
+        "computed": True,
+        "adapter_id": adapter.get("adapter_id"),
+        "adapter_version": adapter.get("adapter_version"),
+        "required_operation_count": len(operation_records),
+        "required_operations_valid": all(
+            record["contract_declared"] is True
+            and record["evidence_valid"] is True
+            and record["side_effects_executed"] is False
+            for record in operation_records
+        ),
+        "denied_operation_count": len(denied_records),
+        "denied_operations_enforced": all(
+            record["contract_denied"] is True
+            and record["mutation_blocked"] is True
+            and record["side_effects_executed"] is False
+            for record in denied_records
+        ),
+        "append_case_record_valid": operation_records[0]["evidence_valid"] is True,
+        "read_case_record_valid": operation_records[1]["evidence_valid"] is True,
+        "verify_manifest_chain_valid": operation_records[2]["evidence_valid"] is True,
+        "export_replay_pack_valid": operation_records[3]["evidence_valid"] is True,
+        "export_audit_pack_valid": operation_records[4]["evidence_valid"] is True,
+        "production_storage_backend_observed": adapter.get("production_storage_backend_observed") is True,
+        "runtime_backend_invoked": False,
+        "operation_records": operation_records,
+        "denied_operation_records": denied_records,
+        "adapter_parity_valid": all(
+            record["contract_declared"] is True
+            and record["evidence_valid"] is True
+            and record["side_effects_executed"] is False
+            for record in operation_records
+        )
+        and all(
+            record["contract_denied"] is True
+            and record["mutation_blocked"] is True
+            and record["side_effects_executed"] is False
+            for record in denied_records
+        )
+        and adapter.get("production_storage_backend_observed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
@@ -788,6 +899,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
+    adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -817,6 +929,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "durable_case_store_adapter",
             "state": "ready",
             "summary": str(durable_adapter.get("adapter_boundary_valid")),
+        },
+        {
+            "id": "evidence_store_adapter_parity",
+            "state": "ready",
+            "summary": str(adapter_parity.get("adapter_parity_valid")),
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -1212,7 +1329,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v2.4.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
@@ -1231,6 +1348,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
+    adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -1345,6 +1463,16 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "adapter_retention_policy_valid": durable_adapter.get("retention_policy_valid") is True,
         "adapter_required_operations_complete": durable_adapter.get("required_operations_complete") is True,
         "adapter_denied_operations_complete": durable_adapter.get("denied_operations_complete") is True,
+        "evidence_store_adapter_parity_observed": adapter_parity.get("computed") is True,
+        "evidence_store_adapter_parity_valid": adapter_parity.get("adapter_parity_valid") is True,
+        "adapter_required_operations_valid": adapter_parity.get("required_operations_valid") is True,
+        "adapter_denied_operations_enforced": adapter_parity.get("denied_operations_enforced") is True,
+        "adapter_append_case_record_valid": adapter_parity.get("append_case_record_valid") is True,
+        "adapter_read_case_record_valid": adapter_parity.get("read_case_record_valid") is True,
+        "adapter_verify_manifest_chain_valid": adapter_parity.get("verify_manifest_chain_valid") is True,
+        "adapter_export_replay_pack_valid": adapter_parity.get("export_replay_pack_valid") is True,
+        "adapter_export_audit_pack_valid": adapter_parity.get("export_audit_pack_valid") is True,
+        "adapter_runtime_backend_invoked": adapter_parity.get("runtime_backend_invoked") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -1385,6 +1513,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and external_approval.get("decision_approval_separate_from_code_merge") is True
         and durable_adapter.get("adapter_boundary_valid") is True
         and durable_adapter.get("production_storage_backend_observed") is False
+        and adapter_parity.get("adapter_parity_valid") is True
+        and adapter_parity.get("runtime_backend_invoked") is False
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -1483,6 +1613,16 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Adapter retention policy valid: `{payload['adapter_retention_policy_valid']}`",
         f"Adapter required operations complete: `{payload['adapter_required_operations_complete']}`",
         f"Adapter denied operations complete: `{payload['adapter_denied_operations_complete']}`",
+        f"Evidence store adapter parity observed: `{payload['evidence_store_adapter_parity_observed']}`",
+        f"Evidence store adapter parity valid: `{payload['evidence_store_adapter_parity_valid']}`",
+        f"Adapter required operations valid: `{payload['adapter_required_operations_valid']}`",
+        f"Adapter denied operations enforced: `{payload['adapter_denied_operations_enforced']}`",
+        f"Adapter append case record valid: `{payload['adapter_append_case_record_valid']}`",
+        f"Adapter read case record valid: `{payload['adapter_read_case_record_valid']}`",
+        f"Adapter verify manifest chain valid: `{payload['adapter_verify_manifest_chain_valid']}`",
+        f"Adapter export replay pack valid: `{payload['adapter_export_replay_pack_valid']}`",
+        f"Adapter export audit pack valid: `{payload['adapter_export_audit_pack_valid']}`",
+        f"Adapter runtime backend invoked: `{payload['adapter_runtime_backend_invoked']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -1503,7 +1643,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v2.3.0-pre",
+    version: str = "v2.4.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -1545,6 +1685,8 @@ def write_v0_2_evidence(
     write_json(target / "approval-record.json", approval)
     replay = build_replay_result_from_manifest(root, durable_manifest)
     write_json(target / "replay-result.json", replay)
+    adapter_parity = evaluate_evidence_store_adapter_parity(root, durable_manifest, replay)
+    write_json(target / "evidence-store-adapter-parity.json", adapter_parity)
     runtime_readiness = build_runtime_readiness_assessment(root)
     write_json(target / "runtime-readiness-assessment.json", runtime_readiness)
     product_surface = build_product_review_surface(root)
@@ -1569,6 +1711,7 @@ def write_v0_2_evidence(
         "manifest": manifest,
         "durable_manifest": durable_manifest,
         "durable_adapter": durable_adapter,
+        "adapter_parity": adapter_parity,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,
