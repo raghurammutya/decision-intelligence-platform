@@ -1,0 +1,20 @@
+{
+  "schema_version": "policy-definitions/v1",
+  "policy_set_id": "negative-missing-evidence-policy-set",
+  "policy_set_version": "0.0.0-negative",
+  "supported_rule_types": ["required_evidence_present"],
+  "outcome_precedence": ["deny", "escalate", "approval_required", "allow"],
+  "policies": [
+    {
+      "policy_id": "missing-evidence-list",
+      "version": "0.0.0-negative",
+      "lifecycle_status": "active",
+      "decision": "approval_required",
+      "rule_type": "required_evidence_present",
+      "required_evidence": [],
+      "message": "Required-evidence policies must declare evidence."
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

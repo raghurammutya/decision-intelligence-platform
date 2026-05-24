@@ -1,0 +1,20 @@
+{
+  "schema_version": "policy-definitions/v1",
+  "policy_set_id": "negative-production-authority-policy-set",
+  "policy_set_version": "0.0.0-negative",
+  "supported_rule_types": ["production_allowed_false"],
+  "outcome_precedence": ["deny", "escalate", "approval_required", "allow"],
+  "policies": [
+    {
+      "policy_id": "allow-production",
+      "version": "0.0.0-negative",
+      "lifecycle_status": "active",
+      "decision": "allow",
+      "rule_type": "production_allowed_false",
+      "production_decision_execution_authorized": true,
+      "message": "Policies must not grant production authority."
+    }
+  ],
+  "runtime_integration_authorized": true,
+  "production_decision_execution_authorized": true
+}

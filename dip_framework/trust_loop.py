@@ -16,11 +16,12 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.4.0-pre")
+    write_v0_2_evidence(root, version="v2.5.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
     approval_record = load_json(root / "reports/trust-loop/approval-record.json")
+    policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
     computed_preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     computed_simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     computed_decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
@@ -48,6 +49,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "completed_steps": [
             "validate_spec",
             "load_capability_registry",
+            "compute_policy_engine",
             "compute_policy_preflight",
             "compute_simulation_evidence",
             "compute_decision_diff",
@@ -79,6 +81,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "acceptance_id": "dip-mvp-acceptance-1",
         "trust_loop_complete": validation["passed"],
         "case_evidence_complete": bool(case_evidence.get("case_id")),
+        "computed_policy_engine_observed": policy_engine.get("computed") is True,
+        "computed_policy_engine_result": policy_engine.get("result"),
+        "policy_engine_valid": policy_engine.get("policy_engine_valid") is True,
+        "policy_engine_deny_precedence_enforced": policy_engine.get("deny_precedence_enforced") is True,
+        "policy_engine_escalate_outcome_supported": policy_engine.get("escalate_outcome_supported") is True,
+        "policy_engine_compatibility_valid": policy_engine.get("policy_compatibility_valid") is True,
         "computed_policy_preflight_observed": computed_preflight.get("computed") is True,
         "computed_simulation_observed": computed_simulation.get("computed") is True,
         "computed_simulation_case_count": computed_simulation.get("case_count", 0),
@@ -148,6 +156,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     return {
         "validation": validation,
         "case_evidence": case_evidence,
+        "policy_engine": policy_engine,
         "computed_preflight": computed_preflight,
         "computed_simulation": computed_simulation,
         "computed_decision_diff": computed_decision_diff,
@@ -177,6 +186,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
 def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     payload = build_trust_loop(root)
     write_json(out / "validation.json", payload["validation"])
+    write_json(out / "computed-policy-engine.json", payload["policy_engine"])
     write_json(out / "computed-policy-preflight.json", payload["computed_preflight"])
     write_json(out / "computed-simulation-evidence.json", payload["computed_simulation"])
     write_json(out / "computed-decision-diff.json", payload["computed_decision_diff"])

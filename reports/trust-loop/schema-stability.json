@@ -115,7 +115,7 @@
     }
   ],
   "frozen_contracts_valid": true,
-  "negative_fixture_count": 7,
+  "negative_fixture_count": 11,
   "negative_fixtures": [
     {
       "errors": [
@@ -193,12 +193,51 @@
       "kind": "durable_case_store_adapter",
       "passed_negative_check": true,
       "path": "examples/negative/durable-case-store-weak-retention.json"
+    },
+    {
+      "errors": [
+        "policy unknown-rule has unknown rule type"
+      ],
+      "expected_error_contains": "has unknown rule type",
+      "kind": "policy_definitions",
+      "passed_negative_check": true,
+      "path": "examples/negative/policy-definitions-unknown-rule.json"
+    },
+    {
+      "errors": [
+        "policy revoked-policy has invalid lifecycle status",
+        "policy revoked-policy is revoked"
+      ],
+      "expected_error_contains": "is revoked",
+      "kind": "policy_definitions",
+      "passed_negative_check": true,
+      "path": "examples/negative/policy-definitions-revoked-policy.json"
+    },
+    {
+      "errors": [
+        "policy definitions cannot authorize runtime integration",
+        "policy definitions cannot authorize production decisions",
+        "policy allow-production cannot authorize production decisions"
+      ],
+      "expected_error_contains": "cannot authorize production decisions",
+      "kind": "policy_definitions",
+      "passed_negative_check": true,
+      "path": "examples/negative/policy-definitions-production-authority.json"
+    },
+    {
+      "errors": [
+        "policy missing-evidence-list missing required evidence"
+      ],
+      "expected_error_contains": "missing required evidence",
+      "kind": "policy_definitions",
+      "passed_negative_check": true,
+      "path": "examples/negative/policy-definitions-missing-required-evidence.json"
     }
   ],
   "negative_fixtures_valid": true,
-  "policy_hash": "73e5d69f1a22bee6744f0ea51898c8c60e32507fcbfa9de9b282975a171405f4",
+  "policy_hash": "774990983efef93d82a55226c6b818ffa831ec9a721a4450a4af80a9b35aa9fa",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.4.0-pre",
+  "policy_version": "2.5.0-pre",
   "production_decision_execution_authorized": false,
   "runtime_integration_authorized": false,
   "schema_stability_valid": true,
