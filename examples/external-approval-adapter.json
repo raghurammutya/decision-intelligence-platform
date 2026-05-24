@@ -1,0 +1,78 @@
+{
+  "schema_version": "external-approval-adapter/v1",
+  "adapter_id": "dip-external-approval-adapter-boundary",
+  "adapter_version": "2.6.0-pre",
+  "source_boundary": "adapter_contract_not_live_approval_system",
+  "purpose": "Define the neutral external approval adapter operations required before DIP may rely on an external decision approval system.",
+  "adapter_type": "contract_only",
+  "live_approval_system_observed": false,
+  "decision_approval_source": "external_approval_adapter_contract",
+  "github_code_review_is_decision_approval": false,
+  "solo_maintainer_exception_is_decision_approval": false,
+  "ai_approval_allowed": false,
+  "required_operations": [
+    "request_approval",
+    "approve_decision",
+    "reject_decision",
+    "expire_approval",
+    "delegate_approval",
+    "revoke_approval",
+    "export_approval_audit"
+  ],
+  "denied_operations": [
+    "ai_self_approval",
+    "requester_self_approval",
+    "mutate_approved_decision",
+    "bypass_policy_preflight",
+    "execute_runtime_decision"
+  ],
+  "required_request_fields": [
+    "approval_request_id",
+    "decision_id",
+    "decision_version",
+    "requester_subject",
+    "required_approver_role",
+    "decision_scope",
+    "case_manifest_hash",
+    "policy_preflight_ref",
+    "simulation_evidence_ref",
+    "decision_diff_ref",
+    "approval_expires_at"
+  ],
+  "required_decision_fields": [
+    "approval_record_id",
+    "approval_request_id",
+    "approver_subject",
+    "approver_role",
+    "decision",
+    "approval_reason",
+    "approval_timestamp",
+    "mfa_evidence",
+    "case_manifest_hash",
+    "audit_export_ref"
+  ],
+  "allowed_decisions": [
+    "approved",
+    "rejected",
+    "expired",
+    "delegated",
+    "revoked"
+  ],
+  "admission_controls": [
+    "policy_preflight_requires_approval",
+    "approval_bound_to_case_manifest",
+    "approver_cannot_be_requester",
+    "ai_identity_excluded",
+    "approval_expiry_enforced",
+    "decision_scope_enforced",
+    "runtime_authority_denied"
+  ],
+  "audit_requirements": [
+    "append_only_approval_records",
+    "content_addressed_case_binding",
+    "approval_decision_lineage",
+    "exportable_audit_pack"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

@@ -149,3 +149,16 @@ supported rule-type compatibility, deterministic outcome precedence, escalation
 support, and negative fixtures for unknown rules, revoked policies,
 runtime/production authority claims, and missing required evidence. AI override,
 runtime integration, and production decision authority remain blocked.
+
+## v2.6 External Approval Adapter Boundary
+
+```bash
+python3 -m dip_framework release-pack --version v2.6.0-pre
+```
+
+v2.6 defines the neutral external approval adapter contract for approval
+request, approval, rejection, expiry, delegation, revocation, and audit export.
+It validates required request and decision evidence, denied self-approval and
+runtime operations, lifecycle outcomes, admission controls, and audit
+requirements. It remains contract-only: no live external approval system,
+runtime integration, or production decision authority is observed.

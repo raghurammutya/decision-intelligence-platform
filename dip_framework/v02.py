@@ -25,6 +25,7 @@ ARTIFACTS = [
     ("solo_maintainer_governance_exception", "examples/solo-maintainer-governance-exception.json"),
     ("schema_stability_policy", "examples/schema-stability-policy.json"),
     ("external_approval_boundary", "examples/external-approval-boundary.json"),
+    ("external_approval_adapter", "examples/external-approval-adapter.json"),
     ("durable_case_store_adapter", "examples/durable-case-store-adapter.json"),
     ("negative_decision_spec_fixture", "examples/negative/decision-spec-production-allowed.json"),
     ("negative_approval_fixture", "examples/negative/approval-ai-approved.json"),
@@ -32,6 +33,7 @@ ARTIFACTS = [
         "negative_external_approval_fixture",
         "examples/negative/external-approval-github-review-as-decision-approval.json",
     ),
+    ("negative_external_approval_adapter_fixture", "examples/negative/external-approval-adapter-ai-self-approval.json"),
     ("negative_policy_definitions_unknown_rule", "examples/negative/policy-definitions-unknown-rule.json"),
     ("negative_policy_definitions_revoked_policy", "examples/negative/policy-definitions-revoked-policy.json"),
     ("negative_policy_definitions_production_authority", "examples/negative/policy-definitions-production-authority.json"),
@@ -55,6 +57,7 @@ ARTIFACTS = [
     ("solo_maintainer_exception", "reports/trust-loop/solo-maintainer-exception.json"),
     ("schema_stability", "reports/trust-loop/schema-stability.json"),
     ("external_approval_boundary", "reports/trust-loop/external-approval-boundary.json"),
+    ("external_approval_adapter", "reports/trust-loop/external-approval-adapter.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
 ]
 
@@ -609,6 +612,7 @@ def evaluate_schema_stability(root: Path = ROOT) -> dict[str, Any]:
         "replay": examples / "support-ticket-replay-result.json",
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
         "external_approval_boundary": examples / "external-approval-boundary.json",
+        "external_approval_adapter": examples / "external-approval-adapter.json",
         "durable_case_store_adapter": examples / "durable-case-store-adapter.json",
     }
     frozen_results = []
@@ -738,6 +742,137 @@ def evaluate_external_approval_boundary(root: Path = ROOT) -> dict[str, Any]:
         and expected_controls.issubset(admission_controls)
         and boundary.get("runtime_integration_authorized") is False
         and boundary.get("production_decision_execution_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_external_approval_adapter(root: Path = ROOT) -> dict[str, Any]:
+    adapter = load_json(root / "examples/external-approval-adapter.json")
+    boundary = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    required_operations = set(adapter.get("required_operations", []))
+    expected_operations = {
+        "request_approval",
+        "approve_decision",
+        "reject_decision",
+        "expire_approval",
+        "delegate_approval",
+        "revoke_approval",
+        "export_approval_audit",
+    }
+    denied_operations = set(adapter.get("denied_operations", []))
+    expected_denied = {
+        "ai_self_approval",
+        "requester_self_approval",
+        "mutate_approved_decision",
+        "bypass_policy_preflight",
+        "execute_runtime_decision",
+    }
+    request_fields = set(adapter.get("required_request_fields", []))
+    expected_request_fields = {
+        "approval_request_id",
+        "decision_id",
+        "decision_version",
+        "requester_subject",
+        "required_approver_role",
+        "decision_scope",
+        "case_manifest_hash",
+        "policy_preflight_ref",
+        "simulation_evidence_ref",
+        "decision_diff_ref",
+        "approval_expires_at",
+    }
+    decision_fields = set(adapter.get("required_decision_fields", []))
+    expected_decision_fields = {
+        "approval_record_id",
+        "approval_request_id",
+        "approver_subject",
+        "approver_role",
+        "decision",
+        "approval_reason",
+        "approval_timestamp",
+        "mfa_evidence",
+        "case_manifest_hash",
+        "audit_export_ref",
+    }
+    allowed_decisions = set(adapter.get("allowed_decisions", []))
+    expected_decisions = {"approved", "rejected", "expired", "delegated", "revoked"}
+    admission_controls = set(adapter.get("admission_controls", []))
+    expected_controls = {
+        "policy_preflight_requires_approval",
+        "approval_bound_to_case_manifest",
+        "approver_cannot_be_requester",
+        "ai_identity_excluded",
+        "approval_expiry_enforced",
+        "decision_scope_enforced",
+        "runtime_authority_denied",
+    }
+    audit_requirements = set(adapter.get("audit_requirements", []))
+    expected_audit = {
+        "append_only_approval_records",
+        "content_addressed_case_binding",
+        "approval_decision_lineage",
+        "exportable_audit_pack",
+    }
+    required_operations_complete = expected_operations.issubset(required_operations)
+    denied_operations_complete = expected_denied.issubset(denied_operations)
+    request_fields_complete = expected_request_fields.issubset(request_fields)
+    decision_fields_complete = expected_decision_fields.issubset(decision_fields)
+    decision_lifecycle_complete = expected_decisions.issubset(allowed_decisions)
+    admission_controls_complete = expected_controls.issubset(admission_controls)
+    audit_requirements_complete = expected_audit.issubset(audit_requirements)
+    boundary_compatible = boundary.get("external_approval_boundary_valid") is True and boundary.get(
+        "decision_approval_separate_from_code_merge"
+    ) is True
+    adapter_boundary_valid = (
+        adapter.get("adapter_type") == "contract_only"
+        and adapter.get("live_approval_system_observed") is False
+        and adapter.get("github_code_review_is_decision_approval") is False
+        and adapter.get("solo_maintainer_exception_is_decision_approval") is False
+        and adapter.get("ai_approval_allowed") is False
+        and required_operations_complete
+        and denied_operations_complete
+        and request_fields_complete
+        and decision_fields_complete
+        and decision_lifecycle_complete
+        and admission_controls_complete
+        and audit_requirements_complete
+        and boundary_compatible
+        and adapter.get("runtime_integration_authorized") is False
+        and adapter.get("production_decision_execution_authorized") is False
+    )
+    return {
+        "schema_version": "external-approval-adapter-evaluation/v1",
+        "evaluation_id": "external-approval-adapter-v2.6-pre-runtime-1",
+        "computed": True,
+        "adapter_id": adapter.get("adapter_id"),
+        "adapter_version": adapter.get("adapter_version"),
+        "adapter_hash": _sha256(root / "examples/external-approval-adapter.json"),
+        "source_boundary": adapter.get("source_boundary"),
+        "adapter_type": adapter.get("adapter_type"),
+        "live_approval_system_observed": adapter.get("live_approval_system_observed") is True,
+        "github_code_review_is_decision_approval": adapter.get("github_code_review_is_decision_approval") is True,
+        "solo_maintainer_exception_is_decision_approval": adapter.get(
+            "solo_maintainer_exception_is_decision_approval"
+        )
+        is True,
+        "ai_approval_allowed": adapter.get("ai_approval_allowed") is True,
+        "required_operation_count": len(required_operations),
+        "required_operations_complete": required_operations_complete,
+        "denied_operation_count": len(denied_operations),
+        "denied_operations_complete": denied_operations_complete,
+        "request_evidence_field_count": len(request_fields),
+        "request_evidence_fields_complete": request_fields_complete,
+        "decision_evidence_field_count": len(decision_fields),
+        "decision_evidence_fields_complete": decision_fields_complete,
+        "decision_lifecycle_outcome_count": len(allowed_decisions),
+        "decision_lifecycle_complete": decision_lifecycle_complete,
+        "admission_control_count": len(admission_controls),
+        "admission_controls_complete": admission_controls_complete,
+        "audit_requirement_count": len(audit_requirements),
+        "audit_requirements_complete": audit_requirements_complete,
+        "boundary_compatible": boundary_compatible,
+        "external_approval_adapter_valid": adapter_boundary_valid,
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
     }
@@ -971,6 +1106,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
@@ -998,6 +1134,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "external_approval_boundary",
             "state": "ready",
             "summary": str(external_approval.get("external_approval_boundary_valid")),
+        },
+        {
+            "id": "external_approval_adapter",
+            "state": "ready",
+            "summary": str(external_approval_adapter.get("external_approval_adapter_valid")),
         },
         {
             "id": "durable_case_store_adapter",
@@ -1403,7 +1544,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
@@ -1422,6 +1563,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", sou
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
@@ -1534,6 +1676,42 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", sou
         "external_approval_required_evidence_count": external_approval.get("required_evidence_count", 0),
         "external_approval_required_evidence_complete": external_approval.get("required_evidence_complete") is True,
         "external_approval_admission_controls_complete": external_approval.get("admission_controls_complete") is True,
+        "external_approval_adapter_observed": external_approval_adapter.get("computed") is True,
+        "external_approval_adapter_valid": external_approval_adapter.get("external_approval_adapter_valid") is True,
+        "external_approval_adapter_required_operations_complete": external_approval_adapter.get(
+            "required_operations_complete"
+        )
+        is True,
+        "external_approval_adapter_denied_operations_complete": external_approval_adapter.get(
+            "denied_operations_complete"
+        )
+        is True,
+        "external_approval_adapter_request_evidence_complete": external_approval_adapter.get(
+            "request_evidence_fields_complete"
+        )
+        is True,
+        "external_approval_adapter_decision_evidence_complete": external_approval_adapter.get(
+            "decision_evidence_fields_complete"
+        )
+        is True,
+        "external_approval_adapter_decision_lifecycle_complete": external_approval_adapter.get(
+            "decision_lifecycle_complete"
+        )
+        is True,
+        "external_approval_adapter_admission_controls_complete": external_approval_adapter.get(
+            "admission_controls_complete"
+        )
+        is True,
+        "external_approval_adapter_audit_requirements_complete": external_approval_adapter.get(
+            "audit_requirements_complete"
+        )
+        is True,
+        "external_approval_adapter_boundary_compatible": external_approval_adapter.get("boundary_compatible") is True,
+        "external_approval_adapter_live_system_observed": external_approval_adapter.get(
+            "live_approval_system_observed"
+        )
+        is True,
+        "external_approval_adapter_ai_approval_allowed": external_approval_adapter.get("ai_approval_allowed") is True,
         "durable_case_store_adapter_observed": durable_adapter.get("computed") is True,
         "durable_case_store_adapter_valid": durable_adapter.get("adapter_boundary_valid") is True,
         "adapter_production_storage_backend_observed": durable_adapter.get("production_storage_backend_observed")
@@ -1601,6 +1779,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", sou
         and external_approval.get("external_approval_boundary_valid") is True
         and external_approval.get("live_approval_system_observed") is False
         and external_approval.get("decision_approval_separate_from_code_merge") is True
+        and external_approval_adapter.get("external_approval_adapter_valid") is True
+        and external_approval_adapter.get("live_approval_system_observed") is False
+        and external_approval_adapter.get("ai_approval_allowed") is False
+        and external_approval_adapter.get("boundary_compatible") is True
         and durable_adapter.get("adapter_boundary_valid") is True
         and durable_adapter.get("production_storage_backend_observed") is False
         and adapter_parity.get("adapter_parity_valid") is True
@@ -1614,6 +1796,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", sou
             "production decision execution is authorized",
             "independent human review was observed for solo-maintainer merges",
             "live external decision approval system is observed",
+            "live external approval adapter system is observed",
             "production durable case store backend is observed",
         ],
     }
@@ -1700,6 +1883,18 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"External approval required evidence count: `{payload['external_approval_required_evidence_count']}`",
         f"External approval required evidence complete: `{payload['external_approval_required_evidence_complete']}`",
         f"External approval admission controls complete: `{payload['external_approval_admission_controls_complete']}`",
+        f"External approval adapter observed: `{payload['external_approval_adapter_observed']}`",
+        f"External approval adapter valid: `{payload['external_approval_adapter_valid']}`",
+        f"External approval adapter required operations complete: `{payload['external_approval_adapter_required_operations_complete']}`",
+        f"External approval adapter denied operations complete: `{payload['external_approval_adapter_denied_operations_complete']}`",
+        f"External approval adapter request evidence complete: `{payload['external_approval_adapter_request_evidence_complete']}`",
+        f"External approval adapter decision evidence complete: `{payload['external_approval_adapter_decision_evidence_complete']}`",
+        f"External approval adapter decision lifecycle complete: `{payload['external_approval_adapter_decision_lifecycle_complete']}`",
+        f"External approval adapter admission controls complete: `{payload['external_approval_adapter_admission_controls_complete']}`",
+        f"External approval adapter audit requirements complete: `{payload['external_approval_adapter_audit_requirements_complete']}`",
+        f"External approval adapter boundary compatible: `{payload['external_approval_adapter_boundary_compatible']}`",
+        f"External approval adapter live system observed: `{payload['external_approval_adapter_live_system_observed']}`",
+        f"External approval adapter AI approval allowed: `{payload['external_approval_adapter_ai_approval_allowed']}`",
         f"Durable case store adapter observed: `{payload['durable_case_store_adapter_observed']}`",
         f"Durable case store adapter valid: `{payload['durable_case_store_adapter_valid']}`",
         f"Adapter production storage backend observed: `{payload['adapter_production_storage_backend_observed']}`",
@@ -1742,7 +1937,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v2.5.0-pre",
+    version: str = "v2.6.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -1764,6 +1959,8 @@ def write_v0_2_evidence(
     write_json(target / "schema-stability.json", schema_stability)
     external_approval = evaluate_external_approval_boundary(root)
     write_json(target / "external-approval-boundary.json", external_approval)
+    external_approval_adapter = evaluate_external_approval_adapter(root)
+    write_json(target / "external-approval-adapter.json", external_approval_adapter)
     case_evidence = build_case_evidence()
     write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
@@ -1807,6 +2004,7 @@ def write_v0_2_evidence(
         "solo_exception": solo_exception,
         "schema_stability": schema_stability,
         "external_approval": external_approval,
+        "external_approval_adapter": external_approval_adapter,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "case_evidence": case_evidence,

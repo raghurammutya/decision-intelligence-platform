@@ -19,6 +19,7 @@
     "evaluate_solo_maintainer_exception",
     "evaluate_schema_stability",
     "evaluate_external_approval_boundary",
+    "evaluate_external_approval_adapter",
     "evaluate_durable_case_store_adapter",
     "evaluate_evidence_store_adapter_parity",
     "assess_runtime_readiness",

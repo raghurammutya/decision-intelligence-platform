@@ -3,7 +3,7 @@
   "compatibility_rules_declared": true,
   "computed": true,
   "evaluation_id": "schema-stability-v2.1-pre-runtime-1",
-  "frozen_contract_count": 18,
+  "frozen_contract_count": 19,
   "frozen_contracts": [
     {
       "expected_schema_version": "decision-spec/v1",
@@ -108,6 +108,12 @@
       "observed_schema_version": "external-approval-boundary/v1"
     },
     {
+      "expected_schema_version": "external-approval-adapter/v1",
+      "kind": "external_approval_adapter",
+      "matches": true,
+      "observed_schema_version": "external-approval-adapter/v1"
+    },
+    {
       "expected_schema_version": "durable-case-store-adapter/v1",
       "kind": "durable_case_store_adapter",
       "matches": true,
@@ -115,7 +121,7 @@
     }
   ],
   "frozen_contracts_valid": true,
-  "negative_fixture_count": 11,
+  "negative_fixture_count": 12,
   "negative_fixtures": [
     {
       "errors": [
@@ -150,6 +156,17 @@
       "kind": "external_approval_boundary",
       "passed_negative_check": true,
       "path": "examples/negative/external-approval-github-review-as-decision-approval.json"
+    },
+    {
+      "errors": [
+        "external approval adapter cannot allow AI self-approval",
+        "external approval adapter missing denied operations",
+        "external approval adapter missing admission controls"
+      ],
+      "expected_error_contains": "cannot allow AI self-approval",
+      "kind": "external_approval_adapter",
+      "passed_negative_check": true,
+      "path": "examples/negative/external-approval-adapter-ai-self-approval.json"
     },
     {
       "errors": [
@@ -235,9 +252,9 @@
     }
   ],
   "negative_fixtures_valid": true,
-  "policy_hash": "774990983efef93d82a55226c6b818ffa831ec9a721a4450a4af80a9b35aa9fa",
+  "policy_hash": "5575e2b4e86d70f7860ebfe83e369aa8d82b3325ae2f5cf1a4eaf821a56bfc4f",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.5.0-pre",
+  "policy_version": "2.6.0-pre",
   "production_decision_execution_authorized": false,
   "runtime_integration_authorized": false,
   "schema_stability_valid": true,

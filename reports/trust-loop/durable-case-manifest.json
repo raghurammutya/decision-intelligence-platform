@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 40,
+  "artifact_count": 43,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -55,12 +55,17 @@
     {
       "artifact_type": "schema_stability_policy",
       "path": "examples/schema-stability-policy.json",
-      "sha256": "774990983efef93d82a55226c6b818ffa831ec9a721a4450a4af80a9b35aa9fa"
+      "sha256": "5575e2b4e86d70f7860ebfe83e369aa8d82b3325ae2f5cf1a4eaf821a56bfc4f"
     },
     {
       "artifact_type": "external_approval_boundary",
       "path": "examples/external-approval-boundary.json",
       "sha256": "d865321915a59c25392bf4ef8738d59e5588667c236dafe4eaa39a170b5d02a6"
+    },
+    {
+      "artifact_type": "external_approval_adapter",
+      "path": "examples/external-approval-adapter.json",
+      "sha256": "2850f3d573d3c2cdd9f7828f128ce9e5ae909a43e2b525a36f127fcbcc7cbf18"
     },
     {
       "artifact_type": "durable_case_store_adapter",
@@ -81,6 +86,11 @@
       "artifact_type": "negative_external_approval_fixture",
       "path": "examples/negative/external-approval-github-review-as-decision-approval.json",
       "sha256": "01cf4f5032e293c63417229710d14cbda2f8f9bca38a58dabdffce134ce7c014"
+    },
+    {
+      "artifact_type": "negative_external_approval_adapter_fixture",
+      "path": "examples/negative/external-approval-adapter-ai-self-approval.json",
+      "sha256": "73c786d876fa64651c0e36f460fb5c86d06828a784dcbc76b7fc809832078f5b"
     },
     {
       "artifact_type": "negative_policy_definitions_unknown_rule",
@@ -190,12 +200,17 @@
     {
       "artifact_type": "schema_stability",
       "path": "reports/trust-loop/schema-stability.json",
-      "sha256": "e9e0a6518de936c5b3afc88bf3f328e78d96be93db35793666b68a07846b04cf"
+      "sha256": "ce0c4174126bd58f29463cc5a06f04ea462a033135f82058507a5a4902470f04"
     },
     {
       "artifact_type": "external_approval_boundary",
       "path": "reports/trust-loop/external-approval-boundary.json",
       "sha256": "69fd49e0a7dbe4e2c39a698b6dc2fc63e90ebc3e00fe05eaa4652af683d3b3f5"
+    },
+    {
+      "artifact_type": "external_approval_adapter",
+      "path": "reports/trust-loop/external-approval-adapter.json",
+      "sha256": "f337523f5088d1052b6560a7847831cdf08b04a36c1cc4383f1114d352212e0c"
     },
     {
       "artifact_type": "case_evidence",
@@ -205,11 +220,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "f38db0726c82c56e64a28671f4a0bd1a0514b2d73cea3015900ad891ddc62a28",
+  "manifest_hash": "8ff1da390273553b833600893a016d9bccd04f5c5f3847d4247068159a5408b6",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "66438d0c2b801138387739c705af23780c68567775041e30348f23636bd12ca6",
+  "parent_manifest_hash": "e1da5632ce099037fb3eef20d675352e8ea2cc59cd741413eb81d54adbb8be8b",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

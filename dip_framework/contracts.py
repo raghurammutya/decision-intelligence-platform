@@ -203,6 +203,28 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "external_approval_adapter": [
+        "schema_version",
+        "adapter_id",
+        "adapter_version",
+        "source_boundary",
+        "purpose",
+        "adapter_type",
+        "live_approval_system_observed",
+        "decision_approval_source",
+        "github_code_review_is_decision_approval",
+        "solo_maintainer_exception_is_decision_approval",
+        "ai_approval_allowed",
+        "required_operations",
+        "denied_operations",
+        "required_request_fields",
+        "required_decision_fields",
+        "allowed_decisions",
+        "admission_controls",
+        "audit_requirements",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "durable_case_store_adapter": [
         "schema_version",
         "adapter_id",
@@ -410,6 +432,92 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("external approval boundary cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("external approval boundary cannot authorize production decisions")
+    if kind == "external_approval_adapter":
+        if payload.get("adapter_type") != "contract_only":
+            errors.append("external approval adapter must remain contract-only")
+        if payload.get("live_approval_system_observed") is not False:
+            errors.append("external approval adapter cannot claim a live approval system")
+        if payload.get("github_code_review_is_decision_approval") is not False:
+            errors.append("external approval adapter cannot treat GitHub review as decision approval")
+        if payload.get("solo_maintainer_exception_is_decision_approval") is not False:
+            errors.append("external approval adapter cannot treat solo-maintainer exception as decision approval")
+        if payload.get("ai_approval_allowed") is not False:
+            errors.append("external approval adapter cannot allow AI self-approval")
+        required_operations = set(payload.get("required_operations", []))
+        denied_operations = set(payload.get("denied_operations", []))
+        required_request_fields = set(payload.get("required_request_fields", []))
+        required_decision_fields = set(payload.get("required_decision_fields", []))
+        allowed_decisions = set(payload.get("allowed_decisions", []))
+        admission_controls = set(payload.get("admission_controls", []))
+        audit_requirements = set(payload.get("audit_requirements", []))
+        if not {
+            "request_approval",
+            "approve_decision",
+            "reject_decision",
+            "expire_approval",
+            "delegate_approval",
+            "revoke_approval",
+            "export_approval_audit",
+        }.issubset(required_operations):
+            errors.append("external approval adapter missing required operations")
+        if not {
+            "ai_self_approval",
+            "requester_self_approval",
+            "mutate_approved_decision",
+            "bypass_policy_preflight",
+            "execute_runtime_decision",
+        }.issubset(denied_operations):
+            errors.append("external approval adapter missing denied operations")
+        if not {
+            "approval_request_id",
+            "decision_id",
+            "decision_version",
+            "requester_subject",
+            "required_approver_role",
+            "decision_scope",
+            "case_manifest_hash",
+            "policy_preflight_ref",
+            "simulation_evidence_ref",
+            "decision_diff_ref",
+            "approval_expires_at",
+        }.issubset(required_request_fields):
+            errors.append("external approval adapter missing request evidence fields")
+        if not {
+            "approval_record_id",
+            "approval_request_id",
+            "approver_subject",
+            "approver_role",
+            "decision",
+            "approval_reason",
+            "approval_timestamp",
+            "mfa_evidence",
+            "case_manifest_hash",
+            "audit_export_ref",
+        }.issubset(required_decision_fields):
+            errors.append("external approval adapter missing decision evidence fields")
+        if not {"approved", "rejected", "expired", "delegated", "revoked"}.issubset(allowed_decisions):
+            errors.append("external approval adapter missing decision lifecycle outcomes")
+        if not {
+            "policy_preflight_requires_approval",
+            "approval_bound_to_case_manifest",
+            "approver_cannot_be_requester",
+            "ai_identity_excluded",
+            "approval_expiry_enforced",
+            "decision_scope_enforced",
+            "runtime_authority_denied",
+        }.issubset(admission_controls):
+            errors.append("external approval adapter missing admission controls")
+        if not {
+            "append_only_approval_records",
+            "content_addressed_case_binding",
+            "approval_decision_lineage",
+            "exportable_audit_pack",
+        }.issubset(audit_requirements):
+            errors.append("external approval adapter missing audit requirements")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("external approval adapter cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("external approval adapter cannot authorize production decisions")
     if kind == "durable_case_store_adapter":
         if payload.get("production_storage_backend_observed") is not False:
             errors.append("durable case store adapter must not claim production storage")
@@ -476,6 +584,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
         "schema_stability_policy": examples / "schema-stability-policy.json",
         "external_approval_boundary": examples / "external-approval-boundary.json",
+        "external_approval_adapter": examples / "external-approval-adapter.json",
         "durable_case_store_adapter": examples / "durable-case-store-adapter.json",
         "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
