@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 20,
+  "surface_count": 27,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -103,6 +103,41 @@
       "id": "pre_runtime_ga",
       "state": "complete_runtime_blocked",
       "summary": "True"
+    },
+    {
+      "id": "governance_closure",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "external_identity_integration",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "external_approval_system",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "production_case_store_backend",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "runtime_control_plane",
+      "state": "designed",
+      "summary": "True"
+    },
+    {
+      "id": "advisory_runtime_pilot",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "limited_runtime_authority_gate",
+      "state": "authority_blocked",
+      "summary": "False"
     },
     {
       "id": "runtime_readiness",

@@ -27,6 +27,13 @@
     "evaluate_release_promotion_chain",
     "assess_runtime_readiness",
     "evaluate_pre_runtime_ga",
+    "evaluate_governance_closure",
+    "evaluate_external_identity_integration",
+    "evaluate_external_approval_system",
+    "evaluate_production_case_store_backend",
+    "evaluate_runtime_control_plane",
+    "evaluate_advisory_runtime_pilot",
+    "evaluate_limited_runtime_authority_gate",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

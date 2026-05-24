@@ -1,0 +1,27 @@
+{
+  "advisory_runtime_ready": true,
+  "authority_prerequisites": {
+    "advisory_runtime_pilot_valid": true,
+    "live_external_approval_system_ready": false,
+    "live_external_idp_mfa_ready": false,
+    "production_case_store_live_ready": false,
+    "runtime_control_plane_design_valid": true
+  },
+  "authority_scope": "limited_advisory_to_runtime_gate",
+  "blocked_reason_count": 3,
+  "blocked_reasons": [
+    "live_external_idp_mfa_ready",
+    "live_external_approval_system_ready",
+    "production_case_store_live_ready"
+  ],
+  "computed": true,
+  "evaluation_id": "limited-runtime-authority-v4.0-gate-1",
+  "limited_runtime_authority_gate_complete": true,
+  "limited_runtime_authority_granted": false,
+  "maturity_claim": "v4_0_authority_gate_complete_authority_blocked",
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "limited-runtime-authority-gate/v1"
+}

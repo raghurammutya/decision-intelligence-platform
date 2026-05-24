@@ -1,0 +1,17 @@
+{
+  "advisory_case_count": 13,
+  "advisory_runtime_pilot_valid": true,
+  "approval_gate_observed": true,
+  "computed": true,
+  "evaluation_id": "advisory-runtime-pilot-v3.6-pre-runtime-1",
+  "lineage_capture_observed": true,
+  "pilot_mode": "advisory_only",
+  "policy_gate_observed": true,
+  "production_decision_execution_authorized": false,
+  "production_mutation_executed": false,
+  "runtime_execution_requested": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "advisory-runtime-pilot-evaluation/v1",
+  "side_effects_executed": false,
+  "simulation_evidence_reused": true
+}

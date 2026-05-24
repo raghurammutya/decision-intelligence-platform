@@ -1231,6 +1231,253 @@ def evaluate_pre_runtime_ga(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_governance_closure(root: Path = ROOT) -> dict[str, Any]:
+    repository = load_json(root / "reports/trust-loop/repository-governance.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    promotion = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    controls_closed = all(
+        [
+            repository.get("required_status_checks_observed") is True,
+            int(repository.get("required_approving_review_count_observed", 0) or 0) >= 1,
+            repository.get("codeowner_review_required_observed") is True,
+            repository.get("admin_enforcement_observed") is True,
+            repository.get("conversation_resolution_required_observed") is True,
+            repository.get("force_pushes_blocked") is True,
+            repository.get("deletions_blocked") is True,
+            repository.get("break_glass_policy_defined") is True,
+            solo_exception.get("exception_valid") is True,
+            promotion.get("release_promotion_chain_valid") is True,
+        ]
+    )
+    return {
+        "schema_version": "governance-closure-evaluation/v1",
+        "evaluation_id": "governance-closure-v3.1-pre-runtime-1",
+        "computed": True,
+        "required_status_checks_observed": repository.get("required_status_checks_observed") is True,
+        "required_review_gate_restored": int(repository.get("required_approving_review_count_observed", 0) or 0) >= 1,
+        "codeowner_review_gate_restored": repository.get("codeowner_review_required_observed") is True,
+        "admin_enforcement_observed": repository.get("admin_enforcement_observed") is True,
+        "conversation_resolution_required_observed": repository.get("conversation_resolution_required_observed") is True,
+        "force_pushes_blocked": repository.get("force_pushes_blocked") is True,
+        "deletions_blocked": repository.get("deletions_blocked") is True,
+        "break_glass_policy_defined": repository.get("break_glass_policy_defined") is True,
+        "solo_maintainer_exception_recorded": solo_exception.get("exception_valid") is True,
+        "independent_human_review_observed": solo_exception.get("independent_human_review_observed") is True,
+        "governance_closure_valid": controls_closed,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_external_identity_integration(root: Path = ROOT) -> dict[str, Any]:
+    external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
+    boundary_valid = all(
+        [
+            external_identity.get("external_identity_contract_valid") is True,
+            live_identity_rbac.get("live_identity_rbac_valid") is True,
+            live_identity_rbac.get("permission_satisfies_approval_role") is True,
+            live_identity_rbac.get("decision_scope_authorized") is True,
+        ]
+    )
+    live_ready = (
+        external_identity.get("live_provider_authenticated") is True
+        and live_identity_rbac.get("mfa_claim_observed") is True
+    )
+    return {
+        "schema_version": "external-identity-integration-evaluation/v1",
+        "evaluation_id": "external-identity-integration-v3.2-pre-runtime-1",
+        "computed": True,
+        "contract_valid": external_identity.get("external_identity_contract_valid") is True,
+        "live_rbac_observed": live_identity_rbac.get("live_identity_rbac_valid") is True,
+        "provider": live_identity_rbac.get("provider"),
+        "subject": live_identity_rbac.get("identity_subject"),
+        "permission_sufficient": live_identity_rbac.get("permission_satisfies_approval_role") is True,
+        "decision_scope_authorized": live_identity_rbac.get("decision_scope_authorized") is True,
+        "live_external_idp_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "mfa_claim_observed": live_identity_rbac.get("mfa_claim_observed") is True,
+        "external_identity_boundary_valid": boundary_valid,
+        "external_identity_live_ready": live_ready,
+        "blocked_claim": "live external IdP and MFA claim are not observed",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_external_approval_system(root: Path = ROOT) -> dict[str, Any]:
+    boundary = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
+    approval_system_ready = (
+        boundary.get("live_approval_system_observed") is True
+        and adapter.get("live_approval_system_observed") is True
+    )
+    boundary_valid = all(
+        [
+            boundary.get("external_approval_boundary_valid") is True,
+            adapter.get("external_approval_adapter_valid") is True,
+            boundary.get("decision_approval_separate_from_code_merge") is True,
+            adapter.get("ai_approval_allowed") is False,
+            adapter.get("boundary_compatible") is True,
+        ]
+    )
+    return {
+        "schema_version": "external-approval-system-evaluation/v1",
+        "evaluation_id": "external-approval-system-v3.3-pre-runtime-1",
+        "computed": True,
+        "approval_boundary_valid": boundary.get("external_approval_boundary_valid") is True,
+        "approval_adapter_valid": adapter.get("external_approval_adapter_valid") is True,
+        "decision_approval_separate_from_code_merge": boundary.get("decision_approval_separate_from_code_merge")
+        is True,
+        "ai_approval_allowed": adapter.get("ai_approval_allowed") is True,
+        "live_external_approval_system_observed": boundary.get("live_approval_system_observed") is True
+        or adapter.get("live_approval_system_observed") is True,
+        "external_approval_system_boundary_valid": boundary_valid,
+        "external_approval_system_live_ready": approval_system_ready,
+        "blocked_claim": "live external approval provider is not observed",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_production_case_store_backend(root: Path = ROOT) -> dict[str, Any]:
+    durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
+    durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
+    adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
+    backend_contract_ready = all(
+        [
+            durable_backend.get("durable_evidence_backend_valid") is True,
+            durable_store.get("durable_store_contract_valid") is True,
+            adapter.get("adapter_boundary_valid") is True,
+            durable_backend.get("runtime_backend_invoked") is False,
+        ]
+    )
+    production_backend_observed = (
+        durable_backend.get("production_storage_backend_observed") is True
+        or durable_store.get("production_storage_backend_observed") is True
+        or adapter.get("production_storage_backend_observed") is True
+    )
+    return {
+        "schema_version": "production-case-store-backend-evaluation/v1",
+        "evaluation_id": "production-case-store-backend-v3.4-pre-runtime-1",
+        "computed": True,
+        "append_only_backend_valid": durable_backend.get("append_only_case_write_observed") is True,
+        "content_addressed_records_valid": durable_backend.get("content_addressed_record_observed") is True,
+        "manifest_chain_valid": durable_backend.get("manifest_chain_verification_from_backend") is True,
+        "replay_export_valid": durable_backend.get("replay_export_from_backend") is True,
+        "audit_export_valid": durable_backend.get("audit_export_from_backend") is True,
+        "delete_denied_observed": durable_backend.get("delete_denied_observed") is True,
+        "mutation_denied_observed": durable_backend.get("mutation_denied_observed") is True,
+        "retention_policy_observed": durable_backend.get("retention_policy_observed") is True,
+        "production_storage_backend_observed": production_backend_observed,
+        "production_case_store_contract_ready": backend_contract_ready,
+        "production_case_store_live_ready": production_backend_observed and backend_contract_ready,
+        "blocked_claim": "production durable case store backend is not observed",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_runtime_control_plane(root: Path = ROOT) -> dict[str, Any]:
+    pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
+    promotion = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    controls = [
+        "policy_gate",
+        "approval_gate",
+        "kill_switch",
+        "entitlement_check",
+        "cost_accounting",
+        "observability_trace",
+        "lineage_capture",
+        "replay_hook",
+        "rollback_path",
+    ]
+    controls_defined = pre_runtime_ga.get("pre_runtime_ga_valid") is True and promotion.get("rollback_evidence_valid") is True
+    return {
+        "schema_version": "runtime-control-plane-design/v1",
+        "evaluation_id": "runtime-control-plane-v3.5-pre-runtime-1",
+        "computed": True,
+        "control_count": len(controls),
+        "required_controls": controls,
+        "policy_gate_defined": controls_defined,
+        "approval_gate_defined": controls_defined,
+        "kill_switch_defined": controls_defined,
+        "entitlement_check_defined": controls_defined,
+        "cost_accounting_defined": controls_defined,
+        "observability_trace_defined": controls_defined,
+        "lineage_capture_defined": controls_defined,
+        "replay_hook_defined": controls_defined,
+        "rollback_path_defined": controls_defined,
+        "runtime_control_plane_design_valid": controls_defined,
+        "runtime_authority_grant_allowed": False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_advisory_runtime_pilot(root: Path = ROOT) -> dict[str, Any]:
+    simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
+    runtime_controls = load_json(root / "reports/trust-loop/runtime-control-plane.json")
+    advisory_case_count = int(simulation.get("case_count", 0) or 0)
+    pilot_valid = (
+        simulation.get("computed") is True
+        and advisory_case_count > 0
+        and runtime_controls.get("runtime_control_plane_design_valid") is True
+    )
+    return {
+        "schema_version": "advisory-runtime-pilot-evaluation/v1",
+        "evaluation_id": "advisory-runtime-pilot-v3.6-pre-runtime-1",
+        "computed": True,
+        "pilot_mode": "advisory_only",
+        "advisory_case_count": advisory_case_count,
+        "simulation_evidence_reused": simulation.get("computed") is True,
+        "lineage_capture_observed": pilot_valid,
+        "policy_gate_observed": runtime_controls.get("policy_gate_defined") is True,
+        "approval_gate_observed": runtime_controls.get("approval_gate_defined") is True,
+        "side_effects_executed": False,
+        "production_mutation_executed": False,
+        "advisory_runtime_pilot_valid": pilot_valid,
+        "runtime_execution_requested": False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_limited_runtime_authority_gate(root: Path = ROOT) -> dict[str, Any]:
+    identity = load_json(root / "reports/trust-loop/external-identity-integration.json")
+    approval = load_json(root / "reports/trust-loop/external-approval-system.json")
+    case_store = load_json(root / "reports/trust-loop/production-case-store-backend.json")
+    runtime_controls = load_json(root / "reports/trust-loop/runtime-control-plane.json")
+    advisory = load_json(root / "reports/trust-loop/advisory-runtime-pilot.json")
+    authority_prerequisites = {
+        "runtime_control_plane_design_valid": runtime_controls.get("runtime_control_plane_design_valid") is True,
+        "advisory_runtime_pilot_valid": advisory.get("advisory_runtime_pilot_valid") is True,
+        "live_external_idp_mfa_ready": identity.get("external_identity_live_ready") is True,
+        "live_external_approval_system_ready": approval.get("external_approval_system_live_ready") is True,
+        "production_case_store_live_ready": case_store.get("production_case_store_live_ready") is True,
+    }
+    blocked_reasons = [key for key, value in authority_prerequisites.items() if value is not True]
+    authority_granted = not blocked_reasons
+    return {
+        "schema_version": "limited-runtime-authority-gate/v1",
+        "evaluation_id": "limited-runtime-authority-v4.0-gate-1",
+        "computed": True,
+        "authority_scope": "limited_advisory_to_runtime_gate",
+        "authority_prerequisites": authority_prerequisites,
+        "blocked_reason_count": len(blocked_reasons),
+        "blocked_reasons": blocked_reasons,
+        "advisory_runtime_ready": advisory.get("advisory_runtime_pilot_valid") is True,
+        "limited_runtime_authority_gate_complete": True,
+        "limited_runtime_authority_granted": authority_granted,
+        "runtime_execution_readiness_percent": 0.0 if not authority_granted else 25.0,
+        "production_decision_authority_percent": 0.0,
+        "runtime_integration_authorized": authority_granted,
+        "production_decision_execution_authorized": False,
+        "maturity_claim": "v4_0_authority_gate_complete_authority_blocked"
+        if not authority_granted
+        else "v4_0_limited_runtime_authority_ready",
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -1288,6 +1535,13 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
     promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
     pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
+    governance_closure = load_json(root / "reports/trust-loop/governance-closure.json")
+    identity_integration = load_json(root / "reports/trust-loop/external-identity-integration.json")
+    approval_system = load_json(root / "reports/trust-loop/external-approval-system.json")
+    production_case_store = load_json(root / "reports/trust-loop/production-case-store-backend.json")
+    runtime_control_plane = load_json(root / "reports/trust-loop/runtime-control-plane.json")
+    advisory_pilot = load_json(root / "reports/trust-loop/advisory-runtime-pilot.json")
+    runtime_authority_gate = load_json(root / "reports/trust-loop/limited-runtime-authority-gate.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -1348,6 +1602,41 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "pre_runtime_ga",
             "state": "complete_runtime_blocked",
             "summary": str(pre_runtime_ga.get("pre_runtime_ga_valid")),
+        },
+        {
+            "id": "governance_closure",
+            "state": "ready",
+            "summary": str(governance_closure.get("governance_closure_valid")),
+        },
+        {
+            "id": "external_identity_integration",
+            "state": "blocked",
+            "summary": str(identity_integration.get("external_identity_live_ready")),
+        },
+        {
+            "id": "external_approval_system",
+            "state": "blocked",
+            "summary": str(approval_system.get("external_approval_system_live_ready")),
+        },
+        {
+            "id": "production_case_store_backend",
+            "state": "blocked",
+            "summary": str(production_case_store.get("production_case_store_live_ready")),
+        },
+        {
+            "id": "runtime_control_plane",
+            "state": "designed",
+            "summary": str(runtime_control_plane.get("runtime_control_plane_design_valid")),
+        },
+        {
+            "id": "advisory_runtime_pilot",
+            "state": "ready",
+            "summary": str(advisory_pilot.get("advisory_runtime_pilot_valid")),
+        },
+        {
+            "id": "limited_runtime_authority_gate",
+            "state": "authority_blocked",
+            "summary": str(runtime_authority_gate.get("limited_runtime_authority_granted")),
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -1804,7 +2093,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v4.0.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
@@ -1830,6 +2119,13 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", sou
     durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
     promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
     pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
+    governance_closure = load_json(root / "reports/trust-loop/governance-closure.json")
+    identity_integration = load_json(root / "reports/trust-loop/external-identity-integration.json")
+    approval_system = load_json(root / "reports/trust-loop/external-approval-system.json")
+    production_case_store = load_json(root / "reports/trust-loop/production-case-store-backend.json")
+    runtime_control_plane = load_json(root / "reports/trust-loop/runtime-control-plane.json")
+    advisory_pilot = load_json(root / "reports/trust-loop/advisory-runtime-pilot.json")
+    runtime_authority_gate = load_json(root / "reports/trust-loop/limited-runtime-authority-gate.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -2058,6 +2354,56 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", sou
         "pre_runtime_simulation_diff_complete": pre_runtime_ga.get("simulation_diff_complete") is True,
         "pre_runtime_approval_boundary_complete": pre_runtime_ga.get("approval_boundary_complete") is True,
         "pre_runtime_runtime_blocked": pre_runtime_ga.get("runtime_blocked") is True,
+        "v3_1_governance_closure_observed": governance_closure.get("computed") is True,
+        "v3_1_governance_closure_valid": governance_closure.get("governance_closure_valid") is True,
+        "v3_1_independent_human_review_observed": governance_closure.get("independent_human_review_observed")
+        is True,
+        "v3_2_external_identity_integration_observed": identity_integration.get("computed") is True,
+        "v3_2_external_identity_boundary_valid": identity_integration.get("external_identity_boundary_valid")
+        is True,
+        "v3_2_external_identity_live_ready": identity_integration.get("external_identity_live_ready") is True,
+        "v3_2_live_external_idp_authenticated": identity_integration.get("live_external_idp_authenticated") is True,
+        "v3_2_mfa_claim_observed": identity_integration.get("mfa_claim_observed") is True,
+        "v3_3_external_approval_system_observed": approval_system.get("computed") is True,
+        "v3_3_external_approval_system_boundary_valid": approval_system.get(
+            "external_approval_system_boundary_valid"
+        )
+        is True,
+        "v3_3_external_approval_system_live_ready": approval_system.get("external_approval_system_live_ready")
+        is True,
+        "v3_3_ai_approval_allowed": approval_system.get("ai_approval_allowed") is True,
+        "v3_4_production_case_store_backend_observed": production_case_store.get("computed") is True,
+        "v3_4_production_case_store_contract_ready": production_case_store.get(
+            "production_case_store_contract_ready"
+        )
+        is True,
+        "v3_4_production_case_store_live_ready": production_case_store.get("production_case_store_live_ready")
+        is True,
+        "v3_4_production_storage_backend_observed": production_case_store.get(
+            "production_storage_backend_observed"
+        )
+        is True,
+        "v3_5_runtime_control_plane_observed": runtime_control_plane.get("computed") is True,
+        "v3_5_runtime_control_plane_design_valid": runtime_control_plane.get(
+            "runtime_control_plane_design_valid"
+        )
+        is True,
+        "v3_5_runtime_authority_grant_allowed": runtime_control_plane.get("runtime_authority_grant_allowed")
+        is True,
+        "v3_6_advisory_runtime_pilot_observed": advisory_pilot.get("computed") is True,
+        "v3_6_advisory_runtime_pilot_valid": advisory_pilot.get("advisory_runtime_pilot_valid") is True,
+        "v3_6_advisory_side_effects_executed": advisory_pilot.get("side_effects_executed") is True,
+        "v3_6_production_mutation_executed": advisory_pilot.get("production_mutation_executed") is True,
+        "v4_0_limited_runtime_authority_gate_observed": runtime_authority_gate.get("computed") is True,
+        "v4_0_limited_runtime_authority_gate_complete": runtime_authority_gate.get(
+            "limited_runtime_authority_gate_complete"
+        )
+        is True,
+        "v4_0_limited_runtime_authority_granted": runtime_authority_gate.get(
+            "limited_runtime_authority_granted"
+        )
+        is True,
+        "v4_0_status_label": runtime_authority_gate.get("maturity_claim", "not_generated"),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -2118,6 +2464,24 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", sou
         and promotion_chain.get("release_promotion_chain_valid") is True
         and promotion_chain.get("prod_deployment_executed") is False
         and pre_runtime_ga.get("pre_runtime_ga_valid") is True
+        and governance_closure.get("governance_closure_valid") is True
+        and governance_closure.get("independent_human_review_observed") is False
+        and identity_integration.get("external_identity_boundary_valid") is True
+        and identity_integration.get("external_identity_live_ready") is False
+        and identity_integration.get("mfa_claim_observed") is False
+        and approval_system.get("external_approval_system_boundary_valid") is True
+        and approval_system.get("external_approval_system_live_ready") is False
+        and approval_system.get("ai_approval_allowed") is False
+        and production_case_store.get("production_case_store_contract_ready") is True
+        and production_case_store.get("production_case_store_live_ready") is False
+        and production_case_store.get("production_storage_backend_observed") is False
+        and runtime_control_plane.get("runtime_control_plane_design_valid") is True
+        and runtime_control_plane.get("runtime_authority_grant_allowed") is False
+        and advisory_pilot.get("advisory_runtime_pilot_valid") is True
+        and advisory_pilot.get("side_effects_executed") is False
+        and advisory_pilot.get("production_mutation_executed") is False
+        and runtime_authority_gate.get("limited_runtime_authority_gate_complete") is True
+        and runtime_authority_gate.get("limited_runtime_authority_granted") is False
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -2131,6 +2495,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", sou
             "live external identity MFA claim is observed",
             "production durable case store backend is observed",
             "production promotion deployment was executed",
+            "limited runtime authority is granted",
         ],
     }
 
@@ -2271,6 +2636,23 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Pre-runtime GA observed: `{payload['pre_runtime_ga_observed']}`",
         f"Pre-runtime GA valid: `{payload['pre_runtime_ga_valid']}`",
         f"Pre-runtime GA status: `{payload['pre_runtime_ga_status_label']}`",
+        f"v3.1 governance closure valid: `{payload['v3_1_governance_closure_valid']}`",
+        f"v3.1 independent human review observed: `{payload['v3_1_independent_human_review_observed']}`",
+        f"v3.2 external identity boundary valid: `{payload['v3_2_external_identity_boundary_valid']}`",
+        f"v3.2 external identity live ready: `{payload['v3_2_external_identity_live_ready']}`",
+        f"v3.2 MFA claim observed: `{payload['v3_2_mfa_claim_observed']}`",
+        f"v3.3 external approval boundary valid: `{payload['v3_3_external_approval_system_boundary_valid']}`",
+        f"v3.3 external approval live ready: `{payload['v3_3_external_approval_system_live_ready']}`",
+        f"v3.3 AI approval allowed: `{payload['v3_3_ai_approval_allowed']}`",
+        f"v3.4 production case store contract ready: `{payload['v3_4_production_case_store_contract_ready']}`",
+        f"v3.4 production case store live ready: `{payload['v3_4_production_case_store_live_ready']}`",
+        f"v3.5 runtime control plane design valid: `{payload['v3_5_runtime_control_plane_design_valid']}`",
+        f"v3.5 runtime authority grant allowed: `{payload['v3_5_runtime_authority_grant_allowed']}`",
+        f"v3.6 advisory runtime pilot valid: `{payload['v3_6_advisory_runtime_pilot_valid']}`",
+        f"v3.6 advisory side effects executed: `{payload['v3_6_advisory_side_effects_executed']}`",
+        f"v4.0 limited runtime authority gate complete: `{payload['v4_0_limited_runtime_authority_gate_complete']}`",
+        f"v4.0 limited runtime authority granted: `{payload['v4_0_limited_runtime_authority_granted']}`",
+        f"v4.0 status: `{payload['v4_0_status_label']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -2291,7 +2673,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v3.0.0-pre",
+    version: str = "v4.0.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -2349,6 +2731,20 @@ def write_v0_2_evidence(
     write_json(target / "runtime-readiness-assessment.json", runtime_readiness)
     pre_runtime_ga = evaluate_pre_runtime_ga(root)
     write_json(target / "pre-runtime-ga-acceptance.json", pre_runtime_ga)
+    governance_closure = evaluate_governance_closure(root)
+    write_json(target / "governance-closure.json", governance_closure)
+    identity_integration = evaluate_external_identity_integration(root)
+    write_json(target / "external-identity-integration.json", identity_integration)
+    approval_system = evaluate_external_approval_system(root)
+    write_json(target / "external-approval-system.json", approval_system)
+    production_case_store = evaluate_production_case_store_backend(root)
+    write_json(target / "production-case-store-backend.json", production_case_store)
+    runtime_control_plane = evaluate_runtime_control_plane(root)
+    write_json(target / "runtime-control-plane.json", runtime_control_plane)
+    advisory_pilot = evaluate_advisory_runtime_pilot(root)
+    write_json(target / "advisory-runtime-pilot.json", advisory_pilot)
+    runtime_authority_gate = evaluate_limited_runtime_authority_gate(root)
+    write_json(target / "limited-runtime-authority-gate.json", runtime_authority_gate)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -2377,6 +2773,13 @@ def write_v0_2_evidence(
         "durable_backend": durable_backend,
         "promotion_chain": promotion_chain,
         "pre_runtime_ga": pre_runtime_ga,
+        "governance_closure": governance_closure,
+        "identity_integration": identity_integration,
+        "approval_system": approval_system,
+        "production_case_store": production_case_store,
+        "runtime_control_plane": runtime_control_plane,
+        "advisory_pilot": advisory_pilot,
+        "runtime_authority_gate": runtime_authority_gate,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,
