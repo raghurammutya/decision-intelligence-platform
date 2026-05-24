@@ -32,6 +32,10 @@ ARTIFACTS = [
         "negative_external_approval_fixture",
         "examples/negative/external-approval-github-review-as-decision-approval.json",
     ),
+    ("negative_policy_definitions_unknown_rule", "examples/negative/policy-definitions-unknown-rule.json"),
+    ("negative_policy_definitions_revoked_policy", "examples/negative/policy-definitions-revoked-policy.json"),
+    ("negative_policy_definitions_production_authority", "examples/negative/policy-definitions-production-authority.json"),
+    ("negative_policy_definitions_missing_required_evidence", "examples/negative/policy-definitions-missing-required-evidence.json"),
     ("negative_durable_case_store_adapter", "examples/negative/durable-case-store-mutable-adapter.json"),
     ("negative_durable_case_store_missing_hash_chain", "examples/negative/durable-case-store-missing-hash-chain.json"),
     ("negative_durable_case_store_delete_enabled", "examples/negative/durable-case-store-delete-enabled.json"),
@@ -43,6 +47,7 @@ ARTIFACTS = [
     ("operational_risk_case_set", "examples/operational-risk-triage-cases.json"),
     ("shared_context_contract", "examples/shared-context-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
+    ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
     ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
     ("capability_governance", "reports/trust-loop/capability-governance.json"),
@@ -148,29 +153,74 @@ def _gh_branch_protection(root: Path, branch: str) -> dict[str, Any]:
 
 
 def compute_policy_preflight(root: Path = ROOT) -> dict[str, Any]:
+    engine = compute_policy_engine(root)
+    spec = load_json(root / "examples/support-ticket-routing-decision-spec.json")
+    return {
+        "schema_version": "policy-preflight/v1",
+        "preflight_id": "computed-preflight-support-ticket-routing-1",
+        "decision_id": spec.get("decision_id"),
+        "decision_version": spec.get("decision_version"),
+        "result": engine["result"],
+        "computed": True,
+        "policy_set_id": engine["policy_set_id"],
+        "policy_set_version": engine["policy_set_version"],
+        "evaluated_policies": engine["evaluated_policies"],
+        "violated_policies": engine["violated_policies"],
+        "required_approvals": engine["required_approvals"],
+        "missing_evidence": engine["missing_evidence"],
+        "environment_restrictions": ["prod"] if spec.get("environment_scope", {}).get("production_allowed") is False else [],
+        "side_effect_restrictions": ["simulation_only"],
+        "remediation_guidance": engine["remediation_guidance"],
+        "ai_override_allowed": False,
+    }
+
+
+def compute_policy_engine(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
     spec = load_json(examples / "support-ticket-routing-decision-spec.json")
     policies = load_json(examples / "support-ticket-policy-definitions.json")
     denied: list[str] = []
+    escalated: list[str] = []
     approval_required: list[str] = []
     missing_evidence: list[str] = []
     evaluated = []
+    supported_rule_types = set(policies.get("supported_rule_types", []))
+    compatibility_errors = []
     for policy in policies.get("policies", []):
         rule = policy.get("rule_type")
         policy_id = str(policy.get("policy_id", ""))
         decision = str(policy.get("decision", ""))
-        evaluated.append({"policy_id": policy_id, "version": policy.get("version"), "rule_type": rule})
+        lifecycle = str(policy.get("lifecycle_status", ""))
+        policy_record = {
+            "policy_id": policy_id,
+            "version": policy.get("version"),
+            "lifecycle_status": lifecycle,
+            "rule_type": rule,
+            "decision": decision,
+            "matched": False,
+        }
+        if lifecycle not in {"active", "deprecated"}:
+            compatibility_errors.append(f"{policy_id}: inactive policy cannot participate")
+            evaluated.append(policy_record)
+            continue
+        if rule not in supported_rule_types:
+            compatibility_errors.append(f"{policy_id}: unsupported rule type")
+            evaluated.append(policy_record)
+            continue
         if rule == "production_allowed_false" and spec.get("environment_scope", {}).get("production_allowed") is not False:
+            policy_record["matched"] = True
             denied.append(policy_id)
         elif rule == "side_effects_simulation_only":
             for side_effect in spec.get("side_effects", []):
                 if side_effect.get("mode") != "simulation_only":
+                    policy_record["matched"] = True
                     denied.append(policy_id)
                     break
         elif rule == "approval_required_for_risk_tier":
             risk_tier = int(spec.get("risk", {}).get("risk_tier", 0) or 0)
             approval = spec.get("approval", {})
             if risk_tier >= int(policy.get("minimum_risk_tier", 0) or 0):
+                policy_record["matched"] = True
                 if approval.get("required") is True:
                     approval_required.extend(approval.get("approver_roles", []))
                 else:
@@ -181,26 +231,48 @@ def compute_policy_preflight(root: Path = ROOT) -> dict[str, Any]:
                 if evidence not in declared:
                     missing_evidence.append(evidence)
             if missing_evidence and decision == "approval_required":
+                policy_record["matched"] = True
                 approval_required.append("evidence-owner")
+        elif rule == "escalate_for_risk_tier":
+            risk_tier = int(spec.get("risk", {}).get("risk_tier", 0) or 0)
+            if risk_tier >= int(policy.get("minimum_risk_tier", 0) or 0):
+                policy_record["matched"] = True
+                escalated.append(policy_id)
+        evaluated.append(policy_record)
 
-    result = "denied" if denied else "approval_required" if approval_required or missing_evidence else "allowed"
+    result = "denied" if denied or compatibility_errors else "escalate" if escalated else "approval_required" if approval_required or missing_evidence else "allowed"
     return {
-        "schema_version": "policy-preflight/v1",
-        "preflight_id": "computed-preflight-support-ticket-routing-1",
+        "schema_version": "policy-engine-evaluation/v1",
+        "evaluation_id": "policy-engine-v2.5-pre-runtime-1",
         "decision_id": spec.get("decision_id"),
         "decision_version": spec.get("decision_version"),
         "result": result,
         "computed": True,
         "policy_set_id": policies.get("policy_set_id"),
         "policy_set_version": policies.get("policy_set_version"),
+        "supported_rule_type_count": len(supported_rule_types),
+        "outcome_precedence": policies.get("outcome_precedence", []),
+        "deny_precedence_enforced": policies.get("outcome_precedence", [None])[0] == "deny",
+        "escalate_outcome_supported": "escalate" in policies.get("outcome_precedence", []),
+        "active_policy_count": len([policy for policy in policies.get("policies", []) if policy.get("lifecycle_status") == "active"]),
+        "revoked_policy_count": len([policy for policy in policies.get("policies", []) if policy.get("lifecycle_status") == "revoked"]),
         "evaluated_policies": evaluated,
         "violated_policies": denied,
+        "escalated_policies": escalated,
         "required_approvals": sorted(set(approval_required)),
         "missing_evidence": sorted(set(missing_evidence)),
-        "environment_restrictions": ["prod"] if spec.get("environment_scope", {}).get("production_allowed") is False else [],
-        "side_effect_restrictions": ["simulation_only"],
+        "compatibility_errors": compatibility_errors,
+        "policy_compatibility_valid": not compatibility_errors,
         "remediation_guidance": ["Record required approvals before release evidence is accepted."],
+        "policy_engine_valid": not compatibility_errors
+        and policies.get("outcome_precedence", [None])[0] == "deny"
+        and "escalate" in policies.get("outcome_precedence", [])
+        and len(supported_rule_types) >= 5
+        and all(policy.get("lifecycle_status") in {"active", "deprecated"} for policy in policies.get("policies", []))
+        and result == "approval_required",
         "ai_override_allowed": False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
     }
 
 
@@ -888,6 +960,7 @@ def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
 
 def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
     simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     approval = load_json(root / "reports/trust-loop/approval-record.json")
@@ -903,6 +976,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
+        {"id": "policy_engine", "state": "ready", "summary": policy_engine.get("result")},
         {"id": "simulation_evidence", "state": "ready", "summary": f"{simulation.get('case_count')} cases"},
         {"id": "decision_diff", "state": "ready", "summary": f"{decision_diff.get('changed_outcome_count')} changed outcomes"},
         {"id": "approval_record", "state": "ready", "summary": approval.get("decision")},
@@ -1329,9 +1403,10 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v2.4.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v2.5.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
     simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
     decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
     manifest = load_json(root / "reports/trust-loop/case-manifest.json")
@@ -1362,6 +1437,15 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.4.0-pre", sou
         "validation_record_count": validation["record_count"],
         "computed_policy_preflight_observed": preflight.get("computed") is True,
         "computed_policy_preflight_result": preflight.get("result"),
+        "computed_policy_engine_observed": policy_engine.get("computed") is True,
+        "computed_policy_engine_result": policy_engine.get("result"),
+        "policy_engine_valid": policy_engine.get("policy_engine_valid") is True,
+        "policy_engine_supported_rule_type_count": policy_engine.get("supported_rule_type_count", 0),
+        "policy_engine_active_policy_count": policy_engine.get("active_policy_count", 0),
+        "policy_engine_revoked_policy_count": policy_engine.get("revoked_policy_count", 0),
+        "policy_engine_deny_precedence_enforced": policy_engine.get("deny_precedence_enforced") is True,
+        "policy_engine_escalate_outcome_supported": policy_engine.get("escalate_outcome_supported") is True,
+        "policy_engine_compatibility_valid": policy_engine.get("policy_compatibility_valid") is True,
         "computed_simulation_observed": simulation.get("computed") is True,
         "computed_simulation_case_count": simulation.get("case_count", 0),
         "computed_simulation_domain_count": simulation.get("domain_count", 0),
@@ -1482,6 +1566,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.4.0-pre", sou
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
         and preflight.get("computed") is True
+        and policy_engine.get("policy_engine_valid") is True
+        and policy_engine.get("result") == preflight.get("result")
+        and policy_engine.get("revoked_policy_count", 1) == 0
+        and policy_engine.get("deny_precedence_enforced") is True
+        and policy_engine.get("escalate_outcome_supported") is True
+        and policy_engine.get("policy_compatibility_valid") is True
         and simulation.get("computed") is True
         and decision_diff.get("computed") is True
         and int(simulation.get("domain_count", 0) or 0) >= 3
@@ -1538,6 +1628,15 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Validation passed: `{payload['validation_passed']}`",
         f"Computed policy preflight observed: `{payload['computed_policy_preflight_observed']}`",
         f"Computed policy preflight result: `{payload['computed_policy_preflight_result']}`",
+        f"Computed policy engine observed: `{payload['computed_policy_engine_observed']}`",
+        f"Computed policy engine result: `{payload['computed_policy_engine_result']}`",
+        f"Policy engine valid: `{payload['policy_engine_valid']}`",
+        f"Policy engine supported rule types: `{payload['policy_engine_supported_rule_type_count']}`",
+        f"Policy engine active policies: `{payload['policy_engine_active_policy_count']}`",
+        f"Policy engine revoked policies: `{payload['policy_engine_revoked_policy_count']}`",
+        f"Policy engine deny precedence enforced: `{payload['policy_engine_deny_precedence_enforced']}`",
+        f"Policy engine escalate outcome supported: `{payload['policy_engine_escalate_outcome_supported']}`",
+        f"Policy engine compatibility valid: `{payload['policy_engine_compatibility_valid']}`",
         f"Computed simulation observed: `{payload['computed_simulation_observed']}`",
         f"Computed simulation cases: `{payload['computed_simulation_case_count']}`",
         f"Computed simulation domains: `{payload['computed_simulation_domain_count']}`",
@@ -1643,10 +1742,12 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v2.4.0-pre",
+    version: str = "v2.5.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
+    policy_engine = compute_policy_engine(root)
+    write_json(target / "computed-policy-engine.json", policy_engine)
     preflight = compute_policy_preflight(root)
     write_json(target / "computed-policy-preflight.json", preflight)
     simulation = compute_simulation(root)
@@ -1698,6 +1799,7 @@ def write_v0_2_evidence(
     write_release_acceptance_markdown(release_dir / "release-acceptance.md", release)
     return {
         "preflight": preflight,
+        "policy_engine": policy_engine,
         "simulation": simulation,
         "decision_diff": decision_diff,
         "capability_governance": capability_governance,

@@ -3,6 +3,7 @@
   "completed_steps": [
     "validate_spec",
     "load_capability_registry",
+    "compute_policy_engine",
     "compute_policy_preflight",
     "compute_simulation_evidence",
     "compute_decision_diff",

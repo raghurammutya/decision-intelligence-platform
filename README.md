@@ -137,3 +137,15 @@ replay export, and audit export operations. It also validates denied mutation
 operations and adds negative fixtures for missing hash-chain enforcement,
 delete-enabled behavior, and weak retention. This remains pre-runtime evidence:
 no production storage backend is observed and no runtime backend is invoked.
+
+## v2.5 Policy Engine Hardening
+
+```bash
+python3 -m dip_framework release-pack --version v2.5.0-pre
+```
+
+v2.5 hardens deterministic policy evaluation with policy lifecycle status,
+supported rule-type compatibility, deterministic outcome precedence, escalation
+support, and negative fixtures for unknown rules, revoked policies,
+runtime/production authority claims, and missing required evidence. AI override,
+runtime integration, and production decision authority remain blocked.

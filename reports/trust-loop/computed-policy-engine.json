@@ -1,11 +1,13 @@
 {
+  "active_policy_count": 5,
   "ai_override_allowed": false,
+  "compatibility_errors": [],
   "computed": true,
   "decision_id": "support-ticket-routing",
   "decision_version": "1.0.0",
-  "environment_restrictions": [
-    "prod"
-  ],
+  "deny_precedence_enforced": true,
+  "escalate_outcome_supported": true,
+  "escalated_policies": [],
   "evaluated_policies": [
     {
       "decision": "deny",
@@ -48,10 +50,19 @@
       "version": "1.0.0"
     }
   ],
+  "evaluation_id": "policy-engine-v2.5-pre-runtime-1",
   "missing_evidence": [],
+  "outcome_precedence": [
+    "deny",
+    "escalate",
+    "approval_required",
+    "allow"
+  ],
+  "policy_compatibility_valid": true,
+  "policy_engine_valid": true,
   "policy_set_id": "support-ticket-routing-policy-set",
   "policy_set_version": "2.5.0-pre",
-  "preflight_id": "computed-preflight-support-ticket-routing-1",
+  "production_decision_execution_authorized": false,
   "remediation_guidance": [
     "Record required approvals before release evidence is accepted."
   ],
@@ -59,9 +70,9 @@
     "support-platform-owner"
   ],
   "result": "approval_required",
-  "schema_version": "policy-preflight/v1",
-  "side_effect_restrictions": [
-    "simulation_only"
-  ],
+  "revoked_policy_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "policy-engine-evaluation/v1",
+  "supported_rule_type_count": 5,
   "violated_policies": []
 }

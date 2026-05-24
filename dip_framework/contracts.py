@@ -43,7 +43,11 @@ REQUIRED = {
         "schema_version",
         "policy_set_id",
         "policy_set_version",
+        "supported_rule_types",
+        "outcome_precedence",
         "policies",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
     ],
     "simulation": [
         "schema_version",
@@ -283,11 +287,30 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
         errors.append("decision diff cannot request runtime execution")
     if kind == "policy_definitions":
         policies = payload.get("policies", [])
+        supported_rule_types = set(payload.get("supported_rule_types", []))
+        if payload.get("outcome_precedence") != ["deny", "escalate", "approval_required", "allow"]:
+            errors.append("policy definitions must declare deterministic outcome precedence")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("policy definitions cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("policy definitions cannot authorize production decisions")
         if not policies:
             errors.append("policy definitions must include at least one policy")
         for policy in policies:
-            if policy.get("decision") not in {"allow", "approval_required", "deny"}:
+            if policy.get("decision") not in {"allow", "approval_required", "deny", "escalate"}:
                 errors.append(f"policy {policy.get('policy_id')} has invalid decision")
+            if policy.get("lifecycle_status") not in {"draft", "active", "deprecated"}:
+                errors.append(f"policy {policy.get('policy_id')} has invalid lifecycle status")
+            if policy.get("lifecycle_status") == "revoked":
+                errors.append(f"policy {policy.get('policy_id')} is revoked")
+            if policy.get("rule_type") not in supported_rule_types:
+                errors.append(f"policy {policy.get('policy_id')} has unknown rule type")
+            if policy.get("rule_type") == "required_evidence_present" and not policy.get("required_evidence"):
+                errors.append(f"policy {policy.get('policy_id')} missing required evidence")
+            if policy.get("runtime_integration_authorized") is True:
+                errors.append(f"policy {policy.get('policy_id')} cannot authorize runtime integration")
+            if policy.get("production_decision_execution_authorized") is True:
+                errors.append(f"policy {policy.get('policy_id')} cannot authorize production decisions")
     if kind == "approval" and payload.get("ai_approved") is not False:
         errors.append("approval cannot be AI-approved")
     if kind == "identity_rbac_registry":

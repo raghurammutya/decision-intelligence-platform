@@ -1,0 +1,19 @@
+{
+  "schema_version": "policy-definitions/v1",
+  "policy_set_id": "negative-revoked-policy-set",
+  "policy_set_version": "0.0.0-negative",
+  "supported_rule_types": ["production_allowed_false"],
+  "outcome_precedence": ["deny", "escalate", "approval_required", "allow"],
+  "policies": [
+    {
+      "policy_id": "revoked-policy",
+      "version": "0.0.0-negative",
+      "lifecycle_status": "revoked",
+      "decision": "deny",
+      "rule_type": "production_allowed_false",
+      "message": "Revoked policies must not participate in admission."
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

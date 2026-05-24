@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 35,
+  "artifact_count": 40,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -20,7 +20,7 @@
     {
       "artifact_type": "policy_definitions",
       "path": "examples/support-ticket-policy-definitions.json",
-      "sha256": "a5d9b065a84220c74005240fec55200933d505eba3cea77d5f65ee51950009d5"
+      "sha256": "ef4c57d952c85037569083ea0ad2a1a60b3547ed8de037f71cad2633a965188f"
     },
     {
       "artifact_type": "identity_rbac_registry",
@@ -55,7 +55,7 @@
     {
       "artifact_type": "schema_stability_policy",
       "path": "examples/schema-stability-policy.json",
-      "sha256": "73e5d69f1a22bee6744f0ea51898c8c60e32507fcbfa9de9b282975a171405f4"
+      "sha256": "774990983efef93d82a55226c6b818ffa831ec9a721a4450a4af80a9b35aa9fa"
     },
     {
       "artifact_type": "external_approval_boundary",
@@ -81,6 +81,26 @@
       "artifact_type": "negative_external_approval_fixture",
       "path": "examples/negative/external-approval-github-review-as-decision-approval.json",
       "sha256": "01cf4f5032e293c63417229710d14cbda2f8f9bca38a58dabdffce134ce7c014"
+    },
+    {
+      "artifact_type": "negative_policy_definitions_unknown_rule",
+      "path": "examples/negative/policy-definitions-unknown-rule.json",
+      "sha256": "573450009e50d9b3c4db20487329987617f6574e7ae827b8403e8fc8b8caac10"
+    },
+    {
+      "artifact_type": "negative_policy_definitions_revoked_policy",
+      "path": "examples/negative/policy-definitions-revoked-policy.json",
+      "sha256": "27e683c0e103fa7c64d1fdf81f7ad414f2e18b97a28cf0ecfdc0c42cff499e54"
+    },
+    {
+      "artifact_type": "negative_policy_definitions_production_authority",
+      "path": "examples/negative/policy-definitions-production-authority.json",
+      "sha256": "8e7cd3ce8565b22cd08b108d86bfdc48389634470527bf06487fd5369f7aa1a0"
+    },
+    {
+      "artifact_type": "negative_policy_definitions_missing_required_evidence",
+      "path": "examples/negative/policy-definitions-missing-required-evidence.json",
+      "sha256": "445a428351694d957399957b707fa1d25dce4e143c2b9730da3f944fe914e191"
     },
     {
       "artifact_type": "negative_durable_case_store_adapter",
@@ -135,7 +155,12 @@
     {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
-      "sha256": "121100862d63252f726174a9e3d31c37e8431cb290f1fc077400acb4626f25be"
+      "sha256": "16068013badb74ff1e0c2052a27cb6038f515282cee6092c741f14ade3898298"
+    },
+    {
+      "artifact_type": "policy_engine",
+      "path": "reports/trust-loop/computed-policy-engine.json",
+      "sha256": "21e4996867d1f8699df3c4aed399f0180e373ecd7dc7a476a04636586ff619ee"
     },
     {
       "artifact_type": "simulation",
@@ -165,7 +190,7 @@
     {
       "artifact_type": "schema_stability",
       "path": "reports/trust-loop/schema-stability.json",
-      "sha256": "eea28c34479e31f349b92907e04eefd6d5fba2556219e628d49b0bb8be0e4946"
+      "sha256": "e9e0a6518de936c5b3afc88bf3f328e78d96be93db35793666b68a07846b04cf"
     },
     {
       "artifact_type": "external_approval_boundary",
@@ -180,11 +205,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "dc318f8b151173937e4877bbffd0e2e6770a4ef386863b1ff53553e27c76aa97",
+  "manifest_hash": "f38db0726c82c56e64a28671f4a0bd1a0514b2d73cea3015900ad891ddc62a28",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "76141e6e44a50d51b30194e68ee54250de9d78cc755785c8626a1dc5edab3b7d",
+  "parent_manifest_hash": "66438d0c2b801138387739c705af23780c68567775041e30348f23636bd12ca6",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

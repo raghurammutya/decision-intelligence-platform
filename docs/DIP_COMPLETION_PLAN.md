@@ -214,6 +214,29 @@ Required evidence:
 - runtime backend remains uninvoked
 - runtime and production authority remain blocked
 
+### v2.5 Policy Engine Hardening
+
+Purpose: move from fixture-shaped policy preflight to a versioned deterministic
+policy evaluator with explicit lifecycle, compatibility, and precedence
+evidence.
+
+This is not a runtime policy engine. It computes pre-runtime policy evidence
+from versioned policy definitions and keeps AI override and runtime authority
+blocked.
+
+Required evidence:
+
+- policy lifecycle status evaluated
+- revoked policies rejected
+- supported rule types declared and checked
+- deterministic outcome precedence declared
+- deny precedence enforced
+- escalation outcome supported
+- required evidence rules validated
+- negative fixtures cover unknown rules, revoked policies, production authority claims, and missing evidence
+- AI override remains blocked
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

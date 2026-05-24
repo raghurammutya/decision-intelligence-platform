@@ -1,7 +1,7 @@
 {
   "schema_version": "schema-stability-policy/v1",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.4.0-pre",
+  "policy_version": "2.5.0-pre",
   "source_boundary": "declared_schema_stability_policy_not_runtime_execution",
   "frozen_contracts": [
     {"kind": "decision_spec", "schema_version": "decision-spec/v1"},
@@ -65,6 +65,26 @@
       "kind": "durable_case_store_adapter",
       "path": "examples/negative/durable-case-store-weak-retention.json",
       "expected_error_contains": "must require at least 365 days retention"
+    },
+    {
+      "kind": "policy_definitions",
+      "path": "examples/negative/policy-definitions-unknown-rule.json",
+      "expected_error_contains": "has unknown rule type"
+    },
+    {
+      "kind": "policy_definitions",
+      "path": "examples/negative/policy-definitions-revoked-policy.json",
+      "expected_error_contains": "is revoked"
+    },
+    {
+      "kind": "policy_definitions",
+      "path": "examples/negative/policy-definitions-production-authority.json",
+      "expected_error_contains": "cannot authorize production decisions"
+    },
+    {
+      "kind": "policy_definitions",
+      "path": "examples/negative/policy-definitions-missing-required-evidence.json",
+      "expected_error_contains": "missing required evidence"
     }
   ],
   "runtime_integration_authorized": false,

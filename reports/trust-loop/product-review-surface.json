@@ -6,13 +6,18 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 14,
+  "surface_count": 15,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
       "id": "decision_review",
       "state": "ready",
       "summary": "support-ticket-routing"
+    },
+    {
+      "id": "policy_engine",
+      "state": "ready",
+      "summary": "approval_required"
     },
     {
       "id": "simulation_evidence",
