@@ -237,6 +237,29 @@ Required evidence:
 - AI override remains blocked
 - runtime and production authority remain blocked
 
+### v2.6 External Approval Adapter Boundary
+
+Purpose: define the external approval adapter contract without claiming a live
+external approval system.
+
+This is not a production approval integration. It defines the adapter
+operations, evidence, lifecycle outcomes, admission controls, and audit
+requirements needed before DIP can rely on an external decision approval
+system.
+
+Required evidence:
+
+- approval request, approve, reject, expire, delegate, revoke, and audit export operations declared
+- AI self-approval, requester self-approval, policy bypass, mutation, and runtime execution operations denied
+- approval request evidence fields complete
+- approval decision evidence fields complete
+- approval lifecycle outcomes complete
+- admission controls complete
+- audit requirements complete
+- adapter remains compatible with the external approval boundary
+- live external approval system remains unobserved
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

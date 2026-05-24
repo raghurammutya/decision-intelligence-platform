@@ -1,7 +1,7 @@
 {
   "schema_version": "schema-stability-policy/v1",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.5.0-pre",
+  "policy_version": "2.6.0-pre",
   "source_boundary": "declared_schema_stability_policy_not_runtime_execution",
   "frozen_contracts": [
     {"kind": "decision_spec", "schema_version": "decision-spec/v1"},
@@ -21,6 +21,7 @@
     {"kind": "replay", "schema_version": "replay-result/v1"},
     {"kind": "solo_maintainer_governance_exception", "schema_version": "solo-maintainer-governance-exception/v1"},
     {"kind": "external_approval_boundary", "schema_version": "external-approval-boundary/v1"},
+    {"kind": "external_approval_adapter", "schema_version": "external-approval-adapter/v1"},
     {"kind": "durable_case_store_adapter", "schema_version": "durable-case-store-adapter/v1"}
   ],
   "compatibility_rules": [
@@ -45,6 +46,11 @@
       "kind": "external_approval_boundary",
       "path": "examples/negative/external-approval-github-review-as-decision-approval.json",
       "expected_error_contains": "cannot treat GitHub review as decision approval"
+    },
+    {
+      "kind": "external_approval_adapter",
+      "path": "examples/negative/external-approval-adapter-ai-self-approval.json",
+      "expected_error_contains": "cannot allow AI self-approval"
     },
     {
       "kind": "durable_case_store_adapter",

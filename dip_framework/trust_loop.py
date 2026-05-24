@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.5.0-pre")
+    write_v0_2_evidence(root, version="v2.6.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -37,6 +37,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
@@ -65,6 +66,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_solo_maintainer_exception",
             "evaluate_schema_stability",
             "evaluate_external_approval_boundary",
+            "evaluate_external_approval_adapter",
             "evaluate_durable_case_store_adapter",
             "evaluate_evidence_store_adapter_parity",
             "assess_runtime_readiness",
@@ -132,6 +134,25 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "decision_approval_separate_from_code_merge"
         )
         is True,
+        "external_approval_adapter_observed": external_approval_adapter.get("computed") is True,
+        "external_approval_adapter_valid": external_approval_adapter.get("external_approval_adapter_valid") is True,
+        "external_approval_adapter_required_operations_complete": external_approval_adapter.get(
+            "required_operations_complete"
+        )
+        is True,
+        "external_approval_adapter_denied_operations_complete": external_approval_adapter.get(
+            "denied_operations_complete"
+        )
+        is True,
+        "external_approval_adapter_decision_lifecycle_complete": external_approval_adapter.get(
+            "decision_lifecycle_complete"
+        )
+        is True,
+        "external_approval_adapter_live_system_observed": external_approval_adapter.get(
+            "live_approval_system_observed"
+        )
+        is True,
+        "external_approval_adapter_ai_approval_allowed": external_approval_adapter.get("ai_approval_allowed") is True,
         "durable_case_store_adapter_observed": durable_adapter.get("computed") is True,
         "durable_case_store_adapter_valid": durable_adapter.get("adapter_boundary_valid") is True,
         "adapter_production_storage_backend_observed": durable_adapter.get("production_storage_backend_observed")
@@ -150,6 +171,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "production decision execution is authorized",
             "independent human review was observed for solo-maintainer merges",
             "live external decision approval system is observed",
+            "live external approval adapter system is observed",
             "production durable case store backend is observed",
         ],
     }
@@ -173,6 +195,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "solo_exception": solo_exception,
         "schema_stability": schema_stability,
         "external_approval": external_approval,
+        "external_approval_adapter": external_approval_adapter,
         "durable_adapter": durable_adapter,
         "adapter_parity": adapter_parity,
         "runtime_readiness": runtime_readiness,
@@ -204,6 +227,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "solo-maintainer-exception.json", payload["solo_exception"])
     write_json(out / "schema-stability.json", payload["schema_stability"])
     write_json(out / "external-approval-boundary.json", payload["external_approval"])
+    write_json(out / "external-approval-adapter.json", payload["external_approval_adapter"])
     write_json(out / "durable-case-store-adapter.json", payload["durable_adapter"])
     write_json(out / "evidence-store-adapter-parity.json", payload["adapter_parity"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
