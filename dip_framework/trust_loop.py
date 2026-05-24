@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.6.0-pre")
+    write_v0_2_evidence(root, version="v2.7.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -31,6 +31,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     repository_governance = load_json(root / "reports/trust-loop/repository-governance.json")
     release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
@@ -60,6 +61,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_repository_governance_policy",
             "evaluate_release_lifecycle_policy",
             "evaluate_external_identity_contract",
+            "evaluate_live_identity_rbac",
             "evaluate_durable_evidence_store_contract",
             "evaluate_capability_governance",
             "evaluate_shared_context_contract",
@@ -114,6 +116,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "external_identity_contract_observed": external_identity.get("computed") is True,
         "external_identity_contract_valid": external_identity.get("external_identity_contract_valid") is True,
         "live_external_identity_provider_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "live_identity_rbac_observed": live_identity_rbac.get("computed") is True,
+        "live_identity_rbac_valid": live_identity_rbac.get("live_identity_rbac_valid") is True,
+        "live_identity_rbac_permission_sufficient": live_identity_rbac.get("permission_satisfies_approval_role")
+        is True,
+        "live_identity_rbac_decision_scope_authorized": live_identity_rbac.get("decision_scope_authorized") is True,
+        "live_identity_rbac_mfa_claim_observed": live_identity_rbac.get("mfa_claim_observed") is True,
         "durable_evidence_store_policy_observed": durable_store.get("computed") is True,
         "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
         "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
@@ -172,6 +180,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "independent human review was observed for solo-maintainer merges",
             "live external decision approval system is observed",
             "live external approval adapter system is observed",
+            "live external identity MFA claim is observed",
             "production durable case store backend is observed",
         ],
     }
@@ -189,6 +198,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,
         "external_identity": external_identity,
+        "live_identity_rbac": live_identity_rbac,
         "durable_store": durable_store,
         "capability_governance": capability_governance,
         "shared_context": shared_context,
@@ -221,6 +231,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "repository-governance.json", payload["repository_governance"])
     write_json(out / "release-lifecycle.json", payload["release_lifecycle"])
     write_json(out / "external-identity.json", payload["external_identity"])
+    write_json(out / "live-identity-rbac.json", payload["live_identity_rbac"])
     write_json(out / "durable-evidence-store.json", payload["durable_store"])
     write_json(out / "capability-governance.json", payload["capability_governance"])
     write_json(out / "shared-context-governance.json", payload["shared_context"])

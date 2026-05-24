@@ -162,3 +162,16 @@ It validates required request and decision evidence, denied self-approval and
 runtime operations, lifecycle outcomes, admission controls, and audit
 requirements. It remains contract-only: no live external approval system,
 runtime integration, or production decision authority is observed.
+
+## v2.7 Live Identity/RBAC Evidence
+
+```bash
+python3 -m dip_framework release-pack --version v2.7.0-pre
+```
+
+v2.7 observes live GitHub identity and repository RBAC evidence for the
+pre-runtime approval authority path. It records the authenticated subject,
+repository permission, and decision-scope authorization, while explicitly
+leaving the external MFA claim unobserved because the available GitHub API path
+does not expose that claim. Runtime integration and production decision
+authority remain blocked.

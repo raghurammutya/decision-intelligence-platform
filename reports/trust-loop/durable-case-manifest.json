@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 43,
+  "artifact_count": 44,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -213,6 +213,11 @@
       "sha256": "f337523f5088d1052b6560a7847831cdf08b04a36c1cc4383f1114d352212e0c"
     },
     {
+      "artifact_type": "live_identity_rbac",
+      "path": "reports/trust-loop/live-identity-rbac.json",
+      "sha256": "7c9e7dc63b97a3d45a3e6f5e06b0e9c4f66e0c3575a58e9d08cf5fb698483104"
+    },
+    {
       "artifact_type": "case_evidence",
       "path": "reports/trust-loop/case-evidence.json",
       "sha256": "41866953e4e036642056c8156abb3633b17380bb847bee678e3667efd2e2feeb"
@@ -220,11 +225,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "8ff1da390273553b833600893a016d9bccd04f5c5f3847d4247068159a5408b6",
+  "manifest_hash": "9ec37708b15e305abc37a72649debbead2bf0e5695d7c60a5f9562b2fcccba3a",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "e1da5632ce099037fb3eef20d675352e8ea2cc59cd741413eb81d54adbb8be8b",
+  "parent_manifest_hash": "de99ae17c2e3b4c6062bc2f864ea4090806c0003f4c518f4c9ac7d21699d8154",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

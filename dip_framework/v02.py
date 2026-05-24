@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -58,6 +59,7 @@ ARTIFACTS = [
     ("schema_stability", "reports/trust-loop/schema-stability.json"),
     ("external_approval_boundary", "reports/trust-loop/external-approval-boundary.json"),
     ("external_approval_adapter", "reports/trust-loop/external-approval-adapter.json"),
+    ("live_identity_rbac", "reports/trust-loop/live-identity-rbac.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
 ]
 
@@ -1062,10 +1064,12 @@ def evaluate_evidence_store_adapter_parity(
 
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
     blockers = [
         "live external identity provider authentication missing",
+        "live external identity MFA claim missing",
         "production durable case store backend missing",
         "promotion chain approval and rollback trail missing",
         "runtime control plane not designed or approved",
@@ -1082,6 +1086,8 @@ def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
         "computed": True,
         "external_identity_contract_valid": external_identity.get("external_identity_contract_valid") is True,
         "live_external_identity_provider_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "live_identity_rbac_valid": live_identity_rbac.get("live_identity_rbac_valid") is True,
+        "live_identity_rbac_mfa_claim_observed": live_identity_rbac.get("mfa_claim_observed") is True,
         "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
         "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
         "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
@@ -1107,6 +1113,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
@@ -1139,6 +1146,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "external_approval_adapter",
             "state": "ready",
             "summary": str(external_approval_adapter.get("external_approval_adapter_valid")),
+        },
+        {
+            "id": "live_identity_rbac",
+            "state": "partial",
+            "summary": f"{live_identity_rbac.get('provider')}:{live_identity_rbac.get('repository_permission')}",
         },
         {
             "id": "durable_case_store_adapter",
@@ -1495,6 +1507,67 @@ def evaluate_durable_evidence_store(root: Path, durable_manifest: dict[str, Any]
     }
 
 
+def _gh_api_json(path: str, root: Path = ROOT) -> tuple[dict[str, Any], str]:
+    result = subprocess.run(
+        ["gh", "api", path],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        return {}, result.stderr.strip()
+    try:
+        return json.loads(result.stdout or "{}"), ""
+    except json.JSONDecodeError as exc:
+        return {}, str(exc)
+
+
+def evaluate_live_identity_rbac(root: Path = ROOT) -> dict[str, Any]:
+    repo = os.environ.get("DIP_GITHUB_REPO", "raghurammutya/decision-intelligence-platform")
+    user, user_error = _gh_api_json("user", root)
+    repo_owner = os.environ.get("GITHUB_REPOSITORY_OWNER") or repo.split("/", 1)[0]
+    login = str(os.environ.get("GITHUB_ACTOR") or user.get("login") or "")
+    permission: dict[str, Any] = {}
+    permission_error = ""
+    if login:
+        permission, permission_error = _gh_api_json(f"repos/{repo}/collaborators/{login}/permission", root)
+    permission_name = str(permission.get("permission") or permission.get("role_name") or "")
+    owner_context_observed = bool(login and repo_owner and login.lower() == repo_owner.lower())
+    effective_permission = permission_name or "owner" if owner_context_observed else permission_name
+    permission_sufficient = permission_name in {"admin", "maintain"} or owner_context_observed
+    live_provider_authenticated = bool(user) or bool(os.environ.get("GITHUB_ACTOR"))
+    live_identity_rbac_valid = live_provider_authenticated and bool(login) and permission_sufficient
+    return {
+        "schema_version": "live-identity-rbac-evidence/v1",
+        "evaluation_id": "live-identity-rbac-v2.7-pre-runtime-1",
+        "computed": True,
+        "provider": "github",
+        "repository": repo,
+        "repository_owner": repo_owner,
+        "live_provider_authenticated": live_provider_authenticated,
+        "identity_subject": login,
+        "identity_id": user.get("id"),
+        "identity_type": user.get("type", ""),
+        "identity_site_admin": user.get("site_admin") is True,
+        "repository_permission_observed": bool(permission) or owner_context_observed,
+        "repository_permission_source": "collaborator_permission_api" if permission else "repository_owner_context",
+        "repository_permission": effective_permission,
+        "repository_role_name": permission.get("role_name", ""),
+        "permission_satisfies_approval_role": permission_sufficient,
+        "decision_scope_authorized": permission_sufficient,
+        "mfa_claim_required": True,
+        "mfa_claim_observed": False,
+        "mfa_claim_source": "not_exposed_by_available_github_api",
+        "external_identity_provider_observed": bool(user),
+        "live_identity_rbac_valid": live_identity_rbac_valid,
+        "observation_errors": [error for error in [user_error, permission_error] if error],
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_approval_record(
     durable_manifest: dict[str, Any],
     approval_authority: dict[str, Any],
@@ -1544,7 +1617,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
@@ -1557,6 +1630,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", sou
     repository_governance = load_json(root / "reports/trust-loop/repository-governance.json")
     release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
@@ -1637,6 +1711,17 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", sou
         "external_identity_contract_observed": external_identity.get("computed") is True,
         "external_identity_contract_valid": external_identity.get("external_identity_contract_valid") is True,
         "live_external_identity_provider_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "live_identity_rbac_observed": live_identity_rbac.get("computed") is True,
+        "live_identity_rbac_provider": live_identity_rbac.get("provider"),
+        "live_identity_rbac_subject": live_identity_rbac.get("identity_subject"),
+        "live_identity_rbac_repository_permission": live_identity_rbac.get("repository_permission"),
+        "live_identity_rbac_permission_sufficient": live_identity_rbac.get(
+            "permission_satisfies_approval_role"
+        )
+        is True,
+        "live_identity_rbac_decision_scope_authorized": live_identity_rbac.get("decision_scope_authorized") is True,
+        "live_identity_rbac_mfa_claim_observed": live_identity_rbac.get("mfa_claim_observed") is True,
+        "live_identity_rbac_valid": live_identity_rbac.get("live_identity_rbac_valid") is True,
         "durable_evidence_store_policy_observed": durable_store.get("computed") is True,
         "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
         "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
@@ -1770,6 +1855,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", sou
         and repository_governance.get("break_glass_policy_defined") is True
         and release_lifecycle.get("release_lifecycle_valid") is True
         and external_identity.get("external_identity_contract_valid") is True
+        and live_identity_rbac.get("live_identity_rbac_valid") is True
+        and live_identity_rbac.get("mfa_claim_observed") is False
         and durable_store.get("durable_store_contract_valid") is True
         and capability_governance.get("capability_governance_valid") is True
         and shared_context.get("shared_context_contract_valid") is True
@@ -1797,6 +1884,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.6.0-pre", sou
             "independent human review was observed for solo-maintainer merges",
             "live external decision approval system is observed",
             "live external approval adapter system is observed",
+            "live external identity MFA claim is observed",
             "production durable case store backend is observed",
         ],
     }
@@ -1851,6 +1939,14 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"External identity contract observed: `{payload['external_identity_contract_observed']}`",
         f"External identity contract valid: `{payload['external_identity_contract_valid']}`",
         f"Live external identity provider authenticated: `{payload['live_external_identity_provider_authenticated']}`",
+        f"Live identity RBAC observed: `{payload['live_identity_rbac_observed']}`",
+        f"Live identity RBAC provider: `{payload['live_identity_rbac_provider']}`",
+        f"Live identity RBAC subject: `{payload['live_identity_rbac_subject']}`",
+        f"Live identity RBAC repository permission: `{payload['live_identity_rbac_repository_permission']}`",
+        f"Live identity RBAC permission sufficient: `{payload['live_identity_rbac_permission_sufficient']}`",
+        f"Live identity RBAC decision scope authorized: `{payload['live_identity_rbac_decision_scope_authorized']}`",
+        f"Live identity RBAC MFA claim observed: `{payload['live_identity_rbac_mfa_claim_observed']}`",
+        f"Live identity RBAC valid: `{payload['live_identity_rbac_valid']}`",
         f"Durable evidence store policy observed: `{payload['durable_evidence_store_policy_observed']}`",
         f"Durable store contract valid: `{payload['durable_store_contract_valid']}`",
         f"Production storage backend observed: `{payload['production_storage_backend_observed']}`",
@@ -1937,7 +2033,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v2.6.0-pre",
+    version: str = "v2.7.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -1961,6 +2057,10 @@ def write_v0_2_evidence(
     write_json(target / "external-approval-boundary.json", external_approval)
     external_approval_adapter = evaluate_external_approval_adapter(root)
     write_json(target / "external-approval-adapter.json", external_approval_adapter)
+    external_identity = evaluate_external_identity(root)
+    write_json(target / "external-identity.json", external_identity)
+    live_identity_rbac = evaluate_live_identity_rbac(root)
+    write_json(target / "live-identity-rbac.json", live_identity_rbac)
     case_evidence = build_case_evidence()
     write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
@@ -1975,8 +2075,6 @@ def write_v0_2_evidence(
     write_json(target / "repository-governance.json", repository_governance)
     release_lifecycle = evaluate_release_lifecycle(root)
     write_json(target / "release-lifecycle.json", release_lifecycle)
-    external_identity = evaluate_external_identity(root)
-    write_json(target / "external-identity.json", external_identity)
     durable_store = evaluate_durable_evidence_store(root, durable_manifest)
     write_json(target / "durable-evidence-store.json", durable_store)
     approval = build_approval_record(durable_manifest, approval_authority)
@@ -2016,6 +2114,7 @@ def write_v0_2_evidence(
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,
         "external_identity": external_identity,
+        "live_identity_rbac": live_identity_rbac,
         "durable_store": durable_store,
         "approval": approval,
         "replay": replay,
