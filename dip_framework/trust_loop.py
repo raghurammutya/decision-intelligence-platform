@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v9.0.0-pre")
+    write_v0_2_evidence(root, version="v10.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -66,6 +66,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     marketplace_runtime = load_json(root / "reports/trust-loop/marketplace-runtime-governance.json")
     shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
     production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
+    completion_plan = load_json(root / "reports/trust-loop/completion-plan-execution.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -122,6 +123,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_marketplace_runtime_governance",
             "evaluate_shared_context_runtime_governance",
             "evaluate_production_authority_readiness_review",
+            "evaluate_completion_plan_execution",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -367,6 +369,21 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "production_decision_authority_granted"
         )
         is True,
+        "v10_0_completion_plan_execution_observed": completion_plan.get("computed") is True,
+        "v10_0_autopilot_execution_review_complete": completion_plan.get(
+            "autopilot_execution_review_complete"
+        )
+        is True,
+        "v10_0_reviewed_step_count": completion_plan.get("reviewed_step_count", 0),
+        "v10_0_evidence_gate_complete_count": completion_plan.get("evidence_gate_complete_count", 0),
+        "v10_0_live_completion_achieved_count": completion_plan.get("live_completion_achieved_count", 0),
+        "v10_0_blocked_live_completion_count": completion_plan.get("blocked_live_completion_count", 0),
+        "v10_0_product_vision_alignment_valid": completion_plan.get("product_vision_alignment_valid") is True,
+        "v10_0_runtime_authority_grant_blocked": completion_plan.get("runtime_authority_grant_blocked") is True,
+        "v10_0_production_decision_authority_blocked": completion_plan.get(
+            "production_decision_authority_blocked"
+        )
+        is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -444,6 +461,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "marketplace_runtime": marketplace_runtime,
         "shared_context_runtime": shared_context_runtime,
         "production_authority": production_authority,
+        "completion_plan": completion_plan,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,
@@ -502,6 +520,7 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "marketplace-runtime-governance.json", payload["marketplace_runtime"])
     write_json(out / "shared-context-runtime-governance.json", payload["shared_context_runtime"])
     write_json(out / "production-authority-readiness-review.json", payload["production_authority"])
+    write_json(out / "completion-plan-execution.json", payload["completion_plan"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
     write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])

@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 42,
+  "surface_count": 43,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -213,6 +213,11 @@
       "id": "production_authority_readiness_review",
       "state": "authority_blocked",
       "summary": "False"
+    },
+    {
+      "id": "completion_plan_execution",
+      "state": "execution_complete_live_authority_blocked",
+      "summary": "9 steps reviewed"
     },
     {
       "id": "runtime_readiness",

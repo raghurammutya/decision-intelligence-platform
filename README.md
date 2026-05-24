@@ -225,7 +225,7 @@ runtime authority:
 ## v4.1-v6.0 Readiness Gates
 
 ```bash
-python3 -m dip_framework release-pack --version v9.0.0-pre
+python3 -m dip_framework release-pack --version v10.0.0-pre
 ```
 
 v4.1 through v6.0 complete the next readiness sequence without granting hidden
@@ -249,7 +249,7 @@ runtime authority:
 ## v6.1-v9.0 Production Authority Readiness Gates
 
 ```bash
-python3 -m dip_framework release-pack --version v9.0.0-pre
+python3 -m dip_framework release-pack --version v10.0.0-pre
 ```
 
 v6.1 through v9.0 complete the production-readiness review sequence without
@@ -272,3 +272,21 @@ granting production decision authority:
   exchange blocked until controlled runtime is authorized.
 - v9.0 records production authority readiness review and keeps production
   decision authority at `0%`.
+
+## v10.0 Completion Plan Execution Review
+
+```bash
+python3 -m dip_framework release-pack --version v10.0.0-pre
+```
+
+v10.0 executes the nine-step completion plan as a review and evidence pass. It
+does not convert missing live prerequisites into readiness:
+
+- all nine completion-plan steps are reviewed;
+- all nine evidence gates remain traceable;
+- live IdP/MFA, live approval provider, production case-store backend, and
+  production promotion remain blocked when not observed;
+- advisory runtime evidence remains recommendation-only;
+- marketplace invocation and shared-context exchange remain blocked until
+  controlled runtime is authorized;
+- production decision authority remains `0%`.

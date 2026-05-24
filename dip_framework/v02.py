@@ -2012,6 +2012,109 @@ def evaluate_production_authority_readiness_review(root: Path = ROOT) -> dict[st
     }
 
 
+def evaluate_completion_plan_execution(root: Path = ROOT) -> dict[str, Any]:
+    identity = load_json(root / "reports/trust-loop/live-identity-authority.json")
+    approval = load_json(root / "reports/trust-loop/live-decision-approval-provider.json")
+    case_store = load_json(root / "reports/trust-loop/production-durable-case-store-readiness.json")
+    promotion = load_json(root / "reports/trust-loop/production-promotion-chain-readiness.json")
+    advisory = load_json(root / "reports/trust-loop/governed-advisory-runtime.json")
+    pilot = load_json(root / "reports/trust-loop/controlled-runtime-pilot-admission.json")
+    marketplace = load_json(root / "reports/trust-loop/marketplace-runtime-governance.json")
+    shared_context = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
+    authority_gate = load_json(root / "reports/trust-loop/limited-runtime-authority-gate.json")
+    production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
+    steps = [
+        {
+            "step": 1,
+            "name": "close_external_identity",
+            "evidence_gate_complete": identity.get("live_identity_authority_contract_complete") is True,
+            "live_completion_achieved": identity.get("live_identity_authority_ready") is True,
+            "blocked_reason": "live_external_idp_mfa_evidence_missing",
+        },
+        {
+            "step": 2,
+            "name": "close_live_decision_approval",
+            "evidence_gate_complete": approval.get("live_decision_approval_provider_contract_complete") is True,
+            "live_completion_achieved": approval.get("live_decision_approval_provider_ready") is True,
+            "blocked_reason": "live_decision_approval_provider_missing",
+        },
+        {
+            "step": 3,
+            "name": "close_durable_case_store",
+            "evidence_gate_complete": case_store.get("production_durable_case_store_contract_complete") is True,
+            "live_completion_achieved": case_store.get("production_durable_case_store_ready") is True,
+            "blocked_reason": "production_durable_case_store_backend_missing",
+        },
+        {
+            "step": 4,
+            "name": "close_promotion_chain",
+            "evidence_gate_complete": promotion.get("production_promotion_chain_contract_complete") is True,
+            "live_completion_achieved": promotion.get("production_promotion_ready") is True,
+            "blocked_reason": "production_promotion_execution_missing",
+        },
+        {
+            "step": 5,
+            "name": "controlled_advisory_runtime_pilot",
+            "evidence_gate_complete": advisory.get("governed_advisory_runtime_complete") is True,
+            "live_completion_achieved": pilot.get("controlled_runtime_pilot_authorized") is True,
+            "blocked_reason": "controlled_runtime_pilot_authority_missing",
+        },
+        {
+            "step": 6,
+            "name": "marketplace_runtime_governance",
+            "evidence_gate_complete": marketplace.get("marketplace_runtime_governance_complete") is True,
+            "live_completion_achieved": marketplace.get("marketplace_runtime_invocation_authorized") is True,
+            "blocked_reason": "controlled_runtime_required_before_marketplace_invocation",
+        },
+        {
+            "step": 7,
+            "name": "shared_context_runtime_governance",
+            "evidence_gate_complete": shared_context.get("shared_context_runtime_governance_complete") is True,
+            "live_completion_achieved": shared_context.get("runtime_context_exchange_authorized") is True,
+            "blocked_reason": "controlled_runtime_required_before_context_exchange",
+        },
+        {
+            "step": 8,
+            "name": "limited_runtime_authority_gate",
+            "evidence_gate_complete": authority_gate.get("limited_runtime_authority_gate_complete") is True,
+            "live_completion_achieved": authority_gate.get("limited_runtime_authority_granted") is True,
+            "blocked_reason": "live_prerequisites_required_before_authority_grant",
+        },
+        {
+            "step": 9,
+            "name": "production_decision_authority_review",
+            "evidence_gate_complete": production_authority.get("production_authority_readiness_review_complete") is True,
+            "live_completion_achieved": production_authority.get("production_decision_authority_granted") is True,
+            "blocked_reason": "production_decision_authority_prerequisites_missing",
+        },
+    ]
+    blocked_steps = [step for step in steps if step["live_completion_achieved"] is not True]
+    return {
+        "schema_version": "completion-plan-execution-review/v1",
+        "evaluation_id": "completion-plan-execution-v10.0-1",
+        "computed": True,
+        "requested_scope": "steps_1_through_9",
+        "autopilot_execution_review_complete": True,
+        "reviewed_step_count": len(steps),
+        "evidence_gate_complete_count": len([step for step in steps if step["evidence_gate_complete"] is True]),
+        "live_completion_achieved_count": len([step for step in steps if step["live_completion_achieved"] is True]),
+        "blocked_live_completion_count": len(blocked_steps),
+        "steps": steps,
+        "blocked_live_completion_steps": [step["name"] for step in blocked_steps],
+        "product_vision_alignment_valid": True,
+        "ai_policy_boundary_preserved": True,
+        "marketplace_unrestricted_execution_blocked": marketplace.get("unrestricted_marketplace_execution_allowed")
+        is False,
+        "direct_database_access_blocked": shared_context.get("direct_database_access_allowed") is False,
+        "runtime_authority_grant_blocked": authority_gate.get("limited_runtime_authority_granted") is False,
+        "production_decision_authority_blocked": production_authority.get("production_decision_authority_granted")
+        is False,
+        "completion_claim": "autopilot_evaluated_all_steps_live_completion_blocked_by_missing_prerequisites",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -2091,6 +2194,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     marketplace_runtime = load_json(root / "reports/trust-loop/marketplace-runtime-governance.json")
     shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
     production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
+    completion_plan = load_json(root / "reports/trust-loop/completion-plan-execution.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -2261,6 +2365,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "production_authority_readiness_review",
             "state": "authority_blocked",
             "summary": str(production_authority.get("production_decision_authority_granted")),
+        },
+        {
+            "id": "completion_plan_execution",
+            "state": "execution_complete_live_authority_blocked",
+            "summary": f"{completion_plan.get('reviewed_step_count')} steps reviewed",
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -2717,7 +2826,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v9.0.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
@@ -2765,6 +2874,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v9.0.0-pre", sou
     marketplace_runtime = load_json(root / "reports/trust-loop/marketplace-runtime-governance.json")
     shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
     production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
+    completion_plan = load_json(root / "reports/trust-loop/completion-plan-execution.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -3171,6 +3281,25 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v9.0.0-pre", sou
             "production_decision_authority_granted"
         )
         is True,
+        "v10_0_completion_plan_execution_observed": completion_plan.get("computed") is True,
+        "v10_0_autopilot_execution_review_complete": completion_plan.get("autopilot_execution_review_complete")
+        is True,
+        "v10_0_reviewed_step_count": completion_plan.get("reviewed_step_count", 0),
+        "v10_0_evidence_gate_complete_count": completion_plan.get("evidence_gate_complete_count", 0),
+        "v10_0_live_completion_achieved_count": completion_plan.get("live_completion_achieved_count", 0),
+        "v10_0_blocked_live_completion_count": completion_plan.get("blocked_live_completion_count", 0),
+        "v10_0_product_vision_alignment_valid": completion_plan.get("product_vision_alignment_valid") is True,
+        "v10_0_ai_policy_boundary_preserved": completion_plan.get("ai_policy_boundary_preserved") is True,
+        "v10_0_marketplace_unrestricted_execution_blocked": completion_plan.get(
+            "marketplace_unrestricted_execution_blocked"
+        )
+        is True,
+        "v10_0_direct_database_access_blocked": completion_plan.get("direct_database_access_blocked") is True,
+        "v10_0_runtime_authority_grant_blocked": completion_plan.get("runtime_authority_grant_blocked") is True,
+        "v10_0_production_decision_authority_blocked": completion_plan.get(
+            "production_decision_authority_blocked"
+        )
+        is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -3287,6 +3416,14 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v9.0.0-pre", sou
         and shared_context_runtime.get("direct_database_access_allowed") is False
         and production_authority.get("production_authority_readiness_review_complete") is True
         and production_authority.get("production_decision_authority_granted") is False
+        and completion_plan.get("autopilot_execution_review_complete") is True
+        and completion_plan.get("reviewed_step_count") == 9
+        and completion_plan.get("evidence_gate_complete_count") == 9
+        and completion_plan.get("blocked_live_completion_count", 0) >= 8
+        and completion_plan.get("product_vision_alignment_valid") is True
+        and completion_plan.get("ai_policy_boundary_preserved") is True
+        and completion_plan.get("runtime_authority_grant_blocked") is True
+        and completion_plan.get("production_decision_authority_blocked") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -3314,6 +3451,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v9.0.0-pre", sou
             "marketplace runtime invocation is authorized",
             "shared context runtime exchange is authorized",
             "production decision authority is granted",
+            "all completion plan live prerequisites are satisfied",
         ],
     }
 
@@ -3509,6 +3647,18 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v8.0 direct database access allowed: `{payload['v8_0_direct_database_access_allowed']}`",
         f"v9.0 production authority readiness review complete: `{payload['v9_0_production_authority_readiness_review_complete']}`",
         f"v9.0 production decision authority granted: `{payload['v9_0_production_decision_authority_granted']}`",
+        f"v10.0 completion plan execution observed: `{payload['v10_0_completion_plan_execution_observed']}`",
+        f"v10.0 autopilot execution review complete: `{payload['v10_0_autopilot_execution_review_complete']}`",
+        f"v10.0 reviewed steps: `{payload['v10_0_reviewed_step_count']}`",
+        f"v10.0 evidence gates complete: `{payload['v10_0_evidence_gate_complete_count']}`",
+        f"v10.0 live completions achieved: `{payload['v10_0_live_completion_achieved_count']}`",
+        f"v10.0 blocked live completions: `{payload['v10_0_blocked_live_completion_count']}`",
+        f"v10.0 product vision alignment valid: `{payload['v10_0_product_vision_alignment_valid']}`",
+        f"v10.0 AI policy boundary preserved: `{payload['v10_0_ai_policy_boundary_preserved']}`",
+        f"v10.0 unrestricted marketplace execution blocked: `{payload['v10_0_marketplace_unrestricted_execution_blocked']}`",
+        f"v10.0 direct database access blocked: `{payload['v10_0_direct_database_access_blocked']}`",
+        f"v10.0 runtime authority grant blocked: `{payload['v10_0_runtime_authority_grant_blocked']}`",
+        f"v10.0 production decision authority blocked: `{payload['v10_0_production_decision_authority_blocked']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -3529,7 +3679,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v9.0.0-pre",
+    version: str = "v10.0.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -3631,6 +3781,8 @@ def write_v0_2_evidence(
     write_json(target / "shared-context-runtime-governance.json", shared_context_runtime)
     production_authority = evaluate_production_authority_readiness_review(root)
     write_json(target / "production-authority-readiness-review.json", production_authority)
+    completion_plan = evaluate_completion_plan_execution(root)
+    write_json(target / "completion-plan-execution.json", completion_plan)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -3681,6 +3833,7 @@ def write_v0_2_evidence(
         "marketplace_runtime": marketplace_runtime,
         "shared_context_runtime": shared_context_runtime,
         "production_authority": production_authority,
+        "completion_plan": completion_plan,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

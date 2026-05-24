@@ -49,6 +49,7 @@
     "evaluate_marketplace_runtime_governance",
     "evaluate_shared_context_runtime_governance",
     "evaluate_production_authority_readiness_review",
+    "evaluate_completion_plan_execution",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

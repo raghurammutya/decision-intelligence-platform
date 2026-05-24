@@ -445,7 +445,7 @@ Required evidence:
 
 ### v4.1-v6.0 Readiness Gates and Platform Hardening
 
-Status: complete on `v9.0.0-pre` as evidence gates and assessments, not
+Status: complete on `v10.0.0-pre` as evidence gates and assessments, not
 production authority.
 
 Purpose: complete the post-v4 readiness sequence while preserving the product
@@ -479,7 +479,7 @@ those live prerequisites are observed and approved.
 
 ### v6.1-v9.0 Production Authority Readiness Gates
 
-Status: complete on `v9.0.0-pre` as evidence gates and readiness review, not
+Status: complete on `v10.0.0-pre` as evidence gates and readiness review, not
 production authority.
 
 Purpose: finish the production authority review path without converting DIP into
@@ -504,6 +504,27 @@ Required evidence:
   hidden shared state remain denied and runtime context exchange remains blocked.
 - v9.0 production authority readiness review is complete; production decision
   authority remains `0%` until every live prerequisite is observed and approved.
+
+### v10.0 Completion Plan Execution Review
+
+Status: complete on `v10.0.0-pre` as an autopilot execution review, not as live
+production readiness.
+
+Purpose: execute the nine-step completion plan end to end, record which steps
+have complete governance gates, and explicitly block any live/runtime/production
+claim whose prerequisite evidence is absent.
+
+Required evidence:
+
+- all nine plan steps are reviewed and recorded;
+- every step has an evidence gate result;
+- live completion remains blocked for unavailable IdP/MFA, approval provider,
+  production durable case-store backend, production promotion execution,
+  controlled runtime, marketplace invocation, shared-context exchange, limited
+  authority, and production decision authority;
+- AI approval, unrestricted marketplace execution, direct database access, and
+  hidden production mutation remain blocked;
+- runtime execution readiness and production decision authority remain `0%`.
 
 ## Completion Gate
 
