@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 20,
-  "record_count": 20,
+  "passed_count": 31,
+  "record_count": 31,
   "records": [
     {
       "errors": [],
@@ -122,6 +122,72 @@
       "kind": "replay",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/support-ticket-replay-result.json"
+    },
+    {
+      "errors": [],
+      "kind": "api_resource_model",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/api-resource-model.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_registry",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-registry.json"
+    },
+    {
+      "errors": [],
+      "kind": "shared_service_certification",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/shared-service-certification.json"
+    },
+    {
+      "errors": [],
+      "kind": "ml_shared_capability_inventory",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/ml-shared-capability-inventory.json"
+    },
+    {
+      "errors": [],
+      "kind": "adapter_evidence_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/adapter-evidence-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_store_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-store-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "runtime_authority_blocked_model",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/runtime-authority-blocked-model.json"
+    },
+    {
+      "errors": [],
+      "kind": "shared_capability_certification_states",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/shared-capability-certification-states.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_contracts",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-contracts.json"
+    },
+    {
+      "errors": [],
+      "kind": "rest_api_contracts",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/rest-api-contracts.json"
+    },
+    {
+      "errors": [],
+      "kind": "event_recovery_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/event-recovery-contract.json"
     }
   ]
 }

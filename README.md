@@ -90,6 +90,22 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
+## v11.0-v15.0 API-First Platform Foundation
+
+```bash
+python3 -m dip_framework release-pack --version v15.0.0-pre
+```
+
+v11.0 adds the API-first modular platform architecture, product-pack registry,
+ML shared-capability inventory, adapter evidence contract, governance-store
+contract, and runtime-authority blocked model. v12.0 adds stateful shared
+capability certification. v13.0 adds explicit product-pack contract gates.
+v14.0 adds REST command/query contracts. v15.0 adds WebSocket event recovery
+contracts with REST recovery twins. These releases remain contract and evidence
+foundation only: no service is certified for runtime use, no product pack has
+runtime authority, WebSocket is not authoritative, and production decision
+execution remains blocked.
+
 ## v2.1 Governance Exception and Schema Stability
 
 ```bash
@@ -290,3 +306,29 @@ does not convert missing live prerequisites into readiness:
 - marketplace invocation and shared-context exchange remain blocked until
   controlled runtime is authorized;
 - production decision authority remains `0%`.
+
+## v11.0 Product-Pack And Shared-Capability Foundation
+
+The next phase should not reinterpret the v10 evidence as platform completion.
+v10 is a pre-runtime governance foundation baseline.
+
+v11 should align DIP with the long-term operating model:
+
+- DIP is the neutral decision-governance foundation.
+- EDI, ML, and future applications are product packs on DIP.
+- Shared services are certified through DIP contracts before reuse.
+- EDI contributes engineering-governance evidence but does not replace DIP's
+  neutral governance store.
+- Common infrastructure is governed and isolated; it is not hidden shared state.
+
+Expected v11 scope:
+
+- API-first modular platform architecture contract
+- product-pack contract
+- EDI engineering-governance product-pack fixture
+- ML trading-decision product-pack fixture
+- support-routing product-pack fixture
+- shared-service certification checklist
+- ML shared-capability inventory
+- DIP governance-store contract
+- runtime authority remains blocked

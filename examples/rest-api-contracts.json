@@ -1,0 +1,85 @@
+{
+  "schema_version": "rest-api-contracts/v1",
+  "contract_id": "dip-rest-api-contracts-v14",
+  "authority": "rest",
+  "required_headers_for_mutations": [
+    "Idempotency-Key",
+    "Correlation-Id"
+  ],
+  "commands_return_resource_ids": true,
+  "queries_return_state_or_projection": true,
+  "resources": [
+    {
+      "resource": "products",
+      "collection_path": "/api/v1/products",
+      "commands": [
+        "register_product"
+      ],
+      "queries": [
+        "get_product",
+        "list_products"
+      ],
+      "evidence_produced": true
+    },
+    {
+      "resource": "product-packs",
+      "collection_path": "/api/v1/product-packs",
+      "commands": [
+        "submit_product_pack"
+      ],
+      "queries": [
+        "get_product_pack",
+        "list_product_packs"
+      ],
+      "evidence_produced": true
+    },
+    {
+      "resource": "simulations",
+      "collection_path": "/api/v1/simulations",
+      "commands": [
+        "start_simulation"
+      ],
+      "queries": [
+        "get_simulation"
+      ],
+      "evidence_produced": true
+    },
+    {
+      "resource": "approvals",
+      "collection_path": "/api/v1/approvals",
+      "commands": [
+        "request_approval",
+        "approve",
+        "reject"
+      ],
+      "queries": [
+        "get_approval"
+      ],
+      "evidence_produced": true
+    },
+    {
+      "resource": "runtime-authority",
+      "collection_path": "/api/v1/runtime-authority",
+      "commands": [
+        "request_authority"
+      ],
+      "queries": [
+        "get_authority_state"
+      ],
+      "evidence_produced": true,
+      "default_state": "blocked"
+    },
+    {
+      "resource": "events",
+      "collection_path": "/api/v1/events",
+      "commands": [],
+      "queries": [
+        "list_events",
+        "get_resource_events"
+      ],
+      "evidence_produced": true
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

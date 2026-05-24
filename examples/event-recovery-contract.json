@@ -1,0 +1,36 @@
+{
+  "schema_version": "event-recovery-contract/v1",
+  "contract_id": "dip-event-recovery-v15",
+  "websocket_endpoint": "/ws/v1/events",
+  "websocket_authoritative": false,
+  "events_mutate_business_state": false,
+  "rest_recovery_required": true,
+  "rest_recovery_endpoints": [
+    "/api/v1/events?after_event_id={event_id}",
+    "/api/v1/resources/{resource_type}/{resource_id}/events",
+    "/api/v1/cases/{case_id}/evidence-pack"
+  ],
+  "required_event_fields": [
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "tenant_id",
+    "product_id",
+    "correlation_id",
+    "resource_type",
+    "resource_id",
+    "resource_uri",
+    "evidence_uri"
+  ],
+  "recoverable_event_types": [
+    "simulation.started",
+    "simulation.completed",
+    "diff.completed",
+    "approval.status_changed",
+    "case.evidence_added",
+    "replay.completed",
+    "runtime_authority.blocked"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

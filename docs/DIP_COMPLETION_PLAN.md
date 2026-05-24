@@ -16,12 +16,94 @@ decision spec -> capability registry -> capability graph -> policy preflight
 This phase does not include runtime execution, marketplace runtime invocation,
 direct production mutation, or live shared-context exchange.
 
+This completion target is a foundation baseline, not the completion of the
+long-term multi-product platform. The next phase must add product-pack
+contracts, shared-service certification, and a neutral DIP governance-store
+model before ML, EDI, or other products are treated as running on a common DIP
+foundation.
+
 ## Operating Rule
 
 EDI may observe DIP evidence, plan safe work, and ingest release artifacts. EDI
 does not drive DIP product scope and is not the DIP runtime.
 
 ## Milestones
+
+### v11.0 API-First Modular Platform Foundation
+
+Status: complete locally on `v11.0.0-pre`.
+
+Purpose: align DIP with API-first modular architecture without forcing a
+microservice topology.
+
+Required evidence:
+
+- REST is authoritative
+- WebSocket is notification and progress only
+- events have REST recovery twins
+- gateway composes UX but does not own truth
+- product packs are explicit
+- shared services are only candidates until certified
+- EDI is an observer/governance product pack, not the universal store
+- ML services are candidate shared capabilities, not the platform foundation
+- runtime authority remains blocked
+
+### v12.0 Shared Capability Certification States
+
+Status: complete locally on `v15.0.0-pre`.
+
+Purpose: define how candidate services move through candidate, observed,
+certified, restricted, and revoked states.
+
+Required evidence:
+
+- no candidate capability claims certification
+- no candidate capability allows runtime invocation
+- promotion evidence requirements are explicit
+- ML services remain candidates or observed assets
+- runtime authority remains blocked
+
+### v13.0 Product-Pack Contracts
+
+Status: complete locally on `v15.0.0-pre`.
+
+Purpose: define how products plug into DIP without direct shared state.
+
+Required evidence:
+
+- each product declares required sections
+- cross-product database access is blocked
+- product runtime authority is none
+- evidence, replay, approvals, shared context, and cost sections are explicit
+
+### v14.0 REST API Contracts
+
+Status: complete locally on `v15.0.0-pre`.
+
+Purpose: define command/query contract evidence before building service
+deployables.
+
+Required evidence:
+
+- REST is the authoritative API layer
+- mutations require `Idempotency-Key` and `Correlation-Id`
+- commands return resource IDs
+- queries return durable state or projections
+- runtime-authority APIs exist but default to blocked
+
+### v15.0 Event Recovery Contracts
+
+Status: complete locally on `v15.0.0-pre`.
+
+Purpose: define realtime behavior without creating a hidden runtime bus.
+
+Required evidence:
+
+- WebSocket is not authoritative
+- events cannot mutate business state
+- REST recovery endpoints are declared
+- events carry resource and evidence references
+- runtime authority remains blocked
 
 ### v1.1 Governance Enforcement Parity
 
@@ -258,6 +340,126 @@ Required evidence:
 - audit requirements complete
 - adapter remains compatible with the external approval boundary
 - live external approval system remains unobserved
+
+## Next Phase: Product-Pack And Shared-Capability Foundation
+
+The next phase should realign DIP from a standalone first-wedge repository into
+the foundation for multiple governed products.
+
+### v11.0 API-First Modular Architecture
+
+Purpose: define DIP as an API-first modular platform architecture without
+forcing a microservice topology on day one.
+
+Required evidence:
+
+- REST is authoritative
+- realtime is notification and progress only
+- every realtime event is recoverable through REST state
+- product resources come before service decomposition
+- gateway composes UX and does not own truth
+- shared capabilities are used through certified contracts for governed decisions
+- adapters return evidence, not only results
+- command/query rules are declared
+- mutation commands require idempotency and correlation identifiers
+- evidence is append-only with reconstructable projections
+- runtime authority APIs are defined but blocked by default
+
+### v11.0 Product Pack Contract
+
+Purpose: define how products run on DIP without merging product runtimes into
+DIP core.
+
+Required evidence:
+
+- product id declared
+- owned decisions declared
+- provided and consumed capabilities declared
+- shared context projections declared
+- required policies declared
+- approval authorities declared
+- emitted evidence declared
+- replay guarantees declared
+- runtime authority level declared
+- cost and entitlement model declared
+- product-local services separated from shared certified services
+- runtime and production authority remain blocked unless separately granted
+
+Initial fixtures:
+
+- EDI engineering-governance product pack
+- ML trading-decision product pack
+- support-routing product pack
+
+### v11.1 Shared-Service Certification
+
+Purpose: prevent ML services or other existing services from becoming shared
+platform dependencies by intent alone.
+
+Required evidence for each candidate shared service:
+
+- neutral contract
+- domain-coupling review
+- authentication and authorization boundary
+- tenant isolation
+- policy hooks
+- audit evidence
+- evidence export
+- replay or reconstruction support
+- failure-mode tests
+- observability
+- cost attribution
+- promotion and rollback evidence
+- service maturity level
+
+### v11.2 ML Shared-Capability Inventory
+
+Purpose: assess ML services as candidate shared capabilities, not as the DIP
+platform foundation.
+
+Candidate services:
+
+- `user_service`
+- `config_service`
+- `api_gateway`
+- `ws_gateway_service`
+- `algo_engine`
+- `ml_runtime_service`
+- `marketplace_service`
+- `alert_service`
+- `comms_service`
+- `calendar_service`
+- `billing_service`
+- Redis
+- Postgres/TimescaleDB
+
+Required classification:
+
+- `do not use`
+- `observe`
+- `adapter candidate`
+- `shared capability candidate`
+
+### v11.3 DIP Governance Store Contract
+
+Purpose: define the neutral DIP governance store so EDI remains an
+engineering-governance product and evidence producer, not the universal
+governance store for all products.
+
+Required records:
+
+- product registry records
+- product-pack versions
+- decision specs
+- capability graph snapshots
+- policy decisions
+- approval records
+- shared context contracts
+- release evidence
+- runtime authority records
+- case evidence
+- replay packs
+- lineage records
 - runtime and production authority remain blocked
 
 ### v2.7 Live Identity/RBAC Evidence

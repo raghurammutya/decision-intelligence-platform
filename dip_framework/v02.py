@@ -49,6 +49,17 @@ ARTIFACTS = [
     ("operational_risk_decision_spec", "examples/operational-risk-triage-decision-spec.json"),
     ("operational_risk_case_set", "examples/operational-risk-triage-cases.json"),
     ("shared_context_contract", "examples/shared-context-contract.json"),
+    ("api_resource_model", "examples/api-resource-model.json"),
+    ("product_pack_registry", "examples/product-pack-registry.json"),
+    ("shared_service_certification", "examples/shared-service-certification.json"),
+    ("ml_shared_capability_inventory", "examples/ml-shared-capability-inventory.json"),
+    ("adapter_evidence_contract", "examples/adapter-evidence-contract.json"),
+    ("governance_store_contract", "examples/governance-store-contract.json"),
+    ("runtime_authority_blocked_model", "examples/runtime-authority-blocked-model.json"),
+    ("shared_capability_certification_states", "examples/shared-capability-certification-states.json"),
+    ("product_pack_contracts", "examples/product-pack-contracts.json"),
+    ("rest_api_contracts", "examples/rest-api-contracts.json"),
+    ("event_recovery_contract", "examples/event-recovery-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -2115,6 +2126,451 @@ def evaluate_completion_plan_execution(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_api_architecture_contract(root: Path = ROOT) -> dict[str, Any]:
+    model = load_json(root / "examples/api-resource-model.json")
+    result = validate_file("api_resource_model", root / "examples/api-resource-model.json")
+    resource_groups = set(model.get("resource_groups", []))
+    required_groups = {
+        "/api/v1/products",
+        "/api/v1/product-packs",
+        "/api/v1/decisions",
+        "/api/v1/capabilities",
+        "/api/v1/policies",
+        "/api/v1/simulations",
+        "/api/v1/diffs",
+        "/api/v1/approvals",
+        "/api/v1/cases",
+        "/api/v1/replay",
+        "/api/v1/shared-context",
+        "/api/v1/governance-store",
+        "/api/v1/runtime-authority",
+        "/api/v1/service-certification",
+        "/api/v1/evidence",
+        "/api/v1/usage",
+        "/api/v1/events",
+    }
+    command_rules = model.get("command_query_rules", {})
+    event_recovery = model.get("event_recovery", {})
+    topology = model.get("deployment_topology", {})
+    return {
+        "schema_version": "api-architecture-evaluation/v1",
+        "evaluation_id": "api-architecture-v11.0-contract-1",
+        "computed": True,
+        "architecture_id": model.get("architecture_id"),
+        "contract_ref": "examples/api-resource-model.json",
+        "contract_valid": result.get("passed") is True,
+        "rest_authoritative": model.get("rest_authoritative") is True,
+        "realtime_authoritative": model.get("realtime_authoritative") is True,
+        "websocket_notification_only": model.get("realtime_authoritative") is False
+        and event_recovery.get("events_can_mutate_business_state") is False,
+        "resource_group_count": len(resource_groups),
+        "required_resource_groups_complete": required_groups.issubset(resource_groups),
+        "command_query_rules_declared": command_rules.get("commands_create_durable_records") is True
+        and command_rules.get("commands_return_resource_ids") is True
+        and command_rules.get("queries_read_state_or_projections") is True,
+        "idempotency_required": "Idempotency-Key" in command_rules.get("required_mutation_headers", []),
+        "correlation_required": "Correlation-Id" in command_rules.get("required_mutation_headers", []),
+        "event_recovery_rest_twin_declared": len(event_recovery.get("rest_recovery_endpoints", [])) >= 2,
+        "gateway_owns_truth": model.get("gateway_boundary", {}).get("gateway_owns_truth") is True,
+        "forced_microservice_topology": topology.get("forced_microservice_topology") is True,
+        "topology_flexible": topology.get("forced_microservice_topology") is False,
+        "runtime_authority_default": model.get("runtime_authority_default"),
+        "production_decision_authority_default": model.get("production_decision_authority_default"),
+        "api_architecture_contract_valid": result.get("passed") is True
+        and model.get("rest_authoritative") is True
+        and model.get("realtime_authoritative") is False
+        and required_groups.issubset(resource_groups)
+        and command_rules.get("commands_create_durable_records") is True
+        and "Idempotency-Key" in command_rules.get("required_mutation_headers", [])
+        and "Correlation-Id" in command_rules.get("required_mutation_headers", [])
+        and event_recovery.get("events_can_mutate_business_state") is False
+        and len(event_recovery.get("rest_recovery_endpoints", [])) >= 2
+        and model.get("gateway_boundary", {}).get("gateway_owns_truth") is False
+        and topology.get("forced_microservice_topology") is False
+        and model.get("runtime_authority_default") == "blocked"
+        and model.get("production_decision_authority_default") == "blocked",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_product_pack_foundation(root: Path = ROOT) -> dict[str, Any]:
+    registry = load_json(root / "examples/product-pack-registry.json")
+    result = validate_file("product_pack_registry", root / "examples/product-pack-registry.json")
+    packs = registry.get("product_packs", [])
+    pack_ids = {pack.get("product_id") for pack in packs}
+    required_pack_ids = {"edi-engineering-governance", "ml-trading-decisions", "support-ticket-routing"}
+    return {
+        "schema_version": "product-pack-foundation-evaluation/v1",
+        "evaluation_id": "product-pack-foundation-v11.0-contract-1",
+        "computed": True,
+        "registry_id": registry.get("registry_id"),
+        "contract_ref": "examples/product-pack-registry.json",
+        "contract_valid": result.get("passed") is True,
+        "product_pack_count": len(packs),
+        "required_product_packs_complete": required_pack_ids.issubset(pack_ids),
+        "edi_product_pack_observed": "edi-engineering-governance" in pack_ids,
+        "ml_product_pack_observed": "ml-trading-decisions" in pack_ids,
+        "support_product_pack_observed": "support-ticket-routing" in pack_ids,
+        "runtime_authority_levels": {
+            str(pack.get("product_id")): pack.get("runtime_authority_level") for pack in packs
+        },
+        "all_product_packs_runtime_blocked": all(pack.get("runtime_authority_level") == "none" for pack in packs),
+        "all_product_packs_emit_evidence": all(bool(pack.get("emitted_evidence")) for pack in packs),
+        "all_product_packs_have_replay_guarantees": all(bool(pack.get("replay_guarantees")) for pack in packs),
+        "product_pack_foundation_valid": result.get("passed") is True
+        and required_pack_ids.issubset(pack_ids)
+        and all(pack.get("runtime_authority_level") == "none" for pack in packs)
+        and all(bool(pack.get("emitted_evidence")) for pack in packs)
+        and all(bool(pack.get("replay_guarantees")) for pack in packs),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_shared_service_certification(root: Path = ROOT) -> dict[str, Any]:
+    certification = load_json(root / "examples/shared-service-certification.json")
+    result = validate_file("shared_service_certification", root / "examples/shared-service-certification.json")
+    services = certification.get("services", [])
+    postures = {service.get("recommended_posture") for service in services}
+    return {
+        "schema_version": "shared-service-certification-evaluation/v1",
+        "evaluation_id": "shared-service-certification-v11.0-contract-1",
+        "computed": True,
+        "certification_id": certification.get("certification_id"),
+        "contract_ref": "examples/shared-service-certification.json",
+        "contract_valid": result.get("passed") is True,
+        "required_evidence_count": len(certification.get("required_evidence", [])),
+        "service_count": len(services),
+        "shared_certified_maturity_defined": "Shared Certified" in certification.get("maturity_levels", []),
+        "adapter_candidate_count": len([service for service in services if service.get("recommended_posture") == "adapter_candidate"]),
+        "observe_count": len([service for service in services if service.get("recommended_posture") == "observe"]),
+        "shared_capability_claimed_count": len(
+            [service for service in services if service.get("current_maturity") in {"Shared Certified", "Platform Critical", "Governance Critical"}]
+        ),
+        "certification_evidence_complete_count": len([service for service in services if service.get("evidence_complete") is True]),
+        "postures_observed": sorted(str(posture) for posture in postures),
+        "shared_service_certification_valid": result.get("passed") is True
+        and "Shared Certified" in certification.get("maturity_levels", [])
+        and len(certification.get("required_evidence", [])) >= 13
+        and all(service.get("evidence_complete") is False for service in services),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_ml_shared_capability_inventory(root: Path = ROOT) -> dict[str, Any]:
+    inventory = load_json(root / "examples/ml-shared-capability-inventory.json")
+    result = validate_file("ml_shared_capability_inventory", root / "examples/ml-shared-capability-inventory.json")
+    capabilities = inventory.get("capabilities", [])
+    counts: dict[str, int] = {}
+    for capability in capabilities:
+        classification = str(capability.get("classification", "unknown"))
+        counts[classification] = counts.get(classification, 0) + 1
+    return {
+        "schema_version": "ml-shared-capability-inventory-evaluation/v1",
+        "evaluation_id": "ml-shared-capability-inventory-v11.0-contract-1",
+        "computed": True,
+        "inventory_id": inventory.get("inventory_id"),
+        "contract_ref": "examples/ml-shared-capability-inventory.json",
+        "contract_valid": result.get("passed") is True,
+        "source_repo": inventory.get("source_repo"),
+        "edi_evidence_source": inventory.get("edi_evidence_source"),
+        "capability_count": len(capabilities),
+        "classification_counts": counts,
+        "adapter_candidate_count": counts.get("adapter_candidate", 0),
+        "observe_count": counts.get("observe", 0),
+        "shared_capability_candidate_count": counts.get("shared_capability_candidate", 0),
+        "algo_engine_observe_first": any(
+            capability.get("asset_id") == "algo_engine" and capability.get("classification") == "observe"
+            for capability in capabilities
+        ),
+        "postgres_timescaledb_shared_candidate": any(
+            capability.get("asset_id") == "postgres_timescaledb"
+            and capability.get("classification") == "shared_capability_candidate"
+            for capability in capabilities
+        ),
+        "ml_inventory_valid": result.get("passed") is True
+        and len(capabilities) >= 10
+        and counts.get("adapter_candidate", 0) >= 5
+        and counts.get("observe", 0) >= 3
+        and any(capability.get("asset_id") == "algo_engine" and capability.get("classification") == "observe" for capability in capabilities),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_adapter_evidence_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/adapter-evidence-contract.json")
+    result = validate_file("adapter_evidence_contract", root / "examples/adapter-evidence-contract.json")
+    return {
+        "schema_version": "adapter-evidence-contract-evaluation/v1",
+        "evaluation_id": "adapter-evidence-contract-v11.0-contract-1",
+        "computed": True,
+        "contract_id": contract.get("contract_id"),
+        "contract_ref": "examples/adapter-evidence-contract.json",
+        "contract_valid": result.get("passed") is True,
+        "adapter_type_count": len(contract.get("adapter_types", [])),
+        "required_evidence_field_count": len(contract.get("required_evidence_fields", [])),
+        "evidence_required": contract.get("evidence_required") is True,
+        "result_without_evidence_allowed": contract.get("result_without_evidence_allowed") is True,
+        "adapter_evidence_contract_valid": result.get("passed") is True
+        and len(contract.get("adapter_types", [])) >= 10
+        and len(contract.get("required_evidence_fields", [])) >= 7
+        and contract.get("evidence_required") is True
+        and contract.get("result_without_evidence_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_governance_store_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/governance-store-contract.json")
+    result = validate_file("governance_store_contract", root / "examples/governance-store-contract.json")
+    return {
+        "schema_version": "governance-store-contract-evaluation/v1",
+        "evaluation_id": "governance-store-contract-v11.0-contract-1",
+        "computed": True,
+        "contract_id": contract.get("contract_id"),
+        "contract_ref": "examples/governance-store-contract.json",
+        "contract_valid": result.get("passed") is True,
+        "required_record_type_count": len(contract.get("required_record_types", [])),
+        "edi_is_universal_governance_store": contract.get("edi_is_universal_governance_store") is True,
+        "append_only_evidence_required": contract.get("append_only_evidence_required") is True,
+        "projection_reconstructable": contract.get("projection_reconstructable") is True,
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "governance_store_contract_valid": result.get("passed") is True
+        and len(contract.get("required_record_types", [])) >= 12
+        and contract.get("edi_is_universal_governance_store") is False
+        and contract.get("append_only_evidence_required") is True
+        and contract.get("projection_reconstructable") is True
+        and contract.get("direct_database_access_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_runtime_authority_blocked_model(root: Path = ROOT) -> dict[str, Any]:
+    model = load_json(root / "examples/runtime-authority-blocked-model.json")
+    result = validate_file("runtime_authority_blocked_model", root / "examples/runtime-authority-blocked-model.json")
+    return {
+        "schema_version": "runtime-authority-blocked-model-evaluation/v1",
+        "evaluation_id": "runtime-authority-blocked-v11.0-contract-1",
+        "computed": True,
+        "model_id": model.get("model_id"),
+        "contract_ref": "examples/runtime-authority-blocked-model.json",
+        "contract_valid": result.get("passed") is True,
+        "runtime_authority": model.get("runtime_authority"),
+        "production_decision_authority": model.get("production_decision_authority"),
+        "blocked_reason_count": len(model.get("blocked_reasons", [])),
+        "runtime_apis_defined": model.get("runtime_apis_defined") is True,
+        "runtime_api_absent": model.get("runtime_api_absent") is True,
+        "authority_granted": model.get("authority_granted") is True,
+        "runtime_authority_blocked_model_valid": result.get("passed") is True
+        and model.get("runtime_authority") == "blocked"
+        and model.get("production_decision_authority") == "blocked"
+        and model.get("runtime_apis_defined") is True
+        and model.get("runtime_api_absent") is False
+        and model.get("authority_granted") is False
+        and len(model.get("blocked_reasons", [])) >= 3,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v11_platform_foundation(root: Path = ROOT) -> dict[str, Any]:
+    api = load_json(root / "reports/trust-loop/api-architecture-contract.json")
+    product_packs = load_json(root / "reports/trust-loop/product-pack-foundation.json")
+    service_certification = load_json(root / "reports/trust-loop/shared-service-certification.json")
+    ml_inventory = load_json(root / "reports/trust-loop/ml-shared-capability-inventory.json")
+    adapter_evidence = load_json(root / "reports/trust-loop/adapter-evidence-contract.json")
+    governance_store = load_json(root / "reports/trust-loop/governance-store-contract.json")
+    runtime_authority = load_json(root / "reports/trust-loop/runtime-authority-blocked-model.json")
+    gates = {
+        "api_architecture_contract_valid": api.get("api_architecture_contract_valid") is True,
+        "product_pack_foundation_valid": product_packs.get("product_pack_foundation_valid") is True,
+        "shared_service_certification_valid": service_certification.get("shared_service_certification_valid") is True,
+        "ml_inventory_valid": ml_inventory.get("ml_inventory_valid") is True,
+        "adapter_evidence_contract_valid": adapter_evidence.get("adapter_evidence_contract_valid") is True,
+        "governance_store_contract_valid": governance_store.get("governance_store_contract_valid") is True,
+        "runtime_authority_blocked_model_valid": runtime_authority.get("runtime_authority_blocked_model_valid") is True,
+    }
+    return {
+        "schema_version": "v11-platform-foundation-evaluation/v1",
+        "evaluation_id": "v11.0-api-product-pack-shared-capability-foundation-1",
+        "computed": True,
+        "foundation_gates": gates,
+        "foundation_gate_count": len(gates),
+        "foundation_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "api_first_modular_architecture_observed": api.get("computed") is True,
+        "product_pack_contract_observed": product_packs.get("computed") is True,
+        "shared_service_certification_observed": service_certification.get("computed") is True,
+        "ml_shared_capability_inventory_observed": ml_inventory.get("computed") is True,
+        "governance_store_contract_observed": governance_store.get("computed") is True,
+        "runtime_authority_blocked": runtime_authority.get("runtime_authority") == "blocked",
+        "forced_microservice_topology": api.get("forced_microservice_topology") is True,
+        "websocket_authority_allowed": api.get("realtime_authoritative") is True,
+        "direct_database_access_allowed": governance_store.get("direct_database_access_allowed") is True,
+        "edi_universal_governance_store": governance_store.get("edi_is_universal_governance_store") is True,
+        "v11_platform_foundation_valid": all(gates.values())
+        and runtime_authority.get("runtime_authority") == "blocked"
+        and api.get("forced_microservice_topology") is False
+        and api.get("websocket_notification_only") is True
+        and governance_store.get("direct_database_access_allowed") is False
+        and governance_store.get("edi_is_universal_governance_store") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_shared_capability_certification_states(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/shared-capability-certification-states.json")
+    result = validate_file("shared_capability_certification_states", root / "examples/shared-capability-certification-states.json")
+    capabilities = contract.get("capabilities", [])
+    states: dict[str, int] = {}
+    for capability in capabilities:
+        state = str(capability.get("state", "unknown"))
+        states[state] = states.get(state, 0) + 1
+    return {
+        "schema_version": "shared-capability-certification-states-evaluation/v1",
+        "evaluation_id": "v12.0-shared-capability-certification-states-1",
+        "computed": True,
+        "contract_id": contract.get("certification_id"),
+        "contract_ref": "examples/shared-capability-certification-states.json",
+        "contract_valid": result.get("passed") is True,
+        "capability_count": len(capabilities),
+        "state_counts": states,
+        "certified_capability_count": contract.get("certified_capability_count", 0),
+        "runtime_invocation_allowed_count": len(
+            [capability for capability in capabilities if capability.get("runtime_invocation_allowed") is True]
+        ),
+        "shared_capability_certification_states_valid": result.get("passed") is True
+        and len(capabilities) >= 4
+        and contract.get("certified_capability_count", 1) == 0
+        and all(capability.get("runtime_invocation_allowed") is False for capability in capabilities),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_product_pack_contracts(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/product-pack-contracts.json")
+    result = validate_file("product_pack_contracts", root / "examples/product-pack-contracts.json")
+    products = contract.get("products", [])
+    return {
+        "schema_version": "product-pack-contracts-evaluation/v1",
+        "evaluation_id": "v13.0-product-pack-contracts-1",
+        "computed": True,
+        "contract_id": contract.get("contract_id"),
+        "contract_ref": "examples/product-pack-contracts.json",
+        "contract_valid": result.get("passed") is True,
+        "product_count": len(products),
+        "required_section_count": len(contract.get("required_sections", [])),
+        "cross_product_database_access_allowed": any(
+            product.get("cross_product_database_access_allowed") is True for product in products
+        ),
+        "runtime_authority_granted_count": len(
+            [product for product in products if product.get("runtime_authority") != "none"]
+        ),
+        "product_pack_contracts_valid": result.get("passed") is True
+        and len(products) >= 3
+        and len(contract.get("required_sections", [])) >= 10
+        and all(product.get("declares_all_required_sections") is True for product in products)
+        and all(product.get("cross_product_database_access_allowed") is False for product in products)
+        and all(product.get("runtime_authority") == "none" for product in products),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_rest_api_contracts(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/rest-api-contracts.json")
+    result = validate_file("rest_api_contracts", root / "examples/rest-api-contracts.json")
+    resources = contract.get("resources", [])
+    return {
+        "schema_version": "rest-api-contracts-evaluation/v1",
+        "evaluation_id": "v14.0-rest-api-contracts-1",
+        "computed": True,
+        "contract_id": contract.get("contract_id"),
+        "contract_ref": "examples/rest-api-contracts.json",
+        "contract_valid": result.get("passed") is True,
+        "resource_count": len(resources),
+        "rest_authoritative": contract.get("authority") == "rest",
+        "idempotency_required": "Idempotency-Key" in contract.get("required_headers_for_mutations", []),
+        "correlation_required": "Correlation-Id" in contract.get("required_headers_for_mutations", []),
+        "all_resources_evidence_producing": all(resource.get("evidence_produced") is True for resource in resources),
+        "runtime_authority_default_blocked": any(
+            resource.get("resource") == "runtime-authority" and resource.get("default_state") == "blocked"
+            for resource in resources
+        ),
+        "rest_api_contracts_valid": result.get("passed") is True
+        and contract.get("authority") == "rest"
+        and len(resources) >= 6
+        and all(resource.get("evidence_produced") is True for resource in resources),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_event_recovery_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/event-recovery-contract.json")
+    result = validate_file("event_recovery_contract", root / "examples/event-recovery-contract.json")
+    return {
+        "schema_version": "event-recovery-contract-evaluation/v1",
+        "evaluation_id": "v15.0-event-recovery-contract-1",
+        "computed": True,
+        "contract_id": contract.get("contract_id"),
+        "contract_ref": "examples/event-recovery-contract.json",
+        "contract_valid": result.get("passed") is True,
+        "websocket_endpoint": contract.get("websocket_endpoint"),
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "events_mutate_business_state": contract.get("events_mutate_business_state") is True,
+        "rest_recovery_required": contract.get("rest_recovery_required") is True,
+        "rest_recovery_endpoint_count": len(contract.get("rest_recovery_endpoints", [])),
+        "required_event_field_count": len(contract.get("required_event_fields", [])),
+        "recoverable_event_type_count": len(contract.get("recoverable_event_types", [])),
+        "event_recovery_contract_valid": result.get("passed") is True
+        and contract.get("websocket_authoritative") is False
+        and contract.get("events_mutate_business_state") is False
+        and contract.get("rest_recovery_required") is True
+        and len(contract.get("rest_recovery_endpoints", [])) >= 3
+        and len(contract.get("required_event_fields", [])) >= 10,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v15_api_foundation(root: Path = ROOT) -> dict[str, Any]:
+    v11 = load_json(root / "reports/trust-loop/v11-platform-foundation.json")
+    v12 = load_json(root / "reports/trust-loop/shared-capability-certification-states.json")
+    v13 = load_json(root / "reports/trust-loop/product-pack-contracts.json")
+    v14 = load_json(root / "reports/trust-loop/rest-api-contracts.json")
+    v15 = load_json(root / "reports/trust-loop/event-recovery-contract.json")
+    gates = {
+        "v11_platform_foundation_valid": v11.get("v11_platform_foundation_valid") is True,
+        "v12_shared_capability_certification_states_valid": v12.get(
+            "shared_capability_certification_states_valid"
+        )
+        is True,
+        "v13_product_pack_contracts_valid": v13.get("product_pack_contracts_valid") is True,
+        "v14_rest_api_contracts_valid": v14.get("rest_api_contracts_valid") is True,
+        "v15_event_recovery_contract_valid": v15.get("event_recovery_contract_valid") is True,
+    }
+    return {
+        "schema_version": "v15-api-foundation-evaluation/v1",
+        "evaluation_id": "v15.0-api-first-product-pack-event-recovery-foundation-1",
+        "computed": True,
+        "foundation_gates": gates,
+        "foundation_gate_count": len(gates),
+        "foundation_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "v15_api_foundation_valid": all(gates.values())
+        and v15.get("websocket_authoritative") is False
+        and v15.get("events_mutate_business_state") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -2875,6 +3331,19 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
     production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
     completion_plan = load_json(root / "reports/trust-loop/completion-plan-execution.json")
+    api_architecture = load_json(root / "reports/trust-loop/api-architecture-contract.json")
+    product_pack_foundation = load_json(root / "reports/trust-loop/product-pack-foundation.json")
+    shared_service_certification = load_json(root / "reports/trust-loop/shared-service-certification.json")
+    ml_shared_capability_inventory = load_json(root / "reports/trust-loop/ml-shared-capability-inventory.json")
+    adapter_evidence = load_json(root / "reports/trust-loop/adapter-evidence-contract.json")
+    governance_store = load_json(root / "reports/trust-loop/governance-store-contract.json")
+    runtime_authority_blocked = load_json(root / "reports/trust-loop/runtime-authority-blocked-model.json")
+    v11_foundation = load_json(root / "reports/trust-loop/v11-platform-foundation.json")
+    shared_capability_certification_states = load_json(root / "reports/trust-loop/shared-capability-certification-states.json")
+    product_pack_contracts = load_json(root / "reports/trust-loop/product-pack-contracts.json")
+    rest_api_contracts = load_json(root / "reports/trust-loop/rest-api-contracts.json")
+    event_recovery_contract = load_json(root / "reports/trust-loop/event-recovery-contract.json")
+    v15_foundation = load_json(root / "reports/trust-loop/v15-api-foundation.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -3300,6 +3769,90 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "production_decision_authority_blocked"
         )
         is True,
+        "v11_0_api_architecture_contract_observed": api_architecture.get("computed") is True,
+        "v11_0_api_architecture_contract_valid": api_architecture.get("api_architecture_contract_valid") is True,
+        "v11_0_rest_authoritative": api_architecture.get("rest_authoritative") is True,
+        "v11_0_websocket_notification_only": api_architecture.get("websocket_notification_only") is True,
+        "v11_0_event_recovery_rest_twin_declared": api_architecture.get("event_recovery_rest_twin_declared")
+        is True,
+        "v11_0_topology_flexible": api_architecture.get("topology_flexible") is True,
+        "v11_0_forced_microservice_topology": api_architecture.get("forced_microservice_topology") is True,
+        "v11_0_product_pack_foundation_observed": product_pack_foundation.get("computed") is True,
+        "v11_0_product_pack_foundation_valid": product_pack_foundation.get("product_pack_foundation_valid")
+        is True,
+        "v11_0_product_pack_count": product_pack_foundation.get("product_pack_count", 0),
+        "v11_0_ml_product_pack_observed": product_pack_foundation.get("ml_product_pack_observed") is True,
+        "v11_0_edi_product_pack_observed": product_pack_foundation.get("edi_product_pack_observed") is True,
+        "v11_0_shared_service_certification_observed": shared_service_certification.get("computed") is True,
+        "v11_0_shared_service_certification_valid": shared_service_certification.get(
+            "shared_service_certification_valid"
+        )
+        is True,
+        "v11_0_service_certification_evidence_complete_count": shared_service_certification.get(
+            "certification_evidence_complete_count", 0
+        ),
+        "v11_0_ml_shared_capability_inventory_observed": ml_shared_capability_inventory.get("computed") is True,
+        "v11_0_ml_shared_capability_inventory_valid": ml_shared_capability_inventory.get("ml_inventory_valid")
+        is True,
+        "v11_0_ml_capability_count": ml_shared_capability_inventory.get("capability_count", 0),
+        "v11_0_algo_engine_observe_first": ml_shared_capability_inventory.get("algo_engine_observe_first")
+        is True,
+        "v11_0_adapter_evidence_contract_observed": adapter_evidence.get("computed") is True,
+        "v11_0_adapter_evidence_contract_valid": adapter_evidence.get("adapter_evidence_contract_valid") is True,
+        "v11_0_governance_store_contract_observed": governance_store.get("computed") is True,
+        "v11_0_governance_store_contract_valid": governance_store.get("governance_store_contract_valid") is True,
+        "v11_0_edi_universal_governance_store": governance_store.get("edi_is_universal_governance_store") is True,
+        "v11_0_direct_database_access_allowed": governance_store.get("direct_database_access_allowed") is True,
+        "v11_0_runtime_authority_blocked_model_observed": runtime_authority_blocked.get("computed") is True,
+        "v11_0_runtime_authority_blocked_model_valid": runtime_authority_blocked.get(
+            "runtime_authority_blocked_model_valid"
+        )
+        is True,
+        "v11_0_runtime_authority_blocked": runtime_authority_blocked.get("runtime_authority") == "blocked",
+        "v11_0_platform_foundation_observed": v11_foundation.get("computed") is True,
+        "v11_0_platform_foundation_valid": v11_foundation.get("v11_platform_foundation_valid") is True,
+        "v11_0_foundation_gate_complete_count": v11_foundation.get("foundation_gate_complete_count", 0),
+        "v11_0_foundation_gate_count": v11_foundation.get("foundation_gate_count", 0),
+        "v12_0_shared_capability_certification_states_observed": shared_capability_certification_states.get(
+            "computed"
+        )
+        is True,
+        "v12_0_shared_capability_certification_states_valid": shared_capability_certification_states.get(
+            "shared_capability_certification_states_valid"
+        )
+        is True,
+        "v12_0_certified_capability_count": shared_capability_certification_states.get(
+            "certified_capability_count", 0
+        ),
+        "v12_0_runtime_invocation_allowed_count": shared_capability_certification_states.get(
+            "runtime_invocation_allowed_count", 0
+        ),
+        "v13_0_product_pack_contracts_observed": product_pack_contracts.get("computed") is True,
+        "v13_0_product_pack_contracts_valid": product_pack_contracts.get("product_pack_contracts_valid") is True,
+        "v13_0_product_count": product_pack_contracts.get("product_count", 0),
+        "v13_0_cross_product_database_access_allowed": product_pack_contracts.get(
+            "cross_product_database_access_allowed"
+        )
+        is True,
+        "v13_0_runtime_authority_granted_count": product_pack_contracts.get("runtime_authority_granted_count", 0),
+        "v14_0_rest_api_contracts_observed": rest_api_contracts.get("computed") is True,
+        "v14_0_rest_api_contracts_valid": rest_api_contracts.get("rest_api_contracts_valid") is True,
+        "v14_0_rest_authoritative": rest_api_contracts.get("rest_authoritative") is True,
+        "v14_0_resource_count": rest_api_contracts.get("resource_count", 0),
+        "v14_0_runtime_authority_default_blocked": rest_api_contracts.get("runtime_authority_default_blocked")
+        is True,
+        "v15_0_event_recovery_contract_observed": event_recovery_contract.get("computed") is True,
+        "v15_0_event_recovery_contract_valid": event_recovery_contract.get("event_recovery_contract_valid")
+        is True,
+        "v15_0_websocket_authoritative": event_recovery_contract.get("websocket_authoritative") is True,
+        "v15_0_events_mutate_business_state": event_recovery_contract.get("events_mutate_business_state")
+        is True,
+        "v15_0_rest_recovery_required": event_recovery_contract.get("rest_recovery_required") is True,
+        "v15_0_rest_recovery_endpoint_count": event_recovery_contract.get("rest_recovery_endpoint_count", 0),
+        "v15_0_api_foundation_observed": v15_foundation.get("computed") is True,
+        "v15_0_api_foundation_valid": v15_foundation.get("v15_api_foundation_valid") is True,
+        "v15_0_foundation_gate_complete_count": v15_foundation.get("foundation_gate_complete_count", 0),
+        "v15_0_foundation_gate_count": v15_foundation.get("foundation_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -3424,6 +3977,38 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and completion_plan.get("ai_policy_boundary_preserved") is True
         and completion_plan.get("runtime_authority_grant_blocked") is True
         and completion_plan.get("production_decision_authority_blocked") is True
+        and api_architecture.get("api_architecture_contract_valid") is True
+        and api_architecture.get("rest_authoritative") is True
+        and api_architecture.get("websocket_notification_only") is True
+        and api_architecture.get("forced_microservice_topology") is False
+        and product_pack_foundation.get("product_pack_foundation_valid") is True
+        and product_pack_foundation.get("ml_product_pack_observed") is True
+        and product_pack_foundation.get("edi_product_pack_observed") is True
+        and shared_service_certification.get("shared_service_certification_valid") is True
+        and shared_service_certification.get("certification_evidence_complete_count", 1) == 0
+        and ml_shared_capability_inventory.get("ml_inventory_valid") is True
+        and ml_shared_capability_inventory.get("algo_engine_observe_first") is True
+        and adapter_evidence.get("adapter_evidence_contract_valid") is True
+        and governance_store.get("governance_store_contract_valid") is True
+        and governance_store.get("edi_is_universal_governance_store") is False
+        and governance_store.get("direct_database_access_allowed") is False
+        and runtime_authority_blocked.get("runtime_authority_blocked_model_valid") is True
+        and runtime_authority_blocked.get("runtime_authority") == "blocked"
+        and v11_foundation.get("v11_platform_foundation_valid") is True
+        and shared_capability_certification_states.get("shared_capability_certification_states_valid") is True
+        and shared_capability_certification_states.get("certified_capability_count", 1) == 0
+        and shared_capability_certification_states.get("runtime_invocation_allowed_count", 1) == 0
+        and product_pack_contracts.get("product_pack_contracts_valid") is True
+        and product_pack_contracts.get("cross_product_database_access_allowed") is False
+        and product_pack_contracts.get("runtime_authority_granted_count", 1) == 0
+        and rest_api_contracts.get("rest_api_contracts_valid") is True
+        and rest_api_contracts.get("rest_authoritative") is True
+        and rest_api_contracts.get("runtime_authority_default_blocked") is True
+        and event_recovery_contract.get("event_recovery_contract_valid") is True
+        and event_recovery_contract.get("websocket_authoritative") is False
+        and event_recovery_contract.get("events_mutate_business_state") is False
+        and event_recovery_contract.get("rest_recovery_required") is True
+        and v15_foundation.get("v15_api_foundation_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -3452,6 +4037,16 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "shared context runtime exchange is authorized",
             "production decision authority is granted",
             "all completion plan live prerequisites are satisfied",
+            "microservice topology is required on day one",
+            "WebSocket events are authoritative",
+            "ML services are the DIP foundation",
+            "EDI is the universal governance store",
+            "shared service certification evidence is complete",
+            "shared ML capabilities are certified",
+            "product packs have runtime authority",
+            "cross-product database access is allowed",
+            "REST API contracts authorize production decisions",
+            "WebSocket events can mutate business state",
         ],
     }
 
@@ -3659,6 +4254,46 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v10.0 direct database access blocked: `{payload['v10_0_direct_database_access_blocked']}`",
         f"v10.0 runtime authority grant blocked: `{payload['v10_0_runtime_authority_grant_blocked']}`",
         f"v10.0 production decision authority blocked: `{payload['v10_0_production_decision_authority_blocked']}`",
+        f"v11.0 API architecture valid: `{payload['v11_0_api_architecture_contract_valid']}`",
+        f"v11.0 REST authoritative: `{payload['v11_0_rest_authoritative']}`",
+        f"v11.0 WebSocket notification only: `{payload['v11_0_websocket_notification_only']}`",
+        f"v11.0 event recovery REST twin declared: `{payload['v11_0_event_recovery_rest_twin_declared']}`",
+        f"v11.0 topology flexible: `{payload['v11_0_topology_flexible']}`",
+        f"v11.0 forced microservice topology: `{payload['v11_0_forced_microservice_topology']}`",
+        f"v11.0 product pack foundation valid: `{payload['v11_0_product_pack_foundation_valid']}`",
+        f"v11.0 product pack count: `{payload['v11_0_product_pack_count']}`",
+        f"v11.0 ML product pack observed: `{payload['v11_0_ml_product_pack_observed']}`",
+        f"v11.0 EDI product pack observed: `{payload['v11_0_edi_product_pack_observed']}`",
+        f"v11.0 shared service certification valid: `{payload['v11_0_shared_service_certification_valid']}`",
+        f"v11.0 service certification evidence complete count: `{payload['v11_0_service_certification_evidence_complete_count']}`",
+        f"v11.0 ML shared capability inventory valid: `{payload['v11_0_ml_shared_capability_inventory_valid']}`",
+        f"v11.0 ML capability count: `{payload['v11_0_ml_capability_count']}`",
+        f"v11.0 algo_engine observe first: `{payload['v11_0_algo_engine_observe_first']}`",
+        f"v11.0 adapter evidence contract valid: `{payload['v11_0_adapter_evidence_contract_valid']}`",
+        f"v11.0 governance store contract valid: `{payload['v11_0_governance_store_contract_valid']}`",
+        f"v11.0 EDI universal governance store: `{payload['v11_0_edi_universal_governance_store']}`",
+        f"v11.0 direct database access allowed: `{payload['v11_0_direct_database_access_allowed']}`",
+        f"v11.0 runtime authority blocked model valid: `{payload['v11_0_runtime_authority_blocked_model_valid']}`",
+        f"v11.0 runtime authority blocked: `{payload['v11_0_runtime_authority_blocked']}`",
+        f"v11.0 platform foundation valid: `{payload['v11_0_platform_foundation_valid']}`",
+        f"v11.0 foundation gates complete: `{payload['v11_0_foundation_gate_complete_count']}/{payload['v11_0_foundation_gate_count']}`",
+        f"v12.0 shared capability certification states valid: `{payload['v12_0_shared_capability_certification_states_valid']}`",
+        f"v12.0 certified capability count: `{payload['v12_0_certified_capability_count']}`",
+        f"v12.0 runtime invocation allowed count: `{payload['v12_0_runtime_invocation_allowed_count']}`",
+        f"v13.0 product pack contracts valid: `{payload['v13_0_product_pack_contracts_valid']}`",
+        f"v13.0 product count: `{payload['v13_0_product_count']}`",
+        f"v13.0 cross-product database access allowed: `{payload['v13_0_cross_product_database_access_allowed']}`",
+        f"v13.0 runtime authority granted count: `{payload['v13_0_runtime_authority_granted_count']}`",
+        f"v14.0 REST API contracts valid: `{payload['v14_0_rest_api_contracts_valid']}`",
+        f"v14.0 REST authoritative: `{payload['v14_0_rest_authoritative']}`",
+        f"v14.0 resource count: `{payload['v14_0_resource_count']}`",
+        f"v14.0 runtime authority default blocked: `{payload['v14_0_runtime_authority_default_blocked']}`",
+        f"v15.0 event recovery contract valid: `{payload['v15_0_event_recovery_contract_valid']}`",
+        f"v15.0 WebSocket authoritative: `{payload['v15_0_websocket_authoritative']}`",
+        f"v15.0 events mutate business state: `{payload['v15_0_events_mutate_business_state']}`",
+        f"v15.0 REST recovery required: `{payload['v15_0_rest_recovery_required']}`",
+        f"v15.0 API foundation valid: `{payload['v15_0_api_foundation_valid']}`",
+        f"v15.0 foundation gates complete: `{payload['v15_0_foundation_gate_complete_count']}/{payload['v15_0_foundation_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -3783,6 +4418,32 @@ def write_v0_2_evidence(
     write_json(target / "production-authority-readiness-review.json", production_authority)
     completion_plan = evaluate_completion_plan_execution(root)
     write_json(target / "completion-plan-execution.json", completion_plan)
+    api_architecture = evaluate_api_architecture_contract(root)
+    write_json(target / "api-architecture-contract.json", api_architecture)
+    product_pack_foundation = evaluate_product_pack_foundation(root)
+    write_json(target / "product-pack-foundation.json", product_pack_foundation)
+    shared_service_certification = evaluate_shared_service_certification(root)
+    write_json(target / "shared-service-certification.json", shared_service_certification)
+    ml_shared_capability_inventory = evaluate_ml_shared_capability_inventory(root)
+    write_json(target / "ml-shared-capability-inventory.json", ml_shared_capability_inventory)
+    adapter_evidence = evaluate_adapter_evidence_contract(root)
+    write_json(target / "adapter-evidence-contract.json", adapter_evidence)
+    governance_store = evaluate_governance_store_contract(root)
+    write_json(target / "governance-store-contract.json", governance_store)
+    runtime_authority_blocked = evaluate_runtime_authority_blocked_model(root)
+    write_json(target / "runtime-authority-blocked-model.json", runtime_authority_blocked)
+    v11_foundation = evaluate_v11_platform_foundation(root)
+    write_json(target / "v11-platform-foundation.json", v11_foundation)
+    shared_capability_certification_states = evaluate_shared_capability_certification_states(root)
+    write_json(target / "shared-capability-certification-states.json", shared_capability_certification_states)
+    product_pack_contracts = evaluate_product_pack_contracts(root)
+    write_json(target / "product-pack-contracts.json", product_pack_contracts)
+    rest_api_contracts = evaluate_rest_api_contracts(root)
+    write_json(target / "rest-api-contracts.json", rest_api_contracts)
+    event_recovery_contract = evaluate_event_recovery_contract(root)
+    write_json(target / "event-recovery-contract.json", event_recovery_contract)
+    v15_foundation = evaluate_v15_api_foundation(root)
+    write_json(target / "v15-api-foundation.json", v15_foundation)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -3834,6 +4495,19 @@ def write_v0_2_evidence(
         "shared_context_runtime": shared_context_runtime,
         "production_authority": production_authority,
         "completion_plan": completion_plan,
+        "api_architecture": api_architecture,
+        "product_pack_foundation": product_pack_foundation,
+        "shared_service_certification": shared_service_certification,
+        "ml_shared_capability_inventory": ml_shared_capability_inventory,
+        "adapter_evidence": adapter_evidence,
+        "governance_store": governance_store,
+        "runtime_authority_blocked": runtime_authority_blocked,
+        "v11_foundation": v11_foundation,
+        "shared_capability_certification_states": shared_capability_certification_states,
+        "product_pack_contracts": product_pack_contracts,
+        "rest_api_contracts": rest_api_contracts,
+        "event_recovery_contract": event_recovery_contract,
+        "v15_foundation": v15_foundation,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

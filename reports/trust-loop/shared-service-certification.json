@@ -1,0 +1,22 @@
+{
+  "adapter_candidate_count": 2,
+  "certification_evidence_complete_count": 0,
+  "certification_id": "dip-shared-service-certification-v11",
+  "computed": true,
+  "contract_ref": "examples/shared-service-certification.json",
+  "contract_valid": true,
+  "evaluation_id": "shared-service-certification-v11.0-contract-1",
+  "observe_count": 1,
+  "postures_observed": [
+    "adapter_candidate",
+    "observe"
+  ],
+  "production_decision_execution_authorized": false,
+  "required_evidence_count": 13,
+  "runtime_integration_authorized": false,
+  "schema_version": "shared-service-certification-evaluation/v1",
+  "service_count": 3,
+  "shared_capability_claimed_count": 0,
+  "shared_certified_maturity_defined": true,
+  "shared_service_certification_valid": true
+}

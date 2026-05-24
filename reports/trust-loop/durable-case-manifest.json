@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 44,
+  "artifact_count": 55,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -163,6 +163,61 @@
       "sha256": "b39d7e62287287e4c8994272a88accb572a397b3b7239ca61061a20294393dae"
     },
     {
+      "artifact_type": "api_resource_model",
+      "path": "examples/api-resource-model.json",
+      "sha256": "9f348cd0e6ca8184ed3352aaf83e2b4a2c3364fcda6962702f49fa9d26b5e2bd"
+    },
+    {
+      "artifact_type": "product_pack_registry",
+      "path": "examples/product-pack-registry.json",
+      "sha256": "75d1e8536bf9459ce3051e29039f2e2c46b77f5ff3b212dacce0b6777518141c"
+    },
+    {
+      "artifact_type": "shared_service_certification",
+      "path": "examples/shared-service-certification.json",
+      "sha256": "52006e908adebe31a8cef734b1852dff2d000184051a62f81678c60f9ad9f928"
+    },
+    {
+      "artifact_type": "ml_shared_capability_inventory",
+      "path": "examples/ml-shared-capability-inventory.json",
+      "sha256": "921e4b3ee6338b694ee9a9a5e19e1855838eb644f5add159f45cd5c591b7927f"
+    },
+    {
+      "artifact_type": "adapter_evidence_contract",
+      "path": "examples/adapter-evidence-contract.json",
+      "sha256": "f9ee48b5cf002ead8d19be9f51287e1e7f5a12fc1a22679ad8a2b2399a3db874"
+    },
+    {
+      "artifact_type": "governance_store_contract",
+      "path": "examples/governance-store-contract.json",
+      "sha256": "72ce8ac7415679edefe902d69053f4d5403c5c176cf7d0357008a70072a30f25"
+    },
+    {
+      "artifact_type": "runtime_authority_blocked_model",
+      "path": "examples/runtime-authority-blocked-model.json",
+      "sha256": "f39c5f0816399ae6945fe2209ebbaaff461fe3cf1e0fc509afd903ee224c4ee8"
+    },
+    {
+      "artifact_type": "shared_capability_certification_states",
+      "path": "examples/shared-capability-certification-states.json",
+      "sha256": "0b8376870006d954d121bae22024456125ca48576ecdd70395ee6c0b7c009c53"
+    },
+    {
+      "artifact_type": "product_pack_contracts",
+      "path": "examples/product-pack-contracts.json",
+      "sha256": "179078026950d7016b88a99ecbef26781e95dd8d1781cd662e2c9e8a4e6f3243"
+    },
+    {
+      "artifact_type": "rest_api_contracts",
+      "path": "examples/rest-api-contracts.json",
+      "sha256": "afd63c8cb4c10755f40ead799970e29be760a21604929fa84579c70ad5dc1850"
+    },
+    {
+      "artifact_type": "event_recovery_contract",
+      "path": "examples/event-recovery-contract.json",
+      "sha256": "3f0446d7819a114febc96a1302138771405d21b1962dbf2cf0f6dd020600c43c"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "16068013badb74ff1e0c2052a27cb6038f515282cee6092c741f14ade3898298"
@@ -225,11 +280,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "9ec37708b15e305abc37a72649debbead2bf0e5695d7c60a5f9562b2fcccba3a",
+  "manifest_hash": "0754a15b64b8db23a37a07d34c01b8daf1a939a924e856331d7cb53ea455d894",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "de99ae17c2e3b4c6062bc2f864ea4090806c0003f4c518f4c9ac7d21699d8154",
+  "parent_manifest_hash": "9710e5d0c2201d9afe63b09ea58381bc691ba54312f2ad61e78f00f67e9e089b",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

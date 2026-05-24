@@ -48,6 +48,19 @@ from dip_framework.v02 import (
     evaluate_repository_governance,
     evaluate_runtime_control_plane,
     evaluate_schema_stability,
+    evaluate_api_architecture_contract,
+    evaluate_adapter_evidence_contract,
+    evaluate_governance_store_contract,
+    evaluate_ml_shared_capability_inventory,
+    evaluate_product_pack_foundation,
+    evaluate_runtime_authority_blocked_model,
+    evaluate_shared_service_certification,
+    evaluate_shared_capability_certification_states,
+    evaluate_v11_platform_foundation,
+    evaluate_product_pack_contracts,
+    evaluate_rest_api_contracts,
+    evaluate_event_recovery_contract,
+    evaluate_v15_api_foundation,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -891,6 +904,114 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(result["release"]["runtime_readiness_assessment_observed"])
         self.assertEqual(result["release"]["runtime_readiness_percent"], 0.0)
         self.assertTrue(result["release"]["product_review_surface_observed"])
+
+    def test_v11_contract_foundation_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v11.0.0-pre")
+        api = evaluate_api_architecture_contract(ROOT)
+        product_packs = evaluate_product_pack_foundation(ROOT)
+        certification = evaluate_shared_service_certification(ROOT)
+        inventory = evaluate_ml_shared_capability_inventory(ROOT)
+        adapter = evaluate_adapter_evidence_contract(ROOT)
+        governance_store = evaluate_governance_store_contract(ROOT)
+        runtime_authority = evaluate_runtime_authority_blocked_model(ROOT)
+        v11 = evaluate_v11_platform_foundation(ROOT)
+
+        self.assertTrue(api["api_architecture_contract_valid"])
+        self.assertTrue(api["rest_authoritative"])
+        self.assertTrue(api["websocket_notification_only"])
+        self.assertTrue(api["event_recovery_rest_twin_declared"])
+        self.assertTrue(api["topology_flexible"])
+        self.assertFalse(api["forced_microservice_topology"])
+        self.assertTrue(product_packs["product_pack_foundation_valid"])
+        self.assertTrue(product_packs["edi_product_pack_observed"])
+        self.assertTrue(product_packs["ml_product_pack_observed"])
+        self.assertTrue(product_packs["support_product_pack_observed"])
+        self.assertTrue(product_packs["all_product_packs_runtime_blocked"])
+        self.assertTrue(certification["shared_service_certification_valid"])
+        self.assertEqual(certification["certification_evidence_complete_count"], 0)
+        self.assertTrue(inventory["ml_inventory_valid"])
+        self.assertTrue(inventory["algo_engine_observe_first"])
+        self.assertTrue(adapter["adapter_evidence_contract_valid"])
+        self.assertFalse(adapter["result_without_evidence_allowed"])
+        self.assertTrue(governance_store["governance_store_contract_valid"])
+        self.assertFalse(governance_store["edi_is_universal_governance_store"])
+        self.assertFalse(governance_store["direct_database_access_allowed"])
+        self.assertTrue(runtime_authority["runtime_authority_blocked_model_valid"])
+        self.assertEqual(runtime_authority["runtime_authority"], "blocked")
+        self.assertFalse(runtime_authority["authority_granted"])
+        self.assertTrue(v11["v11_platform_foundation_valid"])
+        self.assertFalse(v11["forced_microservice_topology"])
+        self.assertFalse(v11["websocket_authority_allowed"])
+        self.assertFalse(v11["direct_database_access_allowed"])
+        self.assertFalse(v11["edi_universal_governance_store"])
+        self.assertTrue(result["release"]["v11_0_api_architecture_contract_valid"])
+        self.assertTrue(result["release"]["v11_0_rest_authoritative"])
+        self.assertTrue(result["release"]["v11_0_websocket_notification_only"])
+        self.assertTrue(result["release"]["v11_0_topology_flexible"])
+        self.assertFalse(result["release"]["v11_0_forced_microservice_topology"])
+        self.assertTrue(result["release"]["v11_0_product_pack_foundation_valid"])
+        self.assertTrue(result["release"]["v11_0_shared_service_certification_valid"])
+        self.assertEqual(result["release"]["v11_0_service_certification_evidence_complete_count"], 0)
+        self.assertTrue(result["release"]["v11_0_ml_shared_capability_inventory_valid"])
+        self.assertTrue(result["release"]["v11_0_algo_engine_observe_first"])
+        self.assertTrue(result["release"]["v11_0_adapter_evidence_contract_valid"])
+        self.assertTrue(result["release"]["v11_0_governance_store_contract_valid"])
+        self.assertFalse(result["release"]["v11_0_edi_universal_governance_store"])
+        self.assertFalse(result["release"]["v11_0_direct_database_access_allowed"])
+        self.assertTrue(result["release"]["v11_0_runtime_authority_blocked_model_valid"])
+        self.assertTrue(result["release"]["v11_0_runtime_authority_blocked"])
+        self.assertTrue(result["release"]["v11_0_platform_foundation_valid"])
+        self.assertEqual(
+            result["release"]["v11_0_foundation_gate_complete_count"],
+            result["release"]["v11_0_foundation_gate_count"],
+        )
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v15_api_foundation_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v15.0.0-pre")
+        certification_states = evaluate_shared_capability_certification_states(ROOT)
+        product_contracts = evaluate_product_pack_contracts(ROOT)
+        rest_api = evaluate_rest_api_contracts(ROOT)
+        event_recovery = evaluate_event_recovery_contract(ROOT)
+        foundation = evaluate_v15_api_foundation(ROOT)
+
+        self.assertTrue(certification_states["shared_capability_certification_states_valid"])
+        self.assertEqual(certification_states["certified_capability_count"], 0)
+        self.assertEqual(certification_states["runtime_invocation_allowed_count"], 0)
+        self.assertTrue(product_contracts["product_pack_contracts_valid"])
+        self.assertFalse(product_contracts["cross_product_database_access_allowed"])
+        self.assertEqual(product_contracts["runtime_authority_granted_count"], 0)
+        self.assertTrue(rest_api["rest_api_contracts_valid"])
+        self.assertTrue(rest_api["rest_authoritative"])
+        self.assertTrue(rest_api["runtime_authority_default_blocked"])
+        self.assertTrue(event_recovery["event_recovery_contract_valid"])
+        self.assertFalse(event_recovery["websocket_authoritative"])
+        self.assertFalse(event_recovery["events_mutate_business_state"])
+        self.assertTrue(event_recovery["rest_recovery_required"])
+        self.assertTrue(foundation["v15_api_foundation_valid"])
+        self.assertEqual(
+            foundation["foundation_gate_complete_count"],
+            foundation["foundation_gate_count"],
+        )
+        self.assertTrue(result["release"]["v12_0_shared_capability_certification_states_valid"])
+        self.assertEqual(result["release"]["v12_0_certified_capability_count"], 0)
+        self.assertEqual(result["release"]["v12_0_runtime_invocation_allowed_count"], 0)
+        self.assertTrue(result["release"]["v13_0_product_pack_contracts_valid"])
+        self.assertFalse(result["release"]["v13_0_cross_product_database_access_allowed"])
+        self.assertEqual(result["release"]["v13_0_runtime_authority_granted_count"], 0)
+        self.assertTrue(result["release"]["v14_0_rest_api_contracts_valid"])
+        self.assertTrue(result["release"]["v14_0_rest_authoritative"])
+        self.assertTrue(result["release"]["v14_0_runtime_authority_default_blocked"])
+        self.assertTrue(result["release"]["v15_0_event_recovery_contract_valid"])
+        self.assertFalse(result["release"]["v15_0_websocket_authoritative"])
+        self.assertFalse(result["release"]["v15_0_events_mutate_business_state"])
+        self.assertTrue(result["release"]["v15_0_rest_recovery_required"])
+        self.assertTrue(result["release"]["v15_0_api_foundation_valid"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
 
 
 if __name__ == "__main__":

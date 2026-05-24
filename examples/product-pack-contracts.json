@@ -1,0 +1,42 @@
+{
+  "schema_version": "product-pack-contracts/v1",
+  "contract_id": "dip-product-pack-contracts-v13",
+  "required_sections": [
+    "product_identity",
+    "owned_decisions",
+    "consumed_capabilities",
+    "provided_capabilities",
+    "shared_context_contracts",
+    "approval_authorities",
+    "policy_requirements",
+    "evidence_outputs",
+    "replay_guarantees",
+    "cost_and_entitlement_model",
+    "runtime_authority"
+  ],
+  "products": [
+    {
+      "product_id": "edi-engineering-governance",
+      "contract_version": "0.1.0",
+      "declares_all_required_sections": true,
+      "cross_product_database_access_allowed": false,
+      "runtime_authority": "none"
+    },
+    {
+      "product_id": "ml-trading-decisions",
+      "contract_version": "0.1.0",
+      "declares_all_required_sections": true,
+      "cross_product_database_access_allowed": false,
+      "runtime_authority": "none"
+    },
+    {
+      "product_id": "support-ticket-routing",
+      "contract_version": "0.1.0",
+      "declares_all_required_sections": true,
+      "cross_product_database_access_allowed": false,
+      "runtime_authority": "none"
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

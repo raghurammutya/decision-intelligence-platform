@@ -1,0 +1,18 @@
+{
+  "capability_count": 4,
+  "certified_capability_count": 0,
+  "computed": true,
+  "contract_id": "dip-shared-capability-certification-v12",
+  "contract_ref": "examples/shared-capability-certification-states.json",
+  "contract_valid": true,
+  "evaluation_id": "v12.0-shared-capability-certification-states-1",
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "runtime_invocation_allowed_count": 0,
+  "schema_version": "shared-capability-certification-states-evaluation/v1",
+  "shared_capability_certification_states_valid": true,
+  "state_counts": {
+    "candidate": 3,
+    "observed": 1
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "governance-store-contract/v1",
+  "contract_id": "dip-governance-store-contract-v11",
+  "source_boundary": "dip_neutral_governance_store",
+  "edi_is_universal_governance_store": false,
+  "append_only_evidence_required": true,
+  "projection_reconstructable": true,
+  "required_record_types": [
+    "product_registry_record",
+    "product_pack_version",
+    "decision_spec",
+    "capability_graph_snapshot",
+    "policy_decision",
+    "approval_record",
+    "shared_context_contract",
+    "release_evidence",
+    "runtime_authority_record",
+    "case_evidence",
+    "replay_pack",
+    "lineage_record"
+  ],
+  "direct_database_access_allowed": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

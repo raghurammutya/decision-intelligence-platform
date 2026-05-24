@@ -1,0 +1,15 @@
+{
+  "adapter_evidence_contract_valid": true,
+  "adapter_type_count": 11,
+  "computed": true,
+  "contract_id": "dip-adapter-evidence-contract-v11",
+  "contract_ref": "examples/adapter-evidence-contract.json",
+  "contract_valid": true,
+  "evaluation_id": "adapter-evidence-contract-v11.0-contract-1",
+  "evidence_required": true,
+  "production_decision_execution_authorized": false,
+  "required_evidence_field_count": 7,
+  "result_without_evidence_allowed": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "adapter-evidence-contract-evaluation/v1"
+}

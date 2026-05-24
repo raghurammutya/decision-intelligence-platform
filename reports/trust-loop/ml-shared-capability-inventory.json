@@ -1,0 +1,24 @@
+{
+  "adapter_candidate_count": 7,
+  "algo_engine_observe_first": true,
+  "capability_count": 13,
+  "classification_counts": {
+    "adapter_candidate": 7,
+    "observe": 5,
+    "shared_capability_candidate": 1
+  },
+  "computed": true,
+  "contract_ref": "examples/ml-shared-capability-inventory.json",
+  "contract_valid": true,
+  "edi_evidence_source": "/home/stocksadmin/workspace/engineering-decision-intelligence/reports/ml-pilot",
+  "evaluation_id": "ml-shared-capability-inventory-v11.0-contract-1",
+  "inventory_id": "ml-shared-capability-inventory-v11",
+  "ml_inventory_valid": true,
+  "observe_count": 5,
+  "postgres_timescaledb_shared_candidate": true,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "ml-shared-capability-inventory-evaluation/v1",
+  "shared_capability_candidate_count": 1,
+  "source_repo": "/home/stocksadmin/workspace/ML"
+}

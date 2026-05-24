@@ -1,0 +1,55 @@
+{
+  "schema_version": "shared-service-certification/v1",
+  "certification_id": "dip-shared-service-certification-v11",
+  "maturity_levels": [
+    "Experimental",
+    "Domain Stable",
+    "Shared Certified",
+    "Platform Critical",
+    "Governance Critical"
+  ],
+  "required_evidence": [
+    "neutral_contract",
+    "domain_coupling_review",
+    "authn_authz_boundary",
+    "tenant_isolation",
+    "policy_hooks",
+    "audit_logging",
+    "evidence_export",
+    "replay_or_reconstruction",
+    "failure_mode_tests",
+    "observability",
+    "cost_attribution",
+    "promotion_evidence",
+    "rollback_evidence"
+  ],
+  "promotion_rule": "No service may move to Shared Certified or above without all required evidence.",
+  "services": [
+    {
+      "service_id": "user_service",
+      "candidate_role": "identity_rbac_approval_authority",
+      "current_maturity": "Domain Stable",
+      "recommended_posture": "adapter_candidate",
+      "required_contract": "IdentityProviderContract",
+      "evidence_complete": false
+    },
+    {
+      "service_id": "config_service",
+      "candidate_role": "policy_config_control_plane",
+      "current_maturity": "Domain Stable",
+      "recommended_posture": "adapter_candidate",
+      "required_contract": "PolicyConfigProviderContract",
+      "evidence_complete": false
+    },
+    {
+      "service_id": "algo_engine",
+      "candidate_role": "computation_script_execution_runtime",
+      "current_maturity": "Domain Stable",
+      "recommended_posture": "observe",
+      "required_contract": "ComputationRuntimeContract",
+      "evidence_complete": false
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

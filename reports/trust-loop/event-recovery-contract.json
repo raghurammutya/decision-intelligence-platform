@@ -1,0 +1,18 @@
+{
+  "computed": true,
+  "contract_id": "dip-event-recovery-v15",
+  "contract_ref": "examples/event-recovery-contract.json",
+  "contract_valid": true,
+  "evaluation_id": "v15.0-event-recovery-contract-1",
+  "event_recovery_contract_valid": true,
+  "events_mutate_business_state": false,
+  "production_decision_execution_authorized": false,
+  "recoverable_event_type_count": 7,
+  "required_event_field_count": 10,
+  "rest_recovery_endpoint_count": 3,
+  "rest_recovery_required": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "event-recovery-contract-evaluation/v1",
+  "websocket_authoritative": false,
+  "websocket_endpoint": "/ws/v1/events"
+}

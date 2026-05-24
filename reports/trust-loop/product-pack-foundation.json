@@ -1,0 +1,24 @@
+{
+  "all_product_packs_emit_evidence": true,
+  "all_product_packs_have_replay_guarantees": true,
+  "all_product_packs_runtime_blocked": true,
+  "computed": true,
+  "contract_ref": "examples/product-pack-registry.json",
+  "contract_valid": true,
+  "edi_product_pack_observed": true,
+  "evaluation_id": "product-pack-foundation-v11.0-contract-1",
+  "ml_product_pack_observed": true,
+  "product_pack_count": 3,
+  "product_pack_foundation_valid": true,
+  "production_decision_execution_authorized": false,
+  "registry_id": "dip-product-pack-registry-v11",
+  "required_product_packs_complete": true,
+  "runtime_authority_levels": {
+    "edi-engineering-governance": "none",
+    "ml-trading-decisions": "none",
+    "support-ticket-routing": "none"
+  },
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-foundation-evaluation/v1",
+  "support_product_pack_observed": true
+}

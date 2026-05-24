@@ -1,0 +1,17 @@
+{
+  "computed": true,
+  "evaluation_id": "v15.0-api-first-product-pack-event-recovery-foundation-1",
+  "foundation_gate_complete_count": 5,
+  "foundation_gate_count": 5,
+  "foundation_gates": {
+    "v11_platform_foundation_valid": true,
+    "v12_shared_capability_certification_states_valid": true,
+    "v13_product_pack_contracts_valid": true,
+    "v14_rest_api_contracts_valid": true,
+    "v15_event_recovery_contract_valid": true
+  },
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "v15-api-foundation-evaluation/v1",
+  "v15_api_foundation_valid": true
+}

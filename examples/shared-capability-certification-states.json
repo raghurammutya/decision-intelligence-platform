@@ -1,0 +1,59 @@
+{
+  "schema_version": "shared-capability-certification-states/v1",
+  "certification_id": "dip-shared-capability-certification-v12",
+  "allowed_states": [
+    "candidate",
+    "observed",
+    "certified",
+    "restricted",
+    "revoked"
+  ],
+  "promotion_evidence_required": [
+    "neutral_contract",
+    "adapter_evidence_contract",
+    "policy_hooks",
+    "tenant_isolation",
+    "audit_export",
+    "lineage_export",
+    "failure_mode_tests",
+    "cost_attribution",
+    "rollback_evidence"
+  ],
+  "capabilities": [
+    {
+      "capability_id": "ml-user-service",
+      "source_asset": "user_service",
+      "target_contract": "IdentityProviderContract",
+      "state": "candidate",
+      "certification_evidence_complete": false,
+      "runtime_invocation_allowed": false
+    },
+    {
+      "capability_id": "ml-computation-engine",
+      "source_asset": "algo_engine",
+      "target_contract": "ComputationRuntimeContract",
+      "state": "observed",
+      "certification_evidence_complete": false,
+      "runtime_invocation_allowed": false
+    },
+    {
+      "capability_id": "ml-alert-service",
+      "source_asset": "alert_service",
+      "target_contract": "NotificationAdapterContract",
+      "state": "candidate",
+      "certification_evidence_complete": false,
+      "runtime_invocation_allowed": false
+    },
+    {
+      "capability_id": "ml-timeseries-store",
+      "source_asset": "postgres_timescaledb",
+      "target_contract": "EvidenceStoreAdapterContract",
+      "state": "candidate",
+      "certification_evidence_complete": false,
+      "runtime_invocation_allowed": false
+    }
+  ],
+  "certified_capability_count": 0,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

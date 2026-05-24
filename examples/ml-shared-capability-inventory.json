@@ -1,0 +1,133 @@
+{
+  "schema_version": "ml-shared-capability-inventory/v1",
+  "inventory_id": "ml-shared-capability-inventory-v11",
+  "source_repo": "/home/stocksadmin/workspace/ML",
+  "edi_evidence_source": "/home/stocksadmin/workspace/engineering-decision-intelligence/reports/ml-pilot",
+  "classification_values": [
+    "do_not_use",
+    "observe",
+    "adapter_candidate",
+    "shared_capability_candidate"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false,
+  "capabilities": [
+    {
+      "asset_id": "user_service",
+      "candidate_role": "identity_rbac_approval_authority",
+      "classification": "adapter_candidate",
+      "domain_coupling": "medium",
+      "risk": "high",
+      "required_contract": "IdentityProviderContract",
+      "first_safe_use": "read_only_identity_rbac_evidence"
+    },
+    {
+      "asset_id": "config_service",
+      "candidate_role": "policy_config_control_plane",
+      "classification": "adapter_candidate",
+      "domain_coupling": "medium",
+      "risk": "high",
+      "required_contract": "PolicyConfigProviderContract",
+      "first_safe_use": "read_only_policy_config_evidence"
+    },
+    {
+      "asset_id": "api_gateway",
+      "candidate_role": "rest_gateway_boundary",
+      "classification": "observe",
+      "domain_coupling": "medium",
+      "risk": "medium",
+      "required_contract": "GatewayContract",
+      "first_safe_use": "contract_reference"
+    },
+    {
+      "asset_id": "ws_gateway_service",
+      "candidate_role": "realtime_progress_events",
+      "classification": "observe",
+      "domain_coupling": "medium",
+      "risk": "medium",
+      "required_contract": "RealtimeProgressContract",
+      "first_safe_use": "event_recovery_reference"
+    },
+    {
+      "asset_id": "algo_engine",
+      "candidate_role": "computation_script_execution_runtime",
+      "classification": "observe",
+      "domain_coupling": "high",
+      "risk": "critical",
+      "required_contract": "ComputationRuntimeContract",
+      "first_safe_use": "context_contract_extraction"
+    },
+    {
+      "asset_id": "ml_runtime_service",
+      "candidate_role": "model_capability_runtime",
+      "classification": "adapter_candidate",
+      "domain_coupling": "medium",
+      "risk": "high",
+      "required_contract": "ModelRuntimeContract",
+      "first_safe_use": "model_capability_contract_fixture"
+    },
+    {
+      "asset_id": "marketplace_service",
+      "candidate_role": "capability_distribution_layer",
+      "classification": "observe",
+      "domain_coupling": "high",
+      "risk": "high",
+      "required_contract": "CapabilityRegistryDistributionContract",
+      "first_safe_use": "registry_redesign_reference"
+    },
+    {
+      "asset_id": "alert_service",
+      "candidate_role": "governance_alerts_escalations",
+      "classification": "adapter_candidate",
+      "domain_coupling": "medium",
+      "risk": "medium",
+      "required_contract": "NotificationCapabilityContract",
+      "first_safe_use": "approval_deadline_notification"
+    },
+    {
+      "asset_id": "comms_service",
+      "candidate_role": "human_workflow_messages",
+      "classification": "adapter_candidate",
+      "domain_coupling": "low",
+      "risk": "medium",
+      "required_contract": "CommsCapabilityContract",
+      "first_safe_use": "review_notification"
+    },
+    {
+      "asset_id": "calendar_service",
+      "candidate_role": "review_windows_replay_schedules",
+      "classification": "observe",
+      "domain_coupling": "high",
+      "risk": "medium",
+      "required_contract": "CalendarWorkflowContract",
+      "first_safe_use": "approval_sla_fixture"
+    },
+    {
+      "asset_id": "billing_service",
+      "candidate_role": "usage_cost_entitlement_accounting",
+      "classification": "adapter_candidate",
+      "domain_coupling": "medium",
+      "risk": "medium",
+      "required_contract": "UsageCostContract",
+      "first_safe_use": "case_and_capability_metering"
+    },
+    {
+      "asset_id": "redis",
+      "candidate_role": "cache_queue_realtime_fanout",
+      "classification": "adapter_candidate",
+      "domain_coupling": "low",
+      "risk": "medium",
+      "required_contract": "EphemeralEventAndCacheContract",
+      "first_safe_use": "recoverable_progress_events"
+    },
+    {
+      "asset_id": "postgres_timescaledb",
+      "candidate_role": "case_store_audit_telemetry",
+      "classification": "shared_capability_candidate",
+      "domain_coupling": "low",
+      "risk": "high",
+      "required_contract": "DurableCaseStoreContract",
+      "first_safe_use": "append_only_case_store_backend"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # DIP Release Acceptance
 
-Release version: `v10.0.0-pre`
+Release version: `v11.0.0-pre`
 Source commit: `local-validation`
 Validation passed: `True`
 Computed policy preflight observed: `True`

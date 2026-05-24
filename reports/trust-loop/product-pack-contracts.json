@@ -1,0 +1,15 @@
+{
+  "computed": true,
+  "contract_id": "dip-product-pack-contracts-v13",
+  "contract_ref": "examples/product-pack-contracts.json",
+  "contract_valid": true,
+  "cross_product_database_access_allowed": false,
+  "evaluation_id": "v13.0-product-pack-contracts-1",
+  "product_count": 3,
+  "product_pack_contracts_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_section_count": 11,
+  "runtime_authority_granted_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-contracts-evaluation/v1"
+}

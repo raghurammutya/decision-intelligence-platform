@@ -1,0 +1,18 @@
+{
+  "schema_version": "runtime-authority-blocked-model/v1",
+  "model_id": "dip-runtime-authority-blocked-v11",
+  "runtime_authority": "blocked",
+  "production_decision_authority": "blocked",
+  "blocked_reasons": [
+    "live approval provider not observed",
+    "production case store not observed",
+    "shared service certification incomplete",
+    "product pack certification incomplete",
+    "runtime promotion not executed"
+  ],
+  "runtime_apis_defined": true,
+  "runtime_api_absent": false,
+  "authority_granted": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "adapter-evidence-contract/v1",
+  "contract_id": "dip-adapter-evidence-contract-v11",
+  "required_result_fields": [
+    "status",
+    "decision"
+  ],
+  "required_evidence_fields": [
+    "provider",
+    "provider_version",
+    "checked_at",
+    "correlation_id",
+    "policy_decision",
+    "source_lineage",
+    "runtime_authority"
+  ],
+  "adapter_types": [
+    "IdentityProviderAdapter",
+    "ApprovalProviderAdapter",
+    "PolicyConfigAdapter",
+    "CaseStoreAdapter",
+    "CapabilityRuntimeAdapter",
+    "ComputationRuntimeAdapter",
+    "ModelRuntimeAdapter",
+    "NotificationAdapter",
+    "CalendarWorkflowAdapter",
+    "UsageCostAdapter",
+    "EvidenceProducerAdapter"
+  ],
+  "evidence_required": true,
+  "result_without_evidence_allowed": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

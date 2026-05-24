@@ -1,0 +1,29 @@
+{
+  "api_first_modular_architecture_observed": true,
+  "computed": true,
+  "direct_database_access_allowed": false,
+  "edi_universal_governance_store": false,
+  "evaluation_id": "v11.0-api-product-pack-shared-capability-foundation-1",
+  "forced_microservice_topology": false,
+  "foundation_gate_complete_count": 7,
+  "foundation_gate_count": 7,
+  "foundation_gates": {
+    "adapter_evidence_contract_valid": true,
+    "api_architecture_contract_valid": true,
+    "governance_store_contract_valid": true,
+    "ml_inventory_valid": true,
+    "product_pack_foundation_valid": true,
+    "runtime_authority_blocked_model_valid": true,
+    "shared_service_certification_valid": true
+  },
+  "governance_store_contract_observed": true,
+  "ml_shared_capability_inventory_observed": true,
+  "product_pack_contract_observed": true,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_blocked": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "v11-platform-foundation-evaluation/v1",
+  "shared_service_certification_observed": true,
+  "v11_platform_foundation_valid": true,
+  "websocket_authority_allowed": false
+}

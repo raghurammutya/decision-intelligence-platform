@@ -1,0 +1,170 @@
+{
+  "schema_version": "product-pack-registry/v1",
+  "registry_id": "dip-product-pack-registry-v11",
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false,
+  "product_packs": [
+    {
+      "product_id": "edi-engineering-governance",
+      "product_pack_id": "edi-engineering-governance-pack",
+      "product_pack_version": "0.1.0",
+      "product_role": "engineering_governance_product_pack",
+      "owned_decisions": [
+        "engineering-readiness-review",
+        "release-evidence-ingestion"
+      ],
+      "provided_capabilities": [
+        "scanner-output-evidence",
+        "pr-ci-branch-protection-evidence",
+        "observed-vs-inferred-review"
+      ],
+      "consumed_capabilities": [
+        "dip-governance-store",
+        "dip-case-store",
+        "dip-policy-preflight"
+      ],
+      "shared_context_produced": [
+        "engineering-governance-summary"
+      ],
+      "shared_context_consumed": [],
+      "required_policies": [
+        "no-runtime-authority-without-live-evidence",
+        "observed-vs-inferred-labeling-required"
+      ],
+      "approval_authorities": [
+        "engineering-governance-owner"
+      ],
+      "emitted_evidence": [
+        "scanner-findings",
+        "branch-protection-evidence",
+        "ci-run-evidence",
+        "release-acceptance-observation"
+      ],
+      "replay_guarantees": [
+        "report-regeneration-from-committed-inputs"
+      ],
+      "runtime_authority_level": "none",
+      "cost_and_entitlement_model": {
+        "metering_required": true,
+        "metering_dimensions": [
+          "repository",
+          "scan",
+          "evidence_record"
+        ]
+      },
+      "product_local_services": [
+        "edi-scanner",
+        "edi-report-generator"
+      ],
+      "shared_certified_services_used": []
+    },
+    {
+      "product_id": "ml-trading-decisions",
+      "product_pack_id": "ml-trading-decision-pack",
+      "product_pack_version": "0.1.0",
+      "product_role": "future_trading_decision_product_pack",
+      "owned_decisions": [
+        "trading-signal-review",
+        "strategy-script-readiness",
+        "broker-action-admission"
+      ],
+      "provided_capabilities": [
+        "domain-signal-computation",
+        "strategy-context-fixtures"
+      ],
+      "consumed_capabilities": [
+        "identity-rbac",
+        "policy-config",
+        "case-store",
+        "computation-runtime"
+      ],
+      "shared_context_produced": [
+        "trading-decision-readiness-summary"
+      ],
+      "shared_context_consumed": [
+        "engineering-governance-summary"
+      ],
+      "required_policies": [
+        "non-prod-broker-write-guard",
+        "runtime-authority-blocked-by-default",
+        "script-execution-advisory-only-until-certified"
+      ],
+      "approval_authorities": [
+        "trading-risk-owner",
+        "platform-governance-owner"
+      ],
+      "emitted_evidence": [
+        "simulation-evidence",
+        "decision-diff-evidence",
+        "policy-preflight-evidence"
+      ],
+      "replay_guarantees": [
+        "no-side-effect-replay",
+        "case-input-replay"
+      ],
+      "runtime_authority_level": "none",
+      "cost_and_entitlement_model": {
+        "metering_required": true,
+        "metering_dimensions": [
+          "strategy",
+          "simulation",
+          "capability_invocation"
+        ]
+      },
+      "product_local_services": [
+        "signal_service",
+        "algo_engine"
+      ],
+      "shared_certified_services_used": []
+    },
+    {
+      "product_id": "support-ticket-routing",
+      "product_pack_id": "support-ticket-routing-pack",
+      "product_pack_version": "0.1.0",
+      "product_role": "neutral_first_wedge_example",
+      "owned_decisions": [
+        "support-ticket-routing"
+      ],
+      "provided_capabilities": [
+        "ticket-routing-policy-fixture"
+      ],
+      "consumed_capabilities": [
+        "policy-preflight",
+        "simulation",
+        "decision-diff",
+        "approval",
+        "case-store",
+        "replay"
+      ],
+      "shared_context_produced": [
+        "ticket-routing-decision-summary"
+      ],
+      "shared_context_consumed": [],
+      "required_policies": [
+        "approval-required-for-risk-tier",
+        "simulation-only-side-effects"
+      ],
+      "approval_authorities": [
+        "support-platform-owner"
+      ],
+      "emitted_evidence": [
+        "case-evidence",
+        "replay-evidence",
+        "approval-record"
+      ],
+      "replay_guarantees": [
+        "manifest-bound-replay"
+      ],
+      "runtime_authority_level": "none",
+      "cost_and_entitlement_model": {
+        "metering_required": true,
+        "metering_dimensions": [
+          "case",
+          "simulation"
+        ]
+      },
+      "product_local_services": [],
+      "shared_certified_services_used": []
+    }
+  ]
+}

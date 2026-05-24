@@ -1,0 +1,16 @@
+{
+  "append_only_evidence_required": true,
+  "computed": true,
+  "contract_id": "dip-governance-store-contract-v11",
+  "contract_ref": "examples/governance-store-contract.json",
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "edi_is_universal_governance_store": false,
+  "evaluation_id": "governance-store-contract-v11.0-contract-1",
+  "governance_store_contract_valid": true,
+  "production_decision_execution_authorized": false,
+  "projection_reconstructable": true,
+  "required_record_type_count": 12,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-store-contract-evaluation/v1"
+}

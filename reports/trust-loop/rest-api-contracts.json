@@ -1,0 +1,17 @@
+{
+  "all_resources_evidence_producing": true,
+  "computed": true,
+  "contract_id": "dip-rest-api-contracts-v14",
+  "contract_ref": "examples/rest-api-contracts.json",
+  "contract_valid": true,
+  "correlation_required": true,
+  "evaluation_id": "v14.0-rest-api-contracts-1",
+  "idempotency_required": true,
+  "production_decision_execution_authorized": false,
+  "resource_count": 6,
+  "rest_api_contracts_valid": true,
+  "rest_authoritative": true,
+  "runtime_authority_default_blocked": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "rest-api-contracts-evaluation/v1"
+}

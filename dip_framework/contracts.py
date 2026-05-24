@@ -288,6 +288,127 @@ REQUIRED = {
         "replayed_case_ref",
         "side_effects_executed",
     ],
+    "api_resource_model": [
+        "schema_version",
+        "architecture_id",
+        "architecture_statement",
+        "deployment_topology",
+        "rest_authoritative",
+        "realtime_authoritative",
+        "resource_groups",
+        "canonical_resource_model",
+        "command_query_rules",
+        "event_recovery",
+        "gateway_boundary",
+        "runtime_authority_default",
+        "production_decision_authority_default",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_registry": [
+        "schema_version",
+        "registry_id",
+        "product_packs",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "shared_service_certification": [
+        "schema_version",
+        "certification_id",
+        "maturity_levels",
+        "required_evidence",
+        "promotion_rule",
+        "services",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "ml_shared_capability_inventory": [
+        "schema_version",
+        "inventory_id",
+        "source_repo",
+        "edi_evidence_source",
+        "classification_values",
+        "capabilities",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "adapter_evidence_contract": [
+        "schema_version",
+        "contract_id",
+        "required_result_fields",
+        "required_evidence_fields",
+        "adapter_types",
+        "evidence_required",
+        "result_without_evidence_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_store_contract": [
+        "schema_version",
+        "contract_id",
+        "source_boundary",
+        "edi_is_universal_governance_store",
+        "append_only_evidence_required",
+        "projection_reconstructable",
+        "required_record_types",
+        "direct_database_access_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "runtime_authority_blocked_model": [
+        "schema_version",
+        "model_id",
+        "runtime_authority",
+        "production_decision_authority",
+        "blocked_reasons",
+        "runtime_apis_defined",
+        "runtime_api_absent",
+        "authority_granted",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "shared_capability_certification_states": [
+        "schema_version",
+        "certification_id",
+        "allowed_states",
+        "promotion_evidence_required",
+        "capabilities",
+        "certified_capability_count",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_contracts": [
+        "schema_version",
+        "contract_id",
+        "required_sections",
+        "products",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "rest_api_contracts": [
+        "schema_version",
+        "contract_id",
+        "authority",
+        "required_headers_for_mutations",
+        "commands_return_resource_ids",
+        "queries_return_state_or_projection",
+        "resources",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "event_recovery_contract": [
+        "schema_version",
+        "contract_id",
+        "websocket_endpoint",
+        "websocket_authoritative",
+        "events_mutate_business_state",
+        "rest_recovery_required",
+        "rest_recovery_endpoints",
+        "required_event_fields",
+        "recoverable_event_types",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -557,6 +678,244 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
         errors.append("case evidence must be immutable or append-only")
     if kind == "replay" and payload.get("side_effects_executed") is not False:
         errors.append("replay cannot execute side effects")
+    if kind == "api_resource_model":
+        if payload.get("rest_authoritative") is not True:
+            errors.append("api resource model must make REST authoritative")
+        if payload.get("realtime_authoritative") is not False:
+            errors.append("api resource model cannot make realtime authoritative")
+        if payload.get("deployment_topology", {}).get("forced_microservice_topology") is not False:
+            errors.append("api resource model cannot force microservice topology")
+        if len(payload.get("resource_groups", [])) < 15:
+            errors.append("api resource model must declare core resource groups")
+        rules = payload.get("command_query_rules", {})
+        if rules.get("commands_create_durable_records") is not True:
+            errors.append("api commands must create durable records")
+        if set(rules.get("required_mutation_headers", [])) != {"Idempotency-Key", "Correlation-Id"}:
+            errors.append("api mutation commands must require idempotency and correlation headers")
+        recovery = payload.get("event_recovery", {})
+        if recovery.get("events_can_mutate_business_state") is not False:
+            errors.append("realtime events cannot mutate business state")
+        if len(recovery.get("rest_recovery_endpoints", [])) < 2:
+            errors.append("realtime events must have REST recovery endpoints")
+        if payload.get("gateway_boundary", {}).get("gateway_owns_truth") is not False:
+            errors.append("gateway cannot own durable truth")
+        if payload.get("runtime_authority_default") != "blocked":
+            errors.append("runtime authority must default to blocked")
+        if payload.get("production_decision_authority_default") != "blocked":
+            errors.append("production decision authority must default to blocked")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("api resource model cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("api resource model cannot authorize production decisions")
+    if kind == "product_pack_registry":
+        packs = payload.get("product_packs", [])
+        if len(packs) < 3:
+            errors.append("product pack registry must include initial EDI, ML, and support fixtures")
+        for pack in packs:
+            for field in [
+                "product_id",
+                "product_pack_id",
+                "product_pack_version",
+                "owned_decisions",
+                "provided_capabilities",
+                "consumed_capabilities",
+                "required_policies",
+                "approval_authorities",
+                "emitted_evidence",
+                "replay_guarantees",
+                "runtime_authority_level",
+                "cost_and_entitlement_model",
+                "product_local_services",
+                "shared_certified_services_used",
+            ]:
+                if field not in pack:
+                    errors.append(f"product pack {pack.get('product_id')} missing {field}")
+            if pack.get("runtime_authority_level") != "none":
+                errors.append(f"product pack {pack.get('product_id')} cannot grant runtime authority")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("product pack registry cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("product pack registry cannot authorize production decisions")
+    if kind == "shared_service_certification":
+        required = set(payload.get("required_evidence", []))
+        expected = {
+            "neutral_contract",
+            "domain_coupling_review",
+            "authn_authz_boundary",
+            "tenant_isolation",
+            "policy_hooks",
+            "audit_logging",
+            "evidence_export",
+            "replay_or_reconstruction",
+            "failure_mode_tests",
+            "observability",
+            "cost_attribution",
+            "promotion_evidence",
+            "rollback_evidence",
+        }
+        if not expected.issubset(required):
+            errors.append("shared service certification missing required evidence categories")
+        if "Shared Certified" not in payload.get("maturity_levels", []):
+            errors.append("shared service certification must include Shared Certified maturity")
+        for service in payload.get("services", []):
+            if service.get("recommended_posture") not in {"observe", "adapter_candidate", "shared_capability_candidate"}:
+                errors.append(f"service {service.get('service_id')} has invalid posture")
+            if service.get("evidence_complete") is not False:
+                errors.append(f"service {service.get('service_id')} cannot claim certification evidence complete")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("shared service certification cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("shared service certification cannot authorize production decisions")
+    if kind == "ml_shared_capability_inventory":
+        classifications = set(payload.get("classification_values", []))
+        if not {"do_not_use", "observe", "adapter_candidate", "shared_capability_candidate"}.issubset(classifications):
+            errors.append("ML inventory missing required classification values")
+        if len(payload.get("capabilities", [])) < 10:
+            errors.append("ML inventory must include core candidate services and infrastructure")
+        for capability in payload.get("capabilities", []):
+            if capability.get("classification") not in classifications:
+                errors.append(f"ML capability {capability.get('asset_id')} has invalid classification")
+            if not capability.get("required_contract"):
+                errors.append(f"ML capability {capability.get('asset_id')} missing required contract")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("ML inventory cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("ML inventory cannot authorize production decisions")
+    if kind == "adapter_evidence_contract":
+        evidence = set(payload.get("required_evidence_fields", []))
+        expected = {
+            "provider",
+            "provider_version",
+            "checked_at",
+            "correlation_id",
+            "policy_decision",
+            "source_lineage",
+            "runtime_authority",
+        }
+        if not expected.issubset(evidence):
+            errors.append("adapter evidence contract missing required evidence fields")
+        if payload.get("evidence_required") is not True:
+            errors.append("adapter evidence contract must require evidence")
+        if payload.get("result_without_evidence_allowed") is not False:
+            errors.append("adapter evidence contract cannot allow result without evidence")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("adapter evidence contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("adapter evidence contract cannot authorize production decisions")
+    if kind == "governance_store_contract":
+        records = set(payload.get("required_record_types", []))
+        expected = {
+            "product_registry_record",
+            "product_pack_version",
+            "decision_spec",
+            "capability_graph_snapshot",
+            "policy_decision",
+            "approval_record",
+            "shared_context_contract",
+            "release_evidence",
+            "runtime_authority_record",
+            "case_evidence",
+            "replay_pack",
+            "lineage_record",
+        }
+        if not expected.issubset(records):
+            errors.append("governance store contract missing required record types")
+        if payload.get("edi_is_universal_governance_store") is not False:
+            errors.append("EDI cannot be the universal governance store")
+        if payload.get("append_only_evidence_required") is not True:
+            errors.append("governance store must require append-only evidence")
+        if payload.get("projection_reconstructable") is not True:
+            errors.append("governance store projections must be reconstructable")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("governance store cannot allow direct database access")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("governance store contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("governance store contract cannot authorize production decisions")
+    if kind == "runtime_authority_blocked_model":
+        if payload.get("runtime_authority") != "blocked":
+            errors.append("runtime authority must be blocked")
+        if payload.get("production_decision_authority") != "blocked":
+            errors.append("production decision authority must be blocked")
+        if len(payload.get("blocked_reasons", [])) < 3:
+            errors.append("runtime authority blocked model must declare blocked reasons")
+        if payload.get("runtime_apis_defined") is not True:
+            errors.append("runtime APIs should be defined")
+        if payload.get("runtime_api_absent") is not False:
+            errors.append("runtime APIs should be gated, not absent")
+        if payload.get("authority_granted") is not False:
+            errors.append("runtime authority cannot be granted")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("runtime authority model cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("runtime authority model cannot authorize production decisions")
+    if kind == "shared_capability_certification_states":
+        states = set(payload.get("allowed_states", []))
+        if not {"candidate", "observed", "certified", "restricted", "revoked"}.issubset(states):
+            errors.append("shared capability certification states missing required lifecycle states")
+        if int(payload.get("certified_capability_count", -1)) != 0:
+            errors.append("shared capabilities cannot claim certification yet")
+        for capability in payload.get("capabilities", []):
+            if capability.get("state") not in states:
+                errors.append(f"capability {capability.get('capability_id')} has invalid state")
+            if capability.get("certification_evidence_complete") is not False:
+                errors.append(f"capability {capability.get('capability_id')} cannot claim complete certification evidence")
+            if capability.get("runtime_invocation_allowed") is not False:
+                errors.append(f"capability {capability.get('capability_id')} cannot allow runtime invocation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("shared capability certification cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("shared capability certification cannot authorize production decisions")
+    if kind == "product_pack_contracts":
+        if len(payload.get("required_sections", [])) < 10:
+            errors.append("product pack contracts must declare required sections")
+        for product in payload.get("products", []):
+            if product.get("declares_all_required_sections") is not True:
+                errors.append(f"product {product.get('product_id')} must declare all required sections")
+            if product.get("cross_product_database_access_allowed") is not False:
+                errors.append(f"product {product.get('product_id')} cannot allow cross-product database access")
+            if product.get("runtime_authority") != "none":
+                errors.append(f"product {product.get('product_id')} cannot grant runtime authority")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("product pack contracts cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("product pack contracts cannot authorize production decisions")
+    if kind == "rest_api_contracts":
+        if payload.get("authority") != "rest":
+            errors.append("REST API contracts must make REST authoritative")
+        if set(payload.get("required_headers_for_mutations", [])) != {"Idempotency-Key", "Correlation-Id"}:
+            errors.append("REST API mutations must require idempotency and correlation headers")
+        if payload.get("commands_return_resource_ids") is not True:
+            errors.append("REST commands must return resource ids")
+        if payload.get("queries_return_state_or_projection") is not True:
+            errors.append("REST queries must return state or projections")
+        if len(payload.get("resources", [])) < 6:
+            errors.append("REST API contracts must include core resource groups")
+        for resource in payload.get("resources", []):
+            if not resource.get("collection_path", "").startswith("/api/v1/"):
+                errors.append(f"resource {resource.get('resource')} must use /api/v1")
+            if resource.get("evidence_produced") is not True:
+                errors.append(f"resource {resource.get('resource')} must produce evidence")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("REST API contracts cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("REST API contracts cannot authorize production decisions")
+    if kind == "event_recovery_contract":
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("event recovery cannot make websocket authoritative")
+        if payload.get("events_mutate_business_state") is not False:
+            errors.append("events cannot mutate business state")
+        if payload.get("rest_recovery_required") is not True:
+            errors.append("event recovery must require REST recovery")
+        if len(payload.get("rest_recovery_endpoints", [])) < 3:
+            errors.append("event recovery must declare REST recovery endpoints")
+        required = {"event_id", "event_type", "occurred_at", "correlation_id", "resource_uri", "evidence_uri"}
+        if not required.issubset(set(payload.get("required_event_fields", []))):
+            errors.append("event recovery missing required event fields")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("event recovery cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("event recovery cannot authorize production decisions")
     return errors
 
 
@@ -589,6 +948,17 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
+        "api_resource_model": examples / "api-resource-model.json",
+        "product_pack_registry": examples / "product-pack-registry.json",
+        "shared_service_certification": examples / "shared-service-certification.json",
+        "ml_shared_capability_inventory": examples / "ml-shared-capability-inventory.json",
+        "adapter_evidence_contract": examples / "adapter-evidence-contract.json",
+        "governance_store_contract": examples / "governance-store-contract.json",
+        "runtime_authority_blocked_model": examples / "runtime-authority-blocked-model.json",
+        "shared_capability_certification_states": examples / "shared-capability-certification-states.json",
+        "product_pack_contracts": examples / "product-pack-contracts.json",
+        "rest_api_contracts": examples / "rest-api-contracts.json",
+        "event_recovery_contract": examples / "event-recovery-contract.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

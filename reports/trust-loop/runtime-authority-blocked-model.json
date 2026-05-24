@@ -1,0 +1,17 @@
+{
+  "authority_granted": false,
+  "blocked_reason_count": 5,
+  "computed": true,
+  "contract_ref": "examples/runtime-authority-blocked-model.json",
+  "contract_valid": true,
+  "evaluation_id": "runtime-authority-blocked-v11.0-contract-1",
+  "model_id": "dip-runtime-authority-blocked-v11",
+  "production_decision_authority": "blocked",
+  "production_decision_execution_authorized": false,
+  "runtime_api_absent": false,
+  "runtime_apis_defined": true,
+  "runtime_authority": "blocked",
+  "runtime_authority_blocked_model_valid": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "runtime-authority-blocked-model-evaluation/v1"
+}

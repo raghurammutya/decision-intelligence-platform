@@ -1,0 +1,73 @@
+{
+  "schema_version": "api-resource-model/v1",
+  "architecture_id": "dip-api-first-modular-platform",
+  "architecture_statement": "DIP is API-first, REST-authoritative, event-notified, adapter-governed, product-pack driven, and topology-flexible.",
+  "deployment_topology": {
+    "forced_microservice_topology": false,
+    "allowed_topologies": [
+      "modular_monolith",
+      "small_service_set",
+      "future_split_services"
+    ],
+    "stable_boundary": "api_and_contract_model"
+  },
+  "rest_authoritative": true,
+  "realtime_authoritative": false,
+  "resource_groups": [
+    "/api/v1/products",
+    "/api/v1/product-packs",
+    "/api/v1/decisions",
+    "/api/v1/capabilities",
+    "/api/v1/policies",
+    "/api/v1/simulations",
+    "/api/v1/diffs",
+    "/api/v1/approvals",
+    "/api/v1/cases",
+    "/api/v1/replay",
+    "/api/v1/shared-context",
+    "/api/v1/governance-store",
+    "/api/v1/runtime-authority",
+    "/api/v1/service-certification",
+    "/api/v1/evidence",
+    "/api/v1/usage",
+    "/api/v1/events"
+  ],
+  "canonical_resource_model": [
+    "Product",
+    "ProductPack",
+    "DecisionSpec",
+    "CapabilityGraph",
+    "PolicyPreflight",
+    "SimulationRun",
+    "DecisionDiff",
+    "ApprovalRequest",
+    "CaseEvidence",
+    "ReplayRun"
+  ],
+  "command_query_rules": {
+    "commands_create_durable_records": true,
+    "commands_return_resource_ids": true,
+    "queries_read_state_or_projections": true,
+    "required_mutation_headers": [
+      "Idempotency-Key",
+      "Correlation-Id"
+    ]
+  },
+  "event_recovery": {
+    "websocket_endpoint": "/ws/v1/events",
+    "rest_recovery_endpoints": [
+      "/api/v1/events?after_event_id={event_id}",
+      "/api/v1/resources/{resource_type}/{resource_id}/events"
+    ],
+    "events_are_small_resource_references": true,
+    "events_can_mutate_business_state": false
+  },
+  "gateway_boundary": {
+    "gateway_composes_ux": true,
+    "gateway_owns_truth": false
+  },
+  "runtime_authority_default": "blocked",
+  "production_decision_authority_default": "blocked",
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

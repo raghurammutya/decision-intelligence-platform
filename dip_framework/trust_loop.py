@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v10.0.0-pre")
+    write_v0_2_evidence(root, version="v15.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -67,6 +67,19 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     shared_context_runtime = load_json(root / "reports/trust-loop/shared-context-runtime-governance.json")
     production_authority = load_json(root / "reports/trust-loop/production-authority-readiness-review.json")
     completion_plan = load_json(root / "reports/trust-loop/completion-plan-execution.json")
+    api_architecture = load_json(root / "reports/trust-loop/api-architecture-contract.json")
+    product_pack_foundation = load_json(root / "reports/trust-loop/product-pack-foundation.json")
+    shared_service_certification = load_json(root / "reports/trust-loop/shared-service-certification.json")
+    ml_shared_capability_inventory = load_json(root / "reports/trust-loop/ml-shared-capability-inventory.json")
+    adapter_evidence = load_json(root / "reports/trust-loop/adapter-evidence-contract.json")
+    governance_store = load_json(root / "reports/trust-loop/governance-store-contract.json")
+    runtime_authority_blocked = load_json(root / "reports/trust-loop/runtime-authority-blocked-model.json")
+    v11_foundation = load_json(root / "reports/trust-loop/v11-platform-foundation.json")
+    shared_capability_certification_states = load_json(root / "reports/trust-loop/shared-capability-certification-states.json")
+    product_pack_contracts = load_json(root / "reports/trust-loop/product-pack-contracts.json")
+    rest_api_contracts = load_json(root / "reports/trust-loop/rest-api-contracts.json")
+    event_recovery_contract = load_json(root / "reports/trust-loop/event-recovery-contract.json")
+    v15_foundation = load_json(root / "reports/trust-loop/v15-api-foundation.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -124,6 +137,19 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_shared_context_runtime_governance",
             "evaluate_production_authority_readiness_review",
             "evaluate_completion_plan_execution",
+            "evaluate_api_first_modular_architecture",
+            "evaluate_product_pack_foundation",
+            "evaluate_shared_service_certification",
+            "evaluate_ml_shared_capability_inventory",
+            "evaluate_adapter_evidence_contract",
+            "evaluate_governance_store_contract",
+            "evaluate_runtime_authority_blocked_model",
+            "evaluate_v11_platform_foundation",
+            "evaluate_shared_capability_certification_states",
+            "evaluate_product_pack_contracts",
+            "evaluate_rest_api_contracts",
+            "evaluate_event_recovery_contract",
+            "evaluate_v15_api_foundation",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -384,6 +410,44 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "production_decision_authority_blocked"
         )
         is True,
+        "v11_0_api_architecture_contract_valid": api_architecture.get("api_architecture_contract_valid") is True,
+        "v11_0_rest_authoritative": api_architecture.get("rest_authoritative") is True,
+        "v11_0_websocket_notification_only": api_architecture.get("websocket_notification_only") is True,
+        "v11_0_topology_flexible": api_architecture.get("topology_flexible") is True,
+        "v11_0_product_pack_foundation_valid": product_pack_foundation.get("product_pack_foundation_valid")
+        is True,
+        "v11_0_product_pack_count": product_pack_foundation.get("product_pack_count", 0),
+        "v11_0_shared_service_certification_valid": shared_service_certification.get(
+            "shared_service_certification_valid"
+        )
+        is True,
+        "v11_0_ml_shared_capability_inventory_valid": ml_shared_capability_inventory.get("ml_inventory_valid")
+        is True,
+        "v11_0_adapter_evidence_contract_valid": adapter_evidence.get("adapter_evidence_contract_valid") is True,
+        "v11_0_governance_store_contract_valid": governance_store.get("governance_store_contract_valid") is True,
+        "v11_0_runtime_authority_blocked_model_valid": runtime_authority_blocked.get(
+            "runtime_authority_blocked_model_valid"
+        )
+        is True,
+        "v11_0_platform_foundation_valid": v11_foundation.get("v11_platform_foundation_valid") is True,
+        "v12_0_shared_capability_certification_states_valid": shared_capability_certification_states.get(
+            "shared_capability_certification_states_valid"
+        )
+        is True,
+        "v12_0_certified_capability_count": shared_capability_certification_states.get(
+            "certified_capability_count", 0
+        ),
+        "v13_0_product_pack_contracts_valid": product_pack_contracts.get("product_pack_contracts_valid") is True,
+        "v13_0_cross_product_database_access_allowed": product_pack_contracts.get(
+            "cross_product_database_access_allowed"
+        )
+        is True,
+        "v14_0_rest_api_contracts_valid": rest_api_contracts.get("rest_api_contracts_valid") is True,
+        "v14_0_rest_authoritative": rest_api_contracts.get("rest_authoritative") is True,
+        "v15_0_event_recovery_contract_valid": event_recovery_contract.get("event_recovery_contract_valid") is True,
+        "v15_0_websocket_authoritative": event_recovery_contract.get("websocket_authoritative") is True,
+        "v15_0_events_mutate_business_state": event_recovery_contract.get("events_mutate_business_state") is True,
+        "v15_0_api_foundation_valid": v15_foundation.get("v15_api_foundation_valid") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -410,6 +474,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "marketplace runtime invocation is authorized",
             "shared context runtime exchange is authorized",
             "production decision authority is granted",
+            "microservice topology is required on day one",
+            "WebSocket events are authoritative",
+            "ML services are the DIP foundation",
+            "EDI is the universal governance store",
+            "shared service certification evidence is complete",
         ],
     }
     return {
