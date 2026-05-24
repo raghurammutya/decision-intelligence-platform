@@ -1,0 +1,69 @@
+{
+  "ai_policy_override_allowed": false,
+  "contract_id": "dip-policy-test-pack-framework",
+  "contract_version": "32.0.0",
+  "deny_precedence_required": true,
+  "deterministic_policy_first": true,
+  "fixtures": [
+    {
+      "expected_outcome": "deny",
+      "fixture_id": "policy-fixture-production-authority-requested",
+      "input": {
+        "production_decision_execution_authorized": true
+      }
+    },
+    {
+      "expected_outcome": "approval_required",
+      "fixture_id": "policy-fixture-high-risk-change",
+      "input": {
+        "risk_tier": 3
+      }
+    },
+    {
+      "expected_outcome": "escalate",
+      "fixture_id": "policy-fixture-cross-product-context",
+      "input": {
+        "shared_context_requested": true
+      }
+    },
+    {
+      "expected_outcome": "approval_required",
+      "fixture_id": "policy-fixture-missing-evidence",
+      "input": {
+        "missing_required_evidence": true
+      }
+    },
+    {
+      "expected_outcome": "deny",
+      "fixture_id": "policy-fixture-revoked-policy",
+      "input": {
+        "policy_lifecycle_status": "revoked"
+      }
+    },
+    {
+      "expected_outcome": "allow",
+      "fixture_id": "policy-fixture-advisory-only-low-risk",
+      "input": {
+        "advisory_only": true,
+        "risk_tier": 1
+      }
+    }
+  ],
+  "production_decision_execution_authorized": false,
+  "required_fixture_outcomes": [
+    "deny",
+    "escalate",
+    "approval_required",
+    "allow"
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "policy-test-pack-framework/v1",
+  "test_pack_types": [
+    "positive_allow",
+    "negative_deny",
+    "approval_required",
+    "escalation",
+    "revoked_policy",
+    "missing_evidence"
+  ]
+}

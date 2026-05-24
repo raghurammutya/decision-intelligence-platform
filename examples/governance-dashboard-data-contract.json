@@ -1,0 +1,30 @@
+{
+  "blocked_claims_visible": true,
+  "contract_id": "dip-governance-dashboard-data",
+  "contract_version": "35.0.0",
+  "dashboard_is_source_of_truth": false,
+  "dashboard_sections": [
+    "readiness_summary",
+    "blocked_claims",
+    "policy_status",
+    "product_pack_admission",
+    "runtime_authority_status",
+    "evidence_completeness",
+    "cost_usage_summary",
+    "shared_context_status"
+  ],
+  "derived_from_rest_evidence": true,
+  "production_decision_execution_authorized": false,
+  "projection_sources": [
+    "/api/v1/cases",
+    "/api/v1/evidence",
+    "/api/v1/policies",
+    "/api/v1/product-packs",
+    "/api/v1/runtime-authority",
+    "/api/v1/usage",
+    "/api/v1/shared-context"
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-dashboard-data-contract/v1",
+  "websocket_authoritative": false
+}

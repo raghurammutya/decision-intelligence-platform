@@ -1,0 +1,15 @@
+{
+  "blocked_claims_visible": true,
+  "computed": true,
+  "contract_valid": true,
+  "dashboard_is_source_of_truth": false,
+  "dashboard_section_count": 8,
+  "derived_from_rest_evidence": true,
+  "evaluation_id": "v35.0-governance-dashboard-data-contract-1",
+  "governance_dashboard_data_contract_valid": true,
+  "production_decision_execution_authorized": false,
+  "projection_source_count": 7,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-dashboard-data-contract-evaluation/v1",
+  "websocket_authoritative": false
+}

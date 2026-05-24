@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v30.0.0-pre")
+    write_v0_2_evidence(root, version="v35.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -98,6 +98,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     semantic_projection_contract = load_json(root / "reports/trust-loop/shared-context-semantic-projection-contract.json")
     product_pack_developer_kit = load_json(root / "reports/trust-loop/product-pack-developer-kit.json")
     v30_closure = load_json(root / "reports/trust-loop/v30-platform-operating-model-closure.json")
+    contract_compatibility_versioning = load_json(root / "reports/trust-loop/contract-compatibility-versioning.json")
+    policy_test_pack_framework = load_json(root / "reports/trust-loop/policy-test-pack-framework.json")
+    product_pack_cli_scaffold = load_json(root / "reports/trust-loop/product-pack-cli-scaffold-contract.json")
+    case_evidence_query = load_json(root / "reports/trust-loop/case-evidence-query-contract.json")
+    governance_dashboard_data = load_json(root / "reports/trust-loop/governance-dashboard-data-contract.json")
+    v35_closure = load_json(root / "reports/trust-loop/v35-usability-governance-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -186,6 +192,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_shared_context_semantic_projection_contract",
             "evaluate_product_pack_developer_kit",
             "evaluate_v30_platform_operating_model_closure",
+            "evaluate_contract_compatibility_versioning",
+            "evaluate_policy_test_pack_framework",
+            "evaluate_product_pack_cli_scaffold_contract",
+            "evaluate_case_evidence_query_contract",
+            "evaluate_governance_dashboard_data_contract",
+            "evaluate_v35_usability_governance_closure",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -628,6 +640,43 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         is True,
         "v30_0_closure_gate_complete_count": v30_closure.get("closure_gate_complete_count", 0),
         "v30_0_closure_gate_count": v30_closure.get("closure_gate_count", 0),
+        "v31_0_compatibility_versioning_valid": contract_compatibility_versioning.get(
+            "compatibility_versioning_valid"
+        )
+        is True,
+        "v31_0_breaking_change_requires_major": contract_compatibility_versioning.get(
+            "breaking_change_requires_major"
+        )
+        is True,
+        "v32_0_policy_test_pack_framework_valid": policy_test_pack_framework.get(
+            "policy_test_pack_framework_valid"
+        )
+        is True,
+        "v32_0_ai_policy_override_allowed": policy_test_pack_framework.get("ai_policy_override_allowed") is True,
+        "v33_0_product_pack_cli_scaffold_valid": product_pack_cli_scaffold.get(
+            "product_pack_cli_scaffold_valid"
+        )
+        is True,
+        "v33_0_no_code_builder": product_pack_cli_scaffold.get("no_code_builder") is True,
+        "v33_0_runtime_authority_creating_command_count": product_pack_cli_scaffold.get(
+            "runtime_authority_creating_command_count", 0
+        ),
+        "v34_0_case_evidence_query_contract_valid": case_evidence_query.get(
+            "case_evidence_query_contract_valid"
+        )
+        is True,
+        "v34_0_production_backend_selected": case_evidence_query.get("production_backend_selected") is True,
+        "v35_0_governance_dashboard_data_contract_valid": governance_dashboard_data.get(
+            "governance_dashboard_data_contract_valid"
+        )
+        is True,
+        "v35_0_dashboard_is_source_of_truth": governance_dashboard_data.get("dashboard_is_source_of_truth")
+        is True,
+        "v35_0_websocket_authoritative": governance_dashboard_data.get("websocket_authoritative") is True,
+        "v35_0_usability_governance_closure_valid": v35_closure.get("v35_usability_governance_closure_valid")
+        is True,
+        "v35_0_closure_gate_complete_count": v35_closure.get("closure_gate_complete_count", 0),
+        "v35_0_closure_gate_count": v35_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,

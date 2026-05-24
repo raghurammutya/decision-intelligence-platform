@@ -119,6 +119,11 @@ def main() -> int:
         "cost_usage_evidence_contract",
         "shared_context_semantic_projection_contract",
         "product_pack_developer_kit",
+        "contract_compatibility_versioning",
+        "policy_test_pack_framework",
+        "product_pack_cli_scaffold_contract",
+        "case_evidence_query_contract",
+        "governance_dashboard_data_contract",
     ])
     validate_one_parser.add_argument("path")
     validate_one_parser.add_argument("--json", action="store_true")
@@ -130,7 +135,7 @@ def main() -> int:
     trust_loop_parser.set_defaults(func=trust_loop)
 
     release_parser = subparsers.add_parser("release-pack", help="Write DIP release acceptance evidence.")
-    release_parser.add_argument("--version", default="v30.0.0-pre")
+    release_parser.add_argument("--version", default="v35.0.0-pre")
     release_parser.add_argument("--source-commit", default="local-validation")
     release_parser.add_argument("--json", action="store_true")
     release_parser.set_defaults(func=release_pack)

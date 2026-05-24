@@ -1,0 +1,38 @@
+{
+  "contract_id": "dip-case-evidence-query",
+  "contract_version": "34.0.0",
+  "direct_database_access_allowed": false,
+  "filter_fields": [
+    "tenant_id",
+    "product_id",
+    "decision_id",
+    "decision_version",
+    "case_status",
+    "policy_result",
+    "created_after",
+    "created_before"
+  ],
+  "pagination_required": true,
+  "production_backend_selected": false,
+  "production_decision_execution_authorized": false,
+  "query_resources": [
+    "cases",
+    "evidence_pack",
+    "lineage",
+    "replay_runs",
+    "approval_records",
+    "simulation_runs",
+    "decision_diffs",
+    "policy_decisions",
+    "capability_versions"
+  ],
+  "rest_authoritative": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "case-evidence-query-contract/v1",
+  "sort_fields": [
+    "created_at",
+    "updated_at",
+    "decision_version",
+    "risk_tier"
+  ]
+}

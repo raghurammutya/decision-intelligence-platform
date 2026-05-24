@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 46,
-  "record_count": 46,
+  "passed_count": 51,
+  "record_count": 51,
   "records": [
     {
       "errors": [],
@@ -278,6 +278,36 @@
       "kind": "product_pack_developer_kit",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-developer-kit.json"
+    },
+    {
+      "errors": [],
+      "kind": "contract_compatibility_versioning",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/contract-compatibility-versioning.json"
+    },
+    {
+      "errors": [],
+      "kind": "policy_test_pack_framework",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/policy-test-pack-framework.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_cli_scaffold_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-cli-scaffold-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "case_evidence_query_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/case-evidence-query-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_dashboard_data_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-dashboard-data-contract.json"
     }
   ]
 }

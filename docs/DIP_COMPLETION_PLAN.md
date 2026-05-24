@@ -982,6 +982,35 @@ Required evidence:
   hidden production mutation remain blocked;
 - runtime execution readiness and production decision authority remain `0%`.
 
+### v31.0-v35.0 Usability Governance Contracts
+
+Status: complete on `v35.0.0-pre` as pre-runtime contract evidence, not as
+runtime authority or production readiness.
+
+Purpose: make the API-first modular platform easier to adopt safely without
+turning DIP into a broad no-code builder, a hidden runtime bus, or an
+uncontrolled shared-service foundation.
+
+Required evidence:
+
+- v31.0 contract compatibility and versioning defines versioned contract types,
+  lifecycle states, and compatibility rules where breaking changes require a
+  major version and deprecated contracts require replacement references.
+- v32.0 policy test-pack framework keeps deterministic policy first, deny
+  precedence required, AI policy override blocked, and core fixtures covering
+  deny, escalate, approval-required, and allow outcomes.
+- v33.0 product-pack CLI scaffold contract defines safe scaffold, validation,
+  evidence-pack, and dry-run commands while keeping runtime authority at `none`,
+  direct database access denied, and broad no-code-builder scope false.
+- v34.0 case evidence query contract defines REST-authoritative case, evidence,
+  lineage, replay, approval, simulation, diff, policy, and capability queries
+  with pagination, filters, and sorting while selecting no production backend.
+- v35.0 governance-dashboard data contract defines dashboard projections derived
+  from REST evidence. The dashboard is not source of truth, WebSocket is not
+  authoritative, and blocked claims remain visible.
+- v35.0 usability governance closure requires all five contracts to pass while
+  runtime integration and production decision execution remain false.
+
 ## Completion Gate
 
 The current phase is complete only if:

@@ -81,6 +81,12 @@
     "evaluate_shared_context_semantic_projection_contract",
     "evaluate_product_pack_developer_kit",
     "evaluate_v30_platform_operating_model_closure",
+    "evaluate_contract_compatibility_versioning",
+    "evaluate_policy_test_pack_framework",
+    "evaluate_product_pack_cli_scaffold_contract",
+    "evaluate_case_evidence_query_contract",
+    "evaluate_governance_dashboard_data_contract",
+    "evaluate_v35_usability_governance_closure",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

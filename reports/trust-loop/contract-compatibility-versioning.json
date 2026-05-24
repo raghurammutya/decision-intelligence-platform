@@ -1,0 +1,15 @@
+{
+  "breaking_change_requires_major": true,
+  "compatibility_rule_count": 5,
+  "compatibility_versioning_valid": true,
+  "computed": true,
+  "contract_valid": true,
+  "deprecated_requires_replacement": true,
+  "evaluation_id": "v31.0-contract-compatibility-versioning-1",
+  "incompatible_rules_require_major": true,
+  "production_decision_execution_authorized": false,
+  "revoked_lifecycle_supported": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "contract-compatibility-versioning-evaluation/v1",
+  "versioned_contract_type_count": 8
+}

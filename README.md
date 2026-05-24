@@ -90,10 +90,10 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
-## v11.0-v30.0 API-First Platform Foundation
+## v11.0-v35.0 API-First Platform Foundation
 
 ```bash
-python3 -m dip_framework release-pack --version v30.0.0-pre
+python3 -m dip_framework release-pack --version v35.0.0-pre
 ```
 
 v11.0 adds the API-first modular platform architecture, product-pack registry,
@@ -112,10 +112,15 @@ v25.0 adds the event recovery v2 contract and contract closure gate. These
 v26.0 adds the shared capability certification workflow. v27.0 adds the runtime
 authority gate contract. v28.0 adds cost and usage evidence. v29.0 adds shared
 context semantic projection contracts. v30.0 adds the product-pack developer kit
-and platform operating model closure gate. These releases remain contract and evidence
-foundation only: no service is certified for runtime use, no product pack has
-runtime authority, no product can use direct database access, WebSocket is not
-authoritative, no production governance-store backend is selected, and
+and platform operating model closure gate. v31.0 adds contract compatibility and
+version lifecycle evidence. v32.0 adds policy test-pack evidence. v33.0 adds
+product-pack CLI scaffold contracts without becoming a broad no-code builder.
+v34.0 adds REST-authoritative case evidence query contracts. v35.0 adds
+governance-dashboard data contracts and usability governance closure. These
+releases remain contract and evidence foundation only: no service is certified
+for runtime use, no product pack has runtime authority, no product can use direct
+database access, WebSocket is not authoritative, no production governance-store
+backend is selected, dashboard projections are not source of truth, and
 production decision execution remains blocked.
 
 ## v2.1 Governance Exception and Schema Stability

@@ -1,0 +1,58 @@
+{
+  "breaking_change_requires_major": true,
+  "compatibility_rules": [
+    {
+      "change_type": "additive_optional_field",
+      "compatible": true,
+      "required_version_bump": "minor"
+    },
+    {
+      "change_type": "additive_required_field",
+      "compatible": false,
+      "required_version_bump": "major"
+    },
+    {
+      "change_type": "field_removal",
+      "compatible": false,
+      "required_version_bump": "major"
+    },
+    {
+      "change_type": "enum_restriction",
+      "compatible": false,
+      "required_version_bump": "major"
+    },
+    {
+      "change_type": "documentation_only",
+      "compatible": true,
+      "required_version_bump": "patch"
+    }
+  ],
+  "contract_id": "dip-contract-compatibility-versioning",
+  "contract_version": "31.0.0",
+  "deprecated_requires_replacement": true,
+  "lifecycle_states": [
+    "draft",
+    "active",
+    "deprecated",
+    "revoked"
+  ],
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "contract-compatibility-versioning/v1",
+  "version_lifecycle_rules": {
+    "draft": "may change before admission",
+    "active": "requires compatibility evaluation before release",
+    "deprecated": "requires replacement contract reference",
+    "revoked": "blocked from new decision composition"
+  },
+  "versioned_contract_types": [
+    "decision_spec",
+    "capability_contract",
+    "policy_definition",
+    "simulation_case_set",
+    "approval_boundary",
+    "case_evidence_contract",
+    "adapter_evidence_contract",
+    "shared_context_projection"
+  ]
+}

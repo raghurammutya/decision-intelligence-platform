@@ -75,6 +75,11 @@ ARTIFACTS = [
     ("cost_usage_evidence_contract", "examples/cost-usage-evidence-contract.json"),
     ("shared_context_semantic_projection_contract", "examples/shared-context-semantic-projection-contract.json"),
     ("product_pack_developer_kit", "examples/product-pack-developer-kit.json"),
+    ("contract_compatibility_versioning", "examples/contract-compatibility-versioning.json"),
+    ("policy_test_pack_framework", "examples/policy-test-pack-framework.json"),
+    ("product_pack_cli_scaffold_contract", "examples/product-pack-cli-scaffold-contract.json"),
+    ("case_evidence_query_contract", "examples/case-evidence-query-contract.json"),
+    ("governance_dashboard_data_contract", "examples/governance-dashboard-data-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -3092,6 +3097,186 @@ def evaluate_v30_platform_operating_model_closure(root: Path = ROOT) -> dict[str
     }
 
 
+def evaluate_contract_compatibility_versioning(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/contract-compatibility-versioning.json")
+    result = validate_file("contract_compatibility_versioning", root / "examples/contract-compatibility-versioning.json")
+    incompatible_rules = [rule for rule in contract.get("compatibility_rules", []) if rule.get("compatible") is False]
+    return {
+        "schema_version": "contract-compatibility-versioning-evaluation/v1",
+        "evaluation_id": "v31.0-contract-compatibility-versioning-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "versioned_contract_type_count": len(contract.get("versioned_contract_types", [])),
+        "compatibility_rule_count": len(contract.get("compatibility_rules", [])),
+        "breaking_change_requires_major": contract.get("breaking_change_requires_major") is True,
+        "deprecated_requires_replacement": contract.get("deprecated_requires_replacement") is True,
+        "revoked_lifecycle_supported": "revoked" in set(contract.get("lifecycle_states", [])),
+        "incompatible_rules_require_major": all(
+            rule.get("required_version_bump") == "major" for rule in incompatible_rules
+        ),
+        "compatibility_versioning_valid": result.get("passed") is True
+        and len(contract.get("versioned_contract_types", [])) >= 6
+        and len(contract.get("compatibility_rules", [])) >= 5
+        and contract.get("breaking_change_requires_major") is True
+        and contract.get("deprecated_requires_replacement") is True
+        and "revoked" in set(contract.get("lifecycle_states", [])),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_policy_test_pack_framework(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/policy-test-pack-framework.json")
+    result = validate_file("policy_test_pack_framework", root / "examples/policy-test-pack-framework.json")
+    fixtures = contract.get("fixtures", [])
+    outcomes = {fixture.get("expected_outcome") for fixture in fixtures}
+    return {
+        "schema_version": "policy-test-pack-framework-evaluation/v1",
+        "evaluation_id": "v32.0-policy-test-pack-framework-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "test_pack_type_count": len(contract.get("test_pack_types", [])),
+        "fixture_count": len(fixtures),
+        "observed_outcomes": sorted(outcome for outcome in outcomes if outcome),
+        "deterministic_policy_first": contract.get("deterministic_policy_first") is True,
+        "ai_policy_override_allowed": contract.get("ai_policy_override_allowed") is True,
+        "deny_precedence_required": contract.get("deny_precedence_required") is True,
+        "required_outcomes_covered": set(contract.get("required_fixture_outcomes", [])).issubset(outcomes),
+        "policy_test_pack_framework_valid": result.get("passed") is True
+        and contract.get("deterministic_policy_first") is True
+        and contract.get("ai_policy_override_allowed") is False
+        and contract.get("deny_precedence_required") is True
+        and len(fixtures) >= 5,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_product_pack_cli_scaffold_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/product-pack-cli-scaffold-contract.json")
+    result = validate_file(
+        "product_pack_cli_scaffold_contract",
+        root / "examples/product-pack-cli-scaffold-contract.json",
+    )
+    commands = contract.get("commands", [])
+    return {
+        "schema_version": "product-pack-cli-scaffold-contract-evaluation/v1",
+        "evaluation_id": "v33.0-product-pack-cli-scaffold-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "command_count": len(commands),
+        "generated_file_count": len(contract.get("generated_files", [])),
+        "validation_output_count": len(contract.get("validation_outputs", [])),
+        "no_code_builder": contract.get("no_code_builder") is True,
+        "runtime_authority_default": contract.get("runtime_authority_default"),
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "runtime_authority_creating_command_count": len(
+            [command for command in commands if command.get("creates_runtime_authority") is True]
+        ),
+        "product_pack_cli_scaffold_valid": result.get("passed") is True
+        and len(commands) >= 4
+        and len(contract.get("generated_files", [])) >= 10
+        and contract.get("no_code_builder") is False
+        and contract.get("runtime_authority_default") == "none"
+        and contract.get("direct_database_access_allowed") is False
+        and all(command.get("creates_runtime_authority") is False for command in commands),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_case_evidence_query_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/case-evidence-query-contract.json")
+    result = validate_file("case_evidence_query_contract", root / "examples/case-evidence-query-contract.json")
+    return {
+        "schema_version": "case-evidence-query-contract-evaluation/v1",
+        "evaluation_id": "v34.0-case-evidence-query-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "query_resource_count": len(contract.get("query_resources", [])),
+        "filter_field_count": len(contract.get("filter_fields", [])),
+        "sort_field_count": len(contract.get("sort_fields", [])),
+        "pagination_required": contract.get("pagination_required") is True,
+        "rest_authoritative": contract.get("rest_authoritative") is True,
+        "production_backend_selected": contract.get("production_backend_selected") is True,
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "case_evidence_query_contract_valid": result.get("passed") is True
+        and len(contract.get("query_resources", [])) >= 8
+        and contract.get("pagination_required") is True
+        and contract.get("rest_authoritative") is True
+        and contract.get("production_backend_selected") is False
+        and contract.get("direct_database_access_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_governance_dashboard_data_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/governance-dashboard-data-contract.json")
+    result = validate_file(
+        "governance_dashboard_data_contract",
+        root / "examples/governance-dashboard-data-contract.json",
+    )
+    return {
+        "schema_version": "governance-dashboard-data-contract-evaluation/v1",
+        "evaluation_id": "v35.0-governance-dashboard-data-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "projection_source_count": len(contract.get("projection_sources", [])),
+        "dashboard_section_count": len(contract.get("dashboard_sections", [])),
+        "derived_from_rest_evidence": contract.get("derived_from_rest_evidence") is True,
+        "dashboard_is_source_of_truth": contract.get("dashboard_is_source_of_truth") is True,
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "blocked_claims_visible": contract.get("blocked_claims_visible") is True,
+        "governance_dashboard_data_contract_valid": result.get("passed") is True
+        and len(contract.get("projection_sources", [])) >= 6
+        and len(contract.get("dashboard_sections", [])) >= 7
+        and contract.get("derived_from_rest_evidence") is True
+        and contract.get("dashboard_is_source_of_truth") is False
+        and contract.get("websocket_authoritative") is False
+        and contract.get("blocked_claims_visible") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v35_usability_governance_closure(root: Path = ROOT) -> dict[str, Any]:
+    v31 = load_json(root / "reports/trust-loop/contract-compatibility-versioning.json")
+    v32 = load_json(root / "reports/trust-loop/policy-test-pack-framework.json")
+    v33 = load_json(root / "reports/trust-loop/product-pack-cli-scaffold-contract.json")
+    v34 = load_json(root / "reports/trust-loop/case-evidence-query-contract.json")
+    v35 = load_json(root / "reports/trust-loop/governance-dashboard-data-contract.json")
+    gates = {
+        "v31_compatibility_versioning_valid": v31.get("compatibility_versioning_valid") is True,
+        "v32_policy_test_pack_framework_valid": v32.get("policy_test_pack_framework_valid") is True,
+        "v33_product_pack_cli_scaffold_valid": v33.get("product_pack_cli_scaffold_valid") is True,
+        "v34_case_evidence_query_contract_valid": v34.get("case_evidence_query_contract_valid") is True,
+        "v35_governance_dashboard_data_contract_valid": v35.get("governance_dashboard_data_contract_valid")
+        is True,
+    }
+    return {
+        "schema_version": "v35-usability-governance-closure-evaluation/v1",
+        "evaluation_id": "v35.0-usability-governance-closure-1",
+        "computed": True,
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "v35_usability_governance_closure_valid": all(gates.values())
+        and v31.get("breaking_change_requires_major") is True
+        and v32.get("deterministic_policy_first") is True
+        and v32.get("ai_policy_override_allowed") is False
+        and v33.get("runtime_authority_creating_command_count", 1) == 0
+        and v33.get("direct_database_access_allowed") is False
+        and v34.get("rest_authoritative") is True
+        and v34.get("production_backend_selected") is False
+        and v35.get("derived_from_rest_evidence") is True
+        and v35.get("dashboard_is_source_of_truth") is False
+        and v35.get("websocket_authoritative") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -3883,6 +4068,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     semantic_projection_contract = load_json(root / "reports/trust-loop/shared-context-semantic-projection-contract.json")
     product_pack_developer_kit = load_json(root / "reports/trust-loop/product-pack-developer-kit.json")
     v30_closure = load_json(root / "reports/trust-loop/v30-platform-operating-model-closure.json")
+    contract_compatibility_versioning = load_json(root / "reports/trust-loop/contract-compatibility-versioning.json")
+    policy_test_pack_framework = load_json(root / "reports/trust-loop/policy-test-pack-framework.json")
+    product_pack_cli_scaffold = load_json(root / "reports/trust-loop/product-pack-cli-scaffold-contract.json")
+    case_evidence_query = load_json(root / "reports/trust-loop/case-evidence-query-contract.json")
+    governance_dashboard_data = load_json(root / "reports/trust-loop/governance-dashboard-data-contract.json")
+    v35_closure = load_json(root / "reports/trust-loop/v35-usability-governance-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -4576,6 +4767,63 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         is True,
         "v30_0_closure_gate_complete_count": v30_closure.get("closure_gate_complete_count", 0),
         "v30_0_closure_gate_count": v30_closure.get("closure_gate_count", 0),
+        "v31_0_compatibility_versioning_valid": contract_compatibility_versioning.get(
+            "compatibility_versioning_valid"
+        )
+        is True,
+        "v31_0_versioned_contract_type_count": contract_compatibility_versioning.get(
+            "versioned_contract_type_count", 0
+        ),
+        "v31_0_breaking_change_requires_major": contract_compatibility_versioning.get(
+            "breaking_change_requires_major"
+        )
+        is True,
+        "v31_0_deprecated_requires_replacement": contract_compatibility_versioning.get(
+            "deprecated_requires_replacement"
+        )
+        is True,
+        "v32_0_policy_test_pack_framework_valid": policy_test_pack_framework.get(
+            "policy_test_pack_framework_valid"
+        )
+        is True,
+        "v32_0_fixture_count": policy_test_pack_framework.get("fixture_count", 0),
+        "v32_0_deterministic_policy_first": policy_test_pack_framework.get("deterministic_policy_first") is True,
+        "v32_0_ai_policy_override_allowed": policy_test_pack_framework.get("ai_policy_override_allowed") is True,
+        "v32_0_required_outcomes_covered": policy_test_pack_framework.get("required_outcomes_covered") is True,
+        "v33_0_product_pack_cli_scaffold_valid": product_pack_cli_scaffold.get(
+            "product_pack_cli_scaffold_valid"
+        )
+        is True,
+        "v33_0_command_count": product_pack_cli_scaffold.get("command_count", 0),
+        "v33_0_no_code_builder": product_pack_cli_scaffold.get("no_code_builder") is True,
+        "v33_0_runtime_authority_default": product_pack_cli_scaffold.get("runtime_authority_default"),
+        "v33_0_direct_database_access_allowed": product_pack_cli_scaffold.get("direct_database_access_allowed")
+        is True,
+        "v33_0_runtime_authority_creating_command_count": product_pack_cli_scaffold.get(
+            "runtime_authority_creating_command_count", 0
+        ),
+        "v34_0_case_evidence_query_contract_valid": case_evidence_query.get(
+            "case_evidence_query_contract_valid"
+        )
+        is True,
+        "v34_0_query_resource_count": case_evidence_query.get("query_resource_count", 0),
+        "v34_0_rest_authoritative": case_evidence_query.get("rest_authoritative") is True,
+        "v34_0_production_backend_selected": case_evidence_query.get("production_backend_selected") is True,
+        "v34_0_direct_database_access_allowed": case_evidence_query.get("direct_database_access_allowed") is True,
+        "v35_0_governance_dashboard_data_contract_valid": governance_dashboard_data.get(
+            "governance_dashboard_data_contract_valid"
+        )
+        is True,
+        "v35_0_dashboard_section_count": governance_dashboard_data.get("dashboard_section_count", 0),
+        "v35_0_derived_from_rest_evidence": governance_dashboard_data.get("derived_from_rest_evidence") is True,
+        "v35_0_dashboard_is_source_of_truth": governance_dashboard_data.get("dashboard_is_source_of_truth")
+        is True,
+        "v35_0_websocket_authoritative": governance_dashboard_data.get("websocket_authoritative") is True,
+        "v35_0_blocked_claims_visible": governance_dashboard_data.get("blocked_claims_visible") is True,
+        "v35_0_usability_governance_closure_valid": v35_closure.get("v35_usability_governance_closure_valid")
+        is True,
+        "v35_0_closure_gate_complete_count": v35_closure.get("closure_gate_complete_count", 0),
+        "v35_0_closure_gate_count": v35_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -4791,6 +5039,25 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and product_pack_developer_kit.get("runtime_authority_granted_count", 1) == 0
         and product_pack_developer_kit.get("direct_database_access_allowed") is False
         and v30_closure.get("v30_platform_operating_model_closure_valid") is True
+        and contract_compatibility_versioning.get("compatibility_versioning_valid") is True
+        and contract_compatibility_versioning.get("breaking_change_requires_major") is True
+        and policy_test_pack_framework.get("policy_test_pack_framework_valid") is True
+        and policy_test_pack_framework.get("deterministic_policy_first") is True
+        and policy_test_pack_framework.get("ai_policy_override_allowed") is False
+        and product_pack_cli_scaffold.get("product_pack_cli_scaffold_valid") is True
+        and product_pack_cli_scaffold.get("no_code_builder") is False
+        and product_pack_cli_scaffold.get("runtime_authority_default") == "none"
+        and product_pack_cli_scaffold.get("direct_database_access_allowed") is False
+        and product_pack_cli_scaffold.get("runtime_authority_creating_command_count", 1) == 0
+        and case_evidence_query.get("case_evidence_query_contract_valid") is True
+        and case_evidence_query.get("rest_authoritative") is True
+        and case_evidence_query.get("production_backend_selected") is False
+        and case_evidence_query.get("direct_database_access_allowed") is False
+        and governance_dashboard_data.get("governance_dashboard_data_contract_valid") is True
+        and governance_dashboard_data.get("derived_from_rest_evidence") is True
+        and governance_dashboard_data.get("dashboard_is_source_of_truth") is False
+        and governance_dashboard_data.get("websocket_authoritative") is False
+        and v35_closure.get("v35_usability_governance_closure_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -4845,6 +5112,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "cost usage evidence is live billing integration",
             "shared context projections allow product database access",
             "product-pack developer kit grants runtime authority",
+            "contract compatibility allows breaking changes without major versioning",
+            "AI can override deterministic policy tests",
+            "product-pack CLI scaffold is a broad no-code builder",
+            "case evidence queries select a production backend",
+            "governance dashboard is the source of truth",
         ],
     }
 
@@ -5166,6 +5438,34 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v30.0 direct database access allowed: `{payload['v30_0_direct_database_access_allowed']}`",
         f"v30.0 platform operating model closure valid: `{payload['v30_0_platform_operating_model_closure_valid']}`",
         f"v30.0 closure gates complete: `{payload['v30_0_closure_gate_complete_count']}/{payload['v30_0_closure_gate_count']}`",
+        f"v31.0 compatibility versioning valid: `{payload['v31_0_compatibility_versioning_valid']}`",
+        f"v31.0 versioned contract types: `{payload['v31_0_versioned_contract_type_count']}`",
+        f"v31.0 breaking changes require major: `{payload['v31_0_breaking_change_requires_major']}`",
+        f"v31.0 deprecated contracts require replacement: `{payload['v31_0_deprecated_requires_replacement']}`",
+        f"v32.0 policy test pack valid: `{payload['v32_0_policy_test_pack_framework_valid']}`",
+        f"v32.0 policy test fixtures: `{payload['v32_0_fixture_count']}`",
+        f"v32.0 deterministic policy first: `{payload['v32_0_deterministic_policy_first']}`",
+        f"v32.0 AI policy override allowed: `{payload['v32_0_ai_policy_override_allowed']}`",
+        f"v32.0 required outcomes covered: `{payload['v32_0_required_outcomes_covered']}`",
+        f"v33.0 product-pack CLI scaffold valid: `{payload['v33_0_product_pack_cli_scaffold_valid']}`",
+        f"v33.0 product-pack CLI commands: `{payload['v33_0_command_count']}`",
+        f"v33.0 no-code builder: `{payload['v33_0_no_code_builder']}`",
+        f"v33.0 runtime authority default: `{payload['v33_0_runtime_authority_default']}`",
+        f"v33.0 direct database access allowed: `{payload['v33_0_direct_database_access_allowed']}`",
+        f"v33.0 runtime-authority creating commands: `{payload['v33_0_runtime_authority_creating_command_count']}`",
+        f"v34.0 case evidence query contract valid: `{payload['v34_0_case_evidence_query_contract_valid']}`",
+        f"v34.0 query resources: `{payload['v34_0_query_resource_count']}`",
+        f"v34.0 REST authoritative: `{payload['v34_0_rest_authoritative']}`",
+        f"v34.0 production backend selected: `{payload['v34_0_production_backend_selected']}`",
+        f"v34.0 direct database access allowed: `{payload['v34_0_direct_database_access_allowed']}`",
+        f"v35.0 governance dashboard data valid: `{payload['v35_0_governance_dashboard_data_contract_valid']}`",
+        f"v35.0 dashboard sections: `{payload['v35_0_dashboard_section_count']}`",
+        f"v35.0 derived from REST evidence: `{payload['v35_0_derived_from_rest_evidence']}`",
+        f"v35.0 dashboard source of truth: `{payload['v35_0_dashboard_is_source_of_truth']}`",
+        f"v35.0 WebSocket authoritative: `{payload['v35_0_websocket_authoritative']}`",
+        f"v35.0 blocked claims visible: `{payload['v35_0_blocked_claims_visible']}`",
+        f"v35.0 usability governance closure valid: `{payload['v35_0_usability_governance_closure_valid']}`",
+        f"v35.0 closure gates complete: `{payload['v35_0_closure_gate_complete_count']}/{payload['v35_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -5352,6 +5652,18 @@ def write_v0_2_evidence(
     write_json(target / "product-pack-developer-kit.json", product_pack_developer_kit)
     v30_closure = evaluate_v30_platform_operating_model_closure(root)
     write_json(target / "v30-platform-operating-model-closure.json", v30_closure)
+    contract_compatibility_versioning = evaluate_contract_compatibility_versioning(root)
+    write_json(target / "contract-compatibility-versioning.json", contract_compatibility_versioning)
+    policy_test_pack_framework = evaluate_policy_test_pack_framework(root)
+    write_json(target / "policy-test-pack-framework.json", policy_test_pack_framework)
+    product_pack_cli_scaffold = evaluate_product_pack_cli_scaffold_contract(root)
+    write_json(target / "product-pack-cli-scaffold-contract.json", product_pack_cli_scaffold)
+    case_evidence_query = evaluate_case_evidence_query_contract(root)
+    write_json(target / "case-evidence-query-contract.json", case_evidence_query)
+    governance_dashboard_data = evaluate_governance_dashboard_data_contract(root)
+    write_json(target / "governance-dashboard-data-contract.json", governance_dashboard_data)
+    v35_closure = evaluate_v35_usability_governance_closure(root)
+    write_json(target / "v35-usability-governance-closure.json", v35_closure)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -5434,6 +5746,12 @@ def write_v0_2_evidence(
         "semantic_projection_contract": semantic_projection_contract,
         "product_pack_developer_kit": product_pack_developer_kit,
         "v30_closure": v30_closure,
+        "contract_compatibility_versioning": contract_compatibility_versioning,
+        "policy_test_pack_framework": policy_test_pack_framework,
+        "product_pack_cli_scaffold": product_pack_cli_scaffold,
+        "case_evidence_query": case_evidence_query,
+        "governance_dashboard_data": governance_dashboard_data,
+        "v35_closure": v35_closure,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

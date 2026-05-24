@@ -79,6 +79,12 @@ from dip_framework.v02 import (
     evaluate_shared_context_semantic_projection_contract,
     evaluate_product_pack_developer_kit,
     evaluate_v30_platform_operating_model_closure,
+    evaluate_contract_compatibility_versioning,
+    evaluate_policy_test_pack_framework,
+    evaluate_product_pack_cli_scaffold_contract,
+    evaluate_case_evidence_query_contract,
+    evaluate_governance_dashboard_data_contract,
+    evaluate_v35_usability_governance_closure,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1181,6 +1187,49 @@ class TrustLoopTests(unittest.TestCase):
         self.assertEqual(result["release"]["v30_0_runtime_authority_granted_count"], 0)
         self.assertFalse(result["release"]["v30_0_direct_database_access_allowed"])
         self.assertTrue(result["release"]["v30_0_platform_operating_model_closure_valid"])
+
+    def test_v35_usability_governance_closure_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v35.0.0-pre")
+
+        compatibility = evaluate_contract_compatibility_versioning(ROOT)
+        policy_tests = evaluate_policy_test_pack_framework(ROOT)
+        cli_scaffold = evaluate_product_pack_cli_scaffold_contract(ROOT)
+        query_contract = evaluate_case_evidence_query_contract(ROOT)
+        dashboard = evaluate_governance_dashboard_data_contract(ROOT)
+        closure = evaluate_v35_usability_governance_closure(ROOT)
+
+        self.assertTrue(compatibility["compatibility_versioning_valid"])
+        self.assertTrue(compatibility["breaking_change_requires_major"])
+        self.assertTrue(policy_tests["policy_test_pack_framework_valid"])
+        self.assertTrue(policy_tests["deterministic_policy_first"])
+        self.assertFalse(policy_tests["ai_policy_override_allowed"])
+        self.assertTrue(cli_scaffold["product_pack_cli_scaffold_valid"])
+        self.assertFalse(cli_scaffold["no_code_builder"])
+        self.assertEqual(cli_scaffold["runtime_authority_default"], "none")
+        self.assertFalse(cli_scaffold["direct_database_access_allowed"])
+        self.assertEqual(cli_scaffold["runtime_authority_creating_command_count"], 0)
+        self.assertTrue(query_contract["case_evidence_query_contract_valid"])
+        self.assertTrue(query_contract["rest_authoritative"])
+        self.assertFalse(query_contract["production_backend_selected"])
+        self.assertTrue(dashboard["governance_dashboard_data_contract_valid"])
+        self.assertTrue(dashboard["derived_from_rest_evidence"])
+        self.assertFalse(dashboard["dashboard_is_source_of_truth"])
+        self.assertFalse(dashboard["websocket_authoritative"])
+        self.assertTrue(closure["v35_usability_governance_closure_valid"])
+        self.assertFalse(closure["runtime_integration_authorized"])
+        self.assertFalse(closure["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["v31_0_compatibility_versioning_valid"])
+        self.assertTrue(result["release"]["v32_0_policy_test_pack_framework_valid"])
+        self.assertFalse(result["release"]["v32_0_ai_policy_override_allowed"])
+        self.assertTrue(result["release"]["v33_0_product_pack_cli_scaffold_valid"])
+        self.assertFalse(result["release"]["v33_0_no_code_builder"])
+        self.assertEqual(result["release"]["v33_0_runtime_authority_creating_command_count"], 0)
+        self.assertTrue(result["release"]["v34_0_case_evidence_query_contract_valid"])
+        self.assertFalse(result["release"]["v34_0_production_backend_selected"])
+        self.assertTrue(result["release"]["v35_0_governance_dashboard_data_contract_valid"])
+        self.assertFalse(result["release"]["v35_0_dashboard_is_source_of_truth"])
+        self.assertFalse(result["release"]["v35_0_websocket_authoritative"])
+        self.assertTrue(result["release"]["v35_0_usability_governance_closure_valid"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

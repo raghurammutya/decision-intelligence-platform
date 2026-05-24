@@ -1,0 +1,21 @@
+{
+  "ai_policy_override_allowed": false,
+  "computed": true,
+  "contract_valid": true,
+  "deny_precedence_required": true,
+  "deterministic_policy_first": true,
+  "evaluation_id": "v32.0-policy-test-pack-framework-1",
+  "fixture_count": 6,
+  "observed_outcomes": [
+    "allow",
+    "approval_required",
+    "deny",
+    "escalate"
+  ],
+  "policy_test_pack_framework_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_outcomes_covered": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "policy-test-pack-framework-evaluation/v1",
+  "test_pack_type_count": 6
+}

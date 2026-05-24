@@ -1,0 +1,16 @@
+{
+  "command_count": 4,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v33.0-product-pack-cli-scaffold-contract-1",
+  "generated_file_count": 10,
+  "no_code_builder": false,
+  "product_pack_cli_scaffold_valid": true,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_creating_command_count": 0,
+  "runtime_authority_default": "none",
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-cli-scaffold-contract-evaluation/v1",
+  "validation_output_count": 6
+}

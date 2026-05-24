@@ -569,6 +569,72 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "contract_compatibility_versioning": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "versioned_contract_types",
+        "compatibility_rules",
+        "lifecycle_states",
+        "version_lifecycle_rules",
+        "breaking_change_requires_major",
+        "deprecated_requires_replacement",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "policy_test_pack_framework": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "test_pack_types",
+        "fixtures",
+        "deterministic_policy_first",
+        "ai_policy_override_allowed",
+        "deny_precedence_required",
+        "required_fixture_outcomes",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_cli_scaffold_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "commands",
+        "generated_files",
+        "validation_outputs",
+        "no_code_builder",
+        "runtime_authority_default",
+        "direct_database_access_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "case_evidence_query_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "query_resources",
+        "pagination_required",
+        "filter_fields",
+        "sort_fields",
+        "rest_authoritative",
+        "production_backend_selected",
+        "direct_database_access_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_dashboard_data_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "projection_sources",
+        "dashboard_sections",
+        "derived_from_rest_evidence",
+        "dashboard_is_source_of_truth",
+        "websocket_authoritative",
+        "blocked_claims_visible",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1401,6 +1467,110 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("developer kit cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("developer kit cannot authorize production decisions")
+    if kind == "contract_compatibility_versioning":
+        if len(payload.get("versioned_contract_types", [])) < 6:
+            errors.append("compatibility versioning must cover core contract types")
+        if len(payload.get("compatibility_rules", [])) < 5:
+            errors.append("compatibility versioning must declare compatibility rules")
+        if payload.get("breaking_change_requires_major") is not True:
+            errors.append("breaking changes must require a major version")
+        if payload.get("deprecated_requires_replacement") is not True:
+            errors.append("deprecated contracts must require replacement references")
+        if "revoked" not in set(payload.get("lifecycle_states", [])):
+            errors.append("compatibility versioning must include revoked lifecycle state")
+        for rule in payload.get("compatibility_rules", []):
+            if rule.get("compatible") is False and rule.get("required_version_bump") != "major":
+                errors.append(f"incompatible change {rule.get('change_type')} must require major bump")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("compatibility versioning cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("compatibility versioning cannot authorize production decisions")
+    if kind == "policy_test_pack_framework":
+        if payload.get("deterministic_policy_first") is not True:
+            errors.append("policy test pack must keep deterministic policy first")
+        if payload.get("ai_policy_override_allowed") is not False:
+            errors.append("policy test pack cannot allow AI policy override")
+        if payload.get("deny_precedence_required") is not True:
+            errors.append("policy test pack must require deny precedence")
+        fixtures = payload.get("fixtures", [])
+        if len(fixtures) < 5:
+            errors.append("policy test pack must include core fixtures")
+        observed_outcomes = {fixture.get("expected_outcome") for fixture in fixtures}
+        if not set(payload.get("required_fixture_outcomes", [])).issubset(observed_outcomes):
+            errors.append("policy test pack missing required fixture outcomes")
+        for fixture in fixtures:
+            if not fixture.get("expected_outcome"):
+                errors.append(f"fixture {fixture.get('fixture_id')} missing expected outcome")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("policy test pack cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("policy test pack cannot authorize production decisions")
+    if kind == "product_pack_cli_scaffold_contract":
+        if len(payload.get("commands", [])) < 4:
+            errors.append("product-pack CLI scaffold must include core commands")
+        required_generated = {
+            "product_manifest",
+            "decision_specs",
+            "capability_graph",
+            "policy_bindings",
+            "simulation_cases",
+            "approval_boundary",
+            "evidence_contract",
+            "replay_contract",
+            "shared_context_contracts",
+            "cost_model",
+        }
+        if not required_generated.issubset(set(payload.get("generated_files", []))):
+            errors.append("product-pack CLI scaffold missing generated contract files")
+        if payload.get("no_code_builder") is not False:
+            errors.append("product-pack CLI scaffold cannot become a broad no-code builder")
+        if payload.get("runtime_authority_default") != "none":
+            errors.append("product-pack CLI scaffold must default runtime authority to none")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("product-pack CLI scaffold cannot allow direct database access")
+        for command in payload.get("commands", []):
+            if command.get("creates_runtime_authority") is not False:
+                errors.append(f"command {command.get('command')} cannot create runtime authority")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("product-pack CLI scaffold cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("product-pack CLI scaffold cannot authorize production decisions")
+    if kind == "case_evidence_query_contract":
+        if len(payload.get("query_resources", [])) < 8:
+            errors.append("case evidence query contract must include core query resources")
+        if payload.get("pagination_required") is not True:
+            errors.append("case evidence query contract must require pagination")
+        if len(payload.get("filter_fields", [])) < 6:
+            errors.append("case evidence query contract must declare filters")
+        if len(payload.get("sort_fields", [])) < 3:
+            errors.append("case evidence query contract must declare sort fields")
+        if payload.get("rest_authoritative") is not True:
+            errors.append("case evidence query contract must keep REST authoritative")
+        if payload.get("production_backend_selected") is not False:
+            errors.append("case evidence query contract cannot select production backend")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("case evidence query contract cannot allow direct database access")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("case evidence query contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("case evidence query contract cannot authorize production decisions")
+    if kind == "governance_dashboard_data_contract":
+        if len(payload.get("projection_sources", [])) < 6:
+            errors.append("governance dashboard contract must declare projection sources")
+        if len(payload.get("dashboard_sections", [])) < 7:
+            errors.append("governance dashboard contract must include governance sections")
+        if payload.get("derived_from_rest_evidence") is not True:
+            errors.append("governance dashboard must derive from REST evidence")
+        if payload.get("dashboard_is_source_of_truth") is not False:
+            errors.append("governance dashboard cannot be source of truth")
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("governance dashboard cannot make WebSocket authoritative")
+        if payload.get("blocked_claims_visible") is not True:
+            errors.append("governance dashboard must expose blocked claims")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("governance dashboard cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("governance dashboard cannot authorize production decisions")
     return errors
 
 
@@ -1459,6 +1629,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "cost_usage_evidence_contract": examples / "cost-usage-evidence-contract.json",
         "shared_context_semantic_projection_contract": examples / "shared-context-semantic-projection-contract.json",
         "product_pack_developer_kit": examples / "product-pack-developer-kit.json",
+        "contract_compatibility_versioning": examples / "contract-compatibility-versioning.json",
+        "policy_test_pack_framework": examples / "policy-test-pack-framework.json",
+        "product_pack_cli_scaffold_contract": examples / "product-pack-cli-scaffold-contract.json",
+        "case_evidence_query_contract": examples / "case-evidence-query-contract.json",
+        "governance_dashboard_data_contract": examples / "governance-dashboard-data-contract.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

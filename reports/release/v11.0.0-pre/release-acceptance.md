@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `70`
+Case manifest artifacts: `75`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -313,6 +313,34 @@ v30.0 runtime authority granted count: `0`
 v30.0 direct database access allowed: `False`
 v30.0 platform operating model closure valid: `True`
 v30.0 closure gates complete: `5/5`
+v31.0 compatibility versioning valid: `True`
+v31.0 versioned contract types: `8`
+v31.0 breaking changes require major: `True`
+v31.0 deprecated contracts require replacement: `True`
+v32.0 policy test pack valid: `True`
+v32.0 policy test fixtures: `6`
+v32.0 deterministic policy first: `True`
+v32.0 AI policy override allowed: `False`
+v32.0 required outcomes covered: `True`
+v33.0 product-pack CLI scaffold valid: `True`
+v33.0 product-pack CLI commands: `4`
+v33.0 no-code builder: `False`
+v33.0 runtime authority default: `none`
+v33.0 direct database access allowed: `False`
+v33.0 runtime-authority creating commands: `0`
+v34.0 case evidence query contract valid: `True`
+v34.0 query resources: `9`
+v34.0 REST authoritative: `True`
+v34.0 production backend selected: `False`
+v34.0 direct database access allowed: `False`
+v35.0 governance dashboard data valid: `True`
+v35.0 dashboard sections: `8`
+v35.0 derived from REST evidence: `True`
+v35.0 dashboard source of truth: `False`
+v35.0 WebSocket authoritative: `False`
+v35.0 blocked claims visible: `True`
+v35.0 usability governance closure valid: `True`
+v35.0 closure gates complete: `5/5`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -373,3 +401,8 @@ Release acceptance passed: `True`
 - `cost usage evidence is live billing integration`
 - `shared context projections allow product database access`
 - `product-pack developer kit grants runtime authority`
+- `contract compatibility allows breaking changes without major versioning`
+- `AI can override deterministic policy tests`
+- `product-pack CLI scaffold is a broad no-code builder`
+- `case evidence queries select a production backend`
+- `governance dashboard is the source of truth`

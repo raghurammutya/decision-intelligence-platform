@@ -1,0 +1,16 @@
+{
+  "case_evidence_query_contract_valid": true,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v34.0-case-evidence-query-contract-1",
+  "filter_field_count": 8,
+  "pagination_required": true,
+  "production_backend_selected": false,
+  "production_decision_execution_authorized": false,
+  "query_resource_count": 9,
+  "rest_authoritative": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "case-evidence-query-contract-evaluation/v1",
+  "sort_field_count": 4
+}

@@ -1,0 +1,52 @@
+{
+  "commands": [
+    {
+      "command": "dip product-pack init",
+      "creates_runtime_authority": false,
+      "purpose": "create product pack contract skeleton"
+    },
+    {
+      "command": "dip product-pack validate",
+      "creates_runtime_authority": false,
+      "purpose": "validate product pack contracts"
+    },
+    {
+      "command": "dip product-pack evidence-pack",
+      "creates_runtime_authority": false,
+      "purpose": "materialize review evidence"
+    },
+    {
+      "command": "dip product-pack dry-run",
+      "creates_runtime_authority": false,
+      "purpose": "run local pre-runtime simulation"
+    }
+  ],
+  "contract_id": "dip-product-pack-cli-scaffold",
+  "contract_version": "33.0.0",
+  "direct_database_access_allowed": false,
+  "generated_files": [
+    "product_manifest",
+    "decision_specs",
+    "capability_graph",
+    "policy_bindings",
+    "simulation_cases",
+    "approval_boundary",
+    "evidence_contract",
+    "replay_contract",
+    "shared_context_contracts",
+    "cost_model"
+  ],
+  "no_code_builder": false,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_default": "none",
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-cli-scaffold-contract/v1",
+  "validation_outputs": [
+    "contract_validation",
+    "policy_preflight",
+    "simulation_evidence",
+    "decision_diff",
+    "case_evidence_pack",
+    "blocked_runtime_authority"
+  ]
+}

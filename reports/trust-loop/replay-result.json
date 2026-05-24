@@ -1,6 +1,6 @@
 {
   "case_id": "case-support-ticket-routing-1",
-  "case_manifest_hash": "1e084186c8e5898e1cf61cd4f6bd10e54609a7a95227bee7424fc30fa8cc7509",
+  "case_manifest_hash": "15eb916b38392fb57a0f65bd147483aaa815addd1509d8cbb1fc612243fe0dcc",
   "decision_id": "support-ticket-routing",
   "manifest_replay_valid": true,
   "original_case_ref": "reports/trust-loop/durable-case-manifest.json",
