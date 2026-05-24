@@ -1,0 +1,18 @@
+{
+  "admin_enforcement_observed": true,
+  "break_glass_policy_defined": true,
+  "codeowner_review_gate_restored": true,
+  "computed": true,
+  "conversation_resolution_required_observed": true,
+  "deletions_blocked": true,
+  "evaluation_id": "governance-closure-v3.1-pre-runtime-1",
+  "force_pushes_blocked": true,
+  "governance_closure_valid": true,
+  "independent_human_review_observed": false,
+  "production_decision_execution_authorized": false,
+  "required_review_gate_restored": true,
+  "required_status_checks_observed": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-closure-evaluation/v1",
+  "solo_maintainer_exception_recorded": true
+}

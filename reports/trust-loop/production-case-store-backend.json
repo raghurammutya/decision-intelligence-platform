@@ -1,0 +1,19 @@
+{
+  "append_only_backend_valid": true,
+  "audit_export_valid": true,
+  "blocked_claim": "production durable case store backend is not observed",
+  "computed": true,
+  "content_addressed_records_valid": true,
+  "delete_denied_observed": true,
+  "evaluation_id": "production-case-store-backend-v3.4-pre-runtime-1",
+  "manifest_chain_valid": true,
+  "mutation_denied_observed": true,
+  "production_case_store_contract_ready": true,
+  "production_case_store_live_ready": false,
+  "production_decision_execution_authorized": false,
+  "production_storage_backend_observed": false,
+  "replay_export_valid": true,
+  "retention_policy_observed": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "production-case-store-backend-evaluation/v1"
+}

@@ -1,0 +1,30 @@
+{
+  "approval_gate_defined": true,
+  "computed": true,
+  "control_count": 9,
+  "cost_accounting_defined": true,
+  "entitlement_check_defined": true,
+  "evaluation_id": "runtime-control-plane-v3.5-pre-runtime-1",
+  "kill_switch_defined": true,
+  "lineage_capture_defined": true,
+  "observability_trace_defined": true,
+  "policy_gate_defined": true,
+  "production_decision_execution_authorized": false,
+  "replay_hook_defined": true,
+  "required_controls": [
+    "policy_gate",
+    "approval_gate",
+    "kill_switch",
+    "entitlement_check",
+    "cost_accounting",
+    "observability_trace",
+    "lineage_capture",
+    "replay_hook",
+    "rollback_path"
+  ],
+  "rollback_path_defined": true,
+  "runtime_authority_grant_allowed": false,
+  "runtime_control_plane_design_valid": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "runtime-control-plane-design/v1"
+}

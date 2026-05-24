@@ -14,7 +14,8 @@
     "live external decision approval system is observed",
     "live external approval adapter system is observed",
     "live external identity MFA claim is observed",
-    "production durable case store backend is observed"
+    "production durable case store backend is observed",
+    "limited runtime authority is granted"
   ],
   "break_glass_policy_defined": true,
   "capability_governance_observed": true,
@@ -70,7 +71,7 @@
   "pre_runtime_ga_observed": true,
   "pre_runtime_ga_valid": true,
   "prod_deployment_executed": false,
-  "product_review_surface_count": 20,
+  "product_review_surface_count": 27,
   "product_review_surface_observed": true,
   "production_decision_execution_authorized": false,
   "production_storage_backend_observed": false,
@@ -90,5 +91,19 @@
   "shared_context_contract_valid": true,
   "solo_maintainer_exception_observed": true,
   "solo_maintainer_exception_valid": true,
-  "trust_loop_complete": true
+  "trust_loop_complete": true,
+  "v3_1_governance_closure_valid": true,
+  "v3_2_external_identity_boundary_valid": true,
+  "v3_2_external_identity_live_ready": false,
+  "v3_2_mfa_claim_observed": false,
+  "v3_3_external_approval_system_boundary_valid": true,
+  "v3_3_external_approval_system_live_ready": false,
+  "v3_4_production_case_store_contract_ready": true,
+  "v3_4_production_case_store_live_ready": false,
+  "v3_5_runtime_authority_grant_allowed": false,
+  "v3_5_runtime_control_plane_design_valid": true,
+  "v3_6_advisory_runtime_pilot_valid": true,
+  "v3_6_advisory_side_effects_executed": false,
+  "v4_0_limited_runtime_authority_gate_complete": true,
+  "v4_0_limited_runtime_authority_granted": false
 }

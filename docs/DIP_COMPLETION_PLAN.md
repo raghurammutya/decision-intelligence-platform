@@ -337,6 +337,112 @@ Required evidence:
 - runtime execution readiness remains `0%`
 - production decision authority remains `0%`
 
+### v3.1 Governance Closure
+
+Purpose: close repository governance evidence while preserving the solo-maintainer
+exception as an exception.
+
+Required evidence:
+
+- required status check observed
+- one-review gate restored
+- CODEOWNER gate restored
+- admin enforcement observed
+- conversation resolution observed
+- force pushes and branch deletion blocked
+- break-glass policy defined
+- solo-maintainer exception recorded
+- independent human review remains unobserved unless a second reviewer exists
+
+### v3.2 External Identity Integration Boundary
+
+Purpose: record the live identity/RBAC boundary and make the missing live IdP/MFA
+claims explicit.
+
+Required evidence:
+
+- external identity contract valid
+- GitHub RBAC observed
+- approval permission and decision scope authorized
+- live external IdP authentication remains blocked when not observed
+- MFA claim remains blocked when not observed
+
+### v3.3 External Approval System Boundary
+
+Purpose: record decision approval system readiness without treating GitHub code
+review or solo-maintainer merge exceptions as decision approval.
+
+Required evidence:
+
+- external approval boundary valid
+- external approval adapter valid
+- decision approval remains separate from code merge
+- AI approval remains blocked
+- live external approval provider remains blocked when not observed
+
+### v3.4 Production Case Store Backend Boundary
+
+Purpose: define production case-store backend requirements while keeping
+production storage unclaimed until observed.
+
+Required evidence:
+
+- append-only writes valid
+- content-addressed records valid
+- manifest chain valid
+- replay and audit export valid
+- delete and mutation denial observed
+- retention policy observed
+- production storage backend remains blocked when not observed
+
+### v3.5 Runtime Control Plane Design
+
+Purpose: define runtime admission controls before runtime authority can be
+granted.
+
+Required evidence:
+
+- policy gate
+- approval gate
+- kill switch
+- entitlement check
+- cost accounting
+- observability trace
+- lineage capture
+- replay hook
+- rollback path
+- runtime authority grant remains blocked
+
+### v3.6 Advisory Runtime Pilot
+
+Purpose: prove advisory-only runtime evaluation from simulation evidence without
+side effects.
+
+Required evidence:
+
+- advisory-only mode
+- simulation evidence reused
+- lineage capture observed
+- policy and approval gates observed
+- no side effects
+- no production mutation
+- production decision authority remains blocked
+
+### v4.0 Limited Runtime Authority Gate
+
+Purpose: complete the authority gate and explicitly block runtime authority until
+all live prerequisites are observed.
+
+Required evidence:
+
+- runtime control-plane design valid
+- advisory runtime pilot valid
+- live external IdP/MFA readiness evaluated
+- live external approval system readiness evaluated
+- production case-store backend readiness evaluated
+- blocked reasons recorded
+- limited runtime authority not granted while prerequisites are missing
+
 ## Completion Gate
 
 The current phase is complete only if:

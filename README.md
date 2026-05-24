@@ -166,7 +166,7 @@ runtime integration, or production decision authority is observed.
 ## v2.7 Live Identity/RBAC Evidence
 
 ```bash
-python3 -m dip_framework release-pack --version v3.0.0-pre
+python3 -m dip_framework release-pack --version v4.0.0-pre
 ```
 
 v2.7 observes live GitHub identity and repository RBAC evidence for the
@@ -199,3 +199,25 @@ capability graph, policy preflight, simulation, decision diff, approval record,
 case store, lineage, replay evidence, identity/RBAC, durable backend observation,
 promotion chain, and EDI observer evidence while keeping runtime execution
 readiness and production decision authority at `0%`.
+
+## v3.1-v4.0 Runtime Authority Gate
+
+v3.1 through v4.0 add the next evidence sequence without silently granting
+runtime authority:
+
+- v3.1 closes repository governance evidence while preserving the solo-maintainer
+  exception as an exception, not independent review.
+- v3.2 records the external identity integration boundary and keeps live IdP/MFA
+  readiness blocked when not observed.
+- v3.3 records the external approval system boundary and keeps live provider
+  readiness blocked when not observed.
+- v3.4 records the production case-store backend contract and keeps production
+  storage readiness blocked when no production backend is observed.
+- v3.5 records runtime control-plane design evidence: policy gate, approval
+  gate, kill switch, entitlement, cost, observability, lineage, replay, and
+  rollback controls.
+- v3.6 records an advisory-only runtime pilot from existing simulation evidence
+  with no side effects or production mutation.
+- v4.0 records the limited-runtime-authority gate as complete but authority
+  remains blocked until live IdP/MFA, live approval provider, and production case
+  store evidence exist.

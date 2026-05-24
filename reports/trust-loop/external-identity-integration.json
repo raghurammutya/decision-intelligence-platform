@@ -1,0 +1,18 @@
+{
+  "blocked_claim": "live external IdP and MFA claim are not observed",
+  "computed": true,
+  "contract_valid": true,
+  "decision_scope_authorized": true,
+  "evaluation_id": "external-identity-integration-v3.2-pre-runtime-1",
+  "external_identity_boundary_valid": true,
+  "external_identity_live_ready": false,
+  "live_external_idp_authenticated": false,
+  "live_rbac_observed": true,
+  "mfa_claim_observed": false,
+  "permission_sufficient": true,
+  "production_decision_execution_authorized": false,
+  "provider": "github",
+  "runtime_integration_authorized": false,
+  "schema_version": "external-identity-integration-evaluation/v1",
+  "subject": "raghurammutya"
+}

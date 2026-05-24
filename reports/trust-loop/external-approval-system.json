@@ -1,0 +1,15 @@
+{
+  "ai_approval_allowed": false,
+  "approval_adapter_valid": true,
+  "approval_boundary_valid": true,
+  "blocked_claim": "live external approval provider is not observed",
+  "computed": true,
+  "decision_approval_separate_from_code_merge": true,
+  "evaluation_id": "external-approval-system-v3.3-pre-runtime-1",
+  "external_approval_system_boundary_valid": true,
+  "external_approval_system_live_ready": false,
+  "live_external_approval_system_observed": false,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "external-approval-system-evaluation/v1"
+}
