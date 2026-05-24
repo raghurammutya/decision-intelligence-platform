@@ -1,0 +1,14 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "developer_kit_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v30.0-product-pack-developer-kit-1",
+  "example_product_count": 3,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_granted_count": 0,
+  "runtime_integration_authorized": false,
+  "scaffold_check_count": 11,
+  "schema_version": "product-pack-developer-kit-evaluation/v1",
+  "validation_rule_count": 6
+}

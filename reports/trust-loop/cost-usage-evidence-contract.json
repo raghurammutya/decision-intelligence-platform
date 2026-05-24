@@ -1,0 +1,14 @@
+{
+  "billing_integration_enabled": false,
+  "computed": true,
+  "contract_valid": true,
+  "cost_usage_evidence_contract_valid": true,
+  "evaluation_id": "v28.0-cost-usage-evidence-contract-1",
+  "live_invocation_observed_count": 0,
+  "production_decision_execution_authorized": false,
+  "required_field_count": 12,
+  "runtime_integration_authorized": false,
+  "sample_record_count": 2,
+  "schema_version": "cost-usage-evidence-contract-evaluation/v1",
+  "usage_record_type_count": 7
+}

@@ -517,6 +517,58 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "shared_capability_certification_workflow": [
+        "schema_version",
+        "workflow_id",
+        "states",
+        "required_evidence_gates",
+        "capability_states",
+        "certified_count",
+        "runtime_invocation_allowed_count",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "runtime_authority_gate_contract": [
+        "schema_version",
+        "contract_id",
+        "default_authority",
+        "default_production_decision_authority",
+        "operations",
+        "required_live_evidence",
+        "negative_fixtures",
+        "runtime_authority_granted",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "cost_usage_evidence_contract": [
+        "schema_version",
+        "contract_id",
+        "billing_integration_enabled",
+        "usage_record_types",
+        "required_fields",
+        "sample_records",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "shared_context_semantic_projection_contract": [
+        "schema_version",
+        "contract_id",
+        "direct_database_access_allowed",
+        "hidden_shared_state_allowed",
+        "projection_contracts",
+        "runtime_context_exchange_authorized",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_developer_kit": [
+        "schema_version",
+        "kit_id",
+        "scaffold_checklist",
+        "example_products",
+        "validation_rules",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1242,6 +1294,113 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("event recovery v2 cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("event recovery v2 cannot authorize production decisions")
+    if kind == "shared_capability_certification_workflow":
+        required_states = {"candidate", "observed", "evidence_incomplete", "certified", "revoked"}
+        if set(payload.get("states", [])) != required_states:
+            errors.append("certification workflow must declare canonical states")
+        if len(payload.get("required_evidence_gates", [])) < 10:
+            errors.append("certification workflow must declare evidence gates")
+        if int(payload.get("certified_count", -1)) != 0:
+            errors.append("certification workflow cannot certify capabilities yet")
+        if int(payload.get("runtime_invocation_allowed_count", -1)) != 0:
+            errors.append("certification workflow cannot allow runtime invocation")
+        for state in payload.get("capability_states", []):
+            if state.get("state") == "certified":
+                errors.append(f"capability {state.get('capability_id')} cannot be certified yet")
+            if state.get("evidence_complete") is not False:
+                errors.append(f"capability {state.get('capability_id')} cannot claim evidence complete")
+            if state.get("runtime_invocation_allowed") is not False:
+                errors.append(f"capability {state.get('capability_id')} cannot allow runtime invocation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("certification workflow cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("certification workflow cannot authorize production decisions")
+    if kind == "runtime_authority_gate_contract":
+        if payload.get("default_authority") != "blocked":
+            errors.append("runtime authority gate must default to blocked")
+        if payload.get("default_production_decision_authority") != "blocked":
+            errors.append("runtime authority gate must block production decision authority")
+        required_headers = {"Idempotency-Key", "Correlation-Id"}
+        if len(payload.get("required_live_evidence", [])) < 5:
+            errors.append("runtime authority gate must declare live evidence requirements")
+        for operation in payload.get("operations", []):
+            if operation.get("method") == "POST" and set(operation.get("headers_required", [])) != required_headers:
+                errors.append(f"runtime authority operation {operation.get('operation')} missing required headers")
+            if operation.get("operation") == "grant" and operation.get("blocked_without_live_evidence") is not True:
+                errors.append("runtime authority grant must be blocked without live evidence")
+        for fixture in payload.get("negative_fixtures", []):
+            if fixture.get("authority_granted") is not False:
+                errors.append(f"negative fixture {fixture.get('fixture_id')} cannot grant authority")
+        if payload.get("runtime_authority_granted") is not False:
+            errors.append("runtime authority gate cannot grant authority")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("runtime authority gate cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("runtime authority gate cannot authorize production decisions")
+    if kind == "cost_usage_evidence_contract":
+        if payload.get("billing_integration_enabled") is not False:
+            errors.append("cost usage contract cannot enable billing integration yet")
+        if len(payload.get("usage_record_types", [])) < 6:
+            errors.append("cost usage contract must include core usage record types")
+        required_fields = set(payload.get("required_fields", []))
+        for record in payload.get("sample_records", []):
+            missing = [field for field in required_fields if field not in record]
+            if missing:
+                errors.append(f"usage record {record.get('usage_id')} missing fields: {missing}")
+            if record.get("live_invocation") is True:
+                errors.append(f"usage record {record.get('usage_id')} cannot observe live invocation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("cost usage contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("cost usage contract cannot authorize production decisions")
+    if kind == "shared_context_semantic_projection_contract":
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("semantic projection cannot allow direct database access")
+        if payload.get("hidden_shared_state_allowed") is not False:
+            errors.append("semantic projection cannot allow hidden shared state")
+        if len(payload.get("projection_contracts", [])) < 2:
+            errors.append("semantic projection contract must include projection examples")
+        for projection in payload.get("projection_contracts", []):
+            for field in [
+                "purpose",
+                "ttl_seconds",
+                "masking_rules",
+                "consent_or_approval_required",
+                "source_lineage",
+                "freshness_rule",
+                "validity_rule",
+                "policy_decision_evidence_uri",
+            ]:
+                if field not in projection:
+                    errors.append(f"projection {projection.get('projection_id')} missing {field}")
+            if int(projection.get("ttl_seconds", 0) or 0) <= 0:
+                errors.append(f"projection {projection.get('projection_id')} must declare TTL")
+            if projection.get("consent_or_approval_required") is not True:
+                errors.append(f"projection {projection.get('projection_id')} must require consent or approval")
+        if payload.get("runtime_context_exchange_authorized") is not False:
+            errors.append("semantic projection cannot authorize runtime context exchange")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("semantic projection cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("semantic projection cannot authorize production decisions")
+    if kind == "product_pack_developer_kit":
+        if len(payload.get("scaffold_checklist", [])) < 10:
+            errors.append("developer kit must include scaffold checklist")
+        if len(payload.get("validation_rules", [])) < 6:
+            errors.append("developer kit must include validation rules")
+        if len(payload.get("example_products", [])) < 3:
+            errors.append("developer kit must include product examples")
+        for product in payload.get("example_products", []):
+            if product.get("admission_stage") != "pre_runtime_review_simulation":
+                errors.append(f"product {product.get('product_id')} must stay pre-runtime")
+            if product.get("runtime_authority") != "none":
+                errors.append(f"product {product.get('product_id')} cannot have runtime authority")
+            if product.get("direct_database_access_allowed") is not False:
+                errors.append(f"product {product.get('product_id')} cannot allow direct database access")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("developer kit cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("developer kit cannot authorize production decisions")
     return errors
 
 
@@ -1295,6 +1454,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "adapter_evidence_contract_kit": examples / "adapter-evidence-contract-kit.json",
         "governance_store_logical_api": examples / "governance-store-logical-api.json",
         "event_recovery_contract_v2": examples / "event-recovery-contract-v2.json",
+        "shared_capability_certification_workflow": examples / "shared-capability-certification-workflow.json",
+        "runtime_authority_gate_contract": examples / "runtime-authority-gate-contract.json",
+        "cost_usage_evidence_contract": examples / "cost-usage-evidence-contract.json",
+        "shared_context_semantic_projection_contract": examples / "shared-context-semantic-projection-contract.json",
+        "product_pack_developer_kit": examples / "product-pack-developer-kit.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

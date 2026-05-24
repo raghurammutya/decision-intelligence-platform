@@ -1,0 +1,31 @@
+{
+  "schema_version": "shared-capability-certification-workflow/v1",
+  "workflow_id": "dip-shared-capability-certification-workflow-v26",
+  "states": ["candidate", "observed", "evidence_incomplete", "certified", "revoked"],
+  "required_evidence_gates": [
+    "neutral_contract",
+    "domain_coupling_review",
+    "auth_boundary",
+    "tenant_isolation",
+    "policy_hooks",
+    "audit_export",
+    "lineage_export",
+    "failure_mode_tests",
+    "observability",
+    "cost_attribution",
+    "promotion_evidence",
+    "rollback_evidence"
+  ],
+  "capability_states": [
+    {"capability_id": "user_service", "state": "evidence_incomplete", "evidence_complete": false, "runtime_invocation_allowed": false},
+    {"capability_id": "config_service", "state": "evidence_incomplete", "evidence_complete": false, "runtime_invocation_allowed": false},
+    {"capability_id": "algo_engine", "state": "observed", "evidence_complete": false, "runtime_invocation_allowed": false},
+    {"capability_id": "ml_runtime_service", "state": "candidate", "evidence_complete": false, "runtime_invocation_allowed": false},
+    {"capability_id": "postgres_timescaledb", "state": "candidate", "evidence_complete": false, "runtime_invocation_allowed": false},
+    {"capability_id": "redis", "state": "candidate", "evidence_complete": false, "runtime_invocation_allowed": false}
+  ],
+  "certified_count": 0,
+  "runtime_invocation_allowed_count": 0,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

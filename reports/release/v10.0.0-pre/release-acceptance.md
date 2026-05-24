@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `65`
+Case manifest artifacts: `70`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -289,6 +289,30 @@ v25.0 REST event log required: `True`
 v25.0 reconnect recovery required: `True`
 v25.0 contract closure valid: `True`
 v25.0 closure gates complete: `5/5`
+v26.0 certification workflow valid: `True`
+v26.0 certified count: `0`
+v26.0 runtime invocation allowed count: `0`
+v26.0 evidence complete count: `0`
+v27.0 runtime authority gate valid: `True`
+v27.0 runtime authority granted: `False`
+v27.0 negative fixtures block authority: `True`
+v27.0 required live evidence count: `5`
+v28.0 cost usage evidence valid: `True`
+v28.0 billing integration enabled: `False`
+v28.0 usage record types: `7`
+v28.0 live invocation observed count: `0`
+v29.0 semantic projection valid: `True`
+v29.0 direct database access allowed: `False`
+v29.0 hidden shared state allowed: `False`
+v29.0 runtime context exchange authorized: `False`
+v29.0 projections require approval: `True`
+v29.0 projections have policy evidence: `True`
+v30.0 product-pack developer kit valid: `True`
+v30.0 example products: `3`
+v30.0 runtime authority granted count: `0`
+v30.0 direct database access allowed: `False`
+v30.0 platform operating model closure valid: `True`
+v30.0 closure gates complete: `5/5`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -344,3 +368,8 @@ Release acceptance passed: `True`
 - `adapter evidence contracts invoke live shared services`
 - `governance-store logical API selects production storage`
 - `event recovery v2 makes WebSocket authoritative`
+- `shared capability certification workflow certifies services`
+- `runtime authority gate grants authority from local fixtures`
+- `cost usage evidence is live billing integration`
+- `shared context projections allow product database access`
+- `product-pack developer kit grants runtime authority`

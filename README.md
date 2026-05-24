@@ -90,10 +90,10 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
-## v11.0-v25.0 API-First Platform Foundation
+## v11.0-v30.0 API-First Platform Foundation
 
 ```bash
-python3 -m dip_framework release-pack --version v25.0.0-pre
+python3 -m dip_framework release-pack --version v30.0.0-pre
 ```
 
 v11.0 adds the API-first modular platform architecture, product-pack registry,
@@ -109,7 +109,10 @@ architecture closure gate. v21.0 adds the canonical OpenAPI contract with
 mutation header gates. v22.0 adds the product-pack contract kit. v23.0 adds the
 adapter evidence contract kit. v24.0 adds the governance-store logical API.
 v25.0 adds the event recovery v2 contract and contract closure gate. These
-releases remain contract and evidence
+v26.0 adds the shared capability certification workflow. v27.0 adds the runtime
+authority gate contract. v28.0 adds cost and usage evidence. v29.0 adds shared
+context semantic projection contracts. v30.0 adds the product-pack developer kit
+and platform operating model closure gate. These releases remain contract and evidence
 foundation only: no service is certified for runtime use, no product pack has
 runtime authority, no product can use direct database access, WebSocket is not
 authoritative, no production governance-store backend is selected, and

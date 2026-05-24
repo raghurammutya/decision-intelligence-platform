@@ -70,6 +70,11 @@ ARTIFACTS = [
     ("adapter_evidence_contract_kit", "examples/adapter-evidence-contract-kit.json"),
     ("governance_store_logical_api", "examples/governance-store-logical-api.json"),
     ("event_recovery_contract_v2", "examples/event-recovery-contract-v2.json"),
+    ("shared_capability_certification_workflow", "examples/shared-capability-certification-workflow.json"),
+    ("runtime_authority_gate_contract", "examples/runtime-authority-gate-contract.json"),
+    ("cost_usage_evidence_contract", "examples/cost-usage-evidence-contract.json"),
+    ("shared_context_semantic_projection_contract", "examples/shared-context-semantic-projection-contract.json"),
+    ("product_pack_developer_kit", "examples/product-pack-developer-kit.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -2920,6 +2925,173 @@ def evaluate_v25_contract_closure(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_shared_capability_certification_workflow(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/shared-capability-certification-workflow.json")
+    result = validate_file(
+        "shared_capability_certification_workflow",
+        root / "examples/shared-capability-certification-workflow.json",
+    )
+    states = contract.get("capability_states", [])
+    return {
+        "schema_version": "shared-capability-certification-workflow-evaluation/v1",
+        "evaluation_id": "v26.0-shared-capability-certification-workflow-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "state_count": len(contract.get("states", [])),
+        "capability_state_count": len(states),
+        "certified_count": contract.get("certified_count", 0),
+        "runtime_invocation_allowed_count": contract.get("runtime_invocation_allowed_count", 0),
+        "evidence_complete_count": len([state for state in states if state.get("evidence_complete") is True]),
+        "certification_workflow_valid": result.get("passed") is True
+        and contract.get("certified_count", 1) == 0
+        and contract.get("runtime_invocation_allowed_count", 1) == 0
+        and all(state.get("state") != "certified" for state in states)
+        and all(state.get("runtime_invocation_allowed") is False for state in states),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_runtime_authority_gate_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/runtime-authority-gate-contract.json")
+    result = validate_file("runtime_authority_gate_contract", root / "examples/runtime-authority-gate-contract.json")
+    fixtures = contract.get("negative_fixtures", [])
+    return {
+        "schema_version": "runtime-authority-gate-contract-evaluation/v1",
+        "evaluation_id": "v27.0-runtime-authority-gate-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "operation_count": len(contract.get("operations", [])),
+        "required_live_evidence_count": len(contract.get("required_live_evidence", [])),
+        "negative_fixture_count": len(fixtures),
+        "negative_fixtures_block_authority": all(fixture.get("authority_granted") is False for fixture in fixtures),
+        "runtime_authority_granted": contract.get("runtime_authority_granted") is True,
+        "runtime_authority_gate_contract_valid": result.get("passed") is True
+        and contract.get("default_authority") == "blocked"
+        and contract.get("default_production_decision_authority") == "blocked"
+        and len(contract.get("required_live_evidence", [])) >= 5
+        and all(fixture.get("authority_granted") is False for fixture in fixtures)
+        and contract.get("runtime_authority_granted") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_cost_usage_evidence_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/cost-usage-evidence-contract.json")
+    result = validate_file("cost_usage_evidence_contract", root / "examples/cost-usage-evidence-contract.json")
+    records = contract.get("sample_records", [])
+    return {
+        "schema_version": "cost-usage-evidence-contract-evaluation/v1",
+        "evaluation_id": "v28.0-cost-usage-evidence-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "usage_record_type_count": len(contract.get("usage_record_types", [])),
+        "required_field_count": len(contract.get("required_fields", [])),
+        "sample_record_count": len(records),
+        "billing_integration_enabled": contract.get("billing_integration_enabled") is True,
+        "live_invocation_observed_count": len([record for record in records if record.get("live_invocation") is True]),
+        "cost_usage_evidence_contract_valid": result.get("passed") is True
+        and contract.get("billing_integration_enabled") is False
+        and len(contract.get("usage_record_types", [])) >= 6
+        and len(records) >= 2,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_shared_context_semantic_projection_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/shared-context-semantic-projection-contract.json")
+    result = validate_file(
+        "shared_context_semantic_projection_contract",
+        root / "examples/shared-context-semantic-projection-contract.json",
+    )
+    projections = contract.get("projection_contracts", [])
+    return {
+        "schema_version": "shared-context-semantic-projection-contract-evaluation/v1",
+        "evaluation_id": "v29.0-shared-context-semantic-projection-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "projection_count": len(projections),
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "hidden_shared_state_allowed": contract.get("hidden_shared_state_allowed") is True,
+        "runtime_context_exchange_authorized": contract.get("runtime_context_exchange_authorized") is True,
+        "all_projections_require_approval": all(
+            projection.get("consent_or_approval_required") is True for projection in projections
+        ),
+        "all_projections_have_policy_evidence": all(
+            bool(projection.get("policy_decision_evidence_uri")) for projection in projections
+        ),
+        "semantic_projection_contract_valid": result.get("passed") is True
+        and len(projections) >= 2
+        and contract.get("direct_database_access_allowed") is False
+        and contract.get("hidden_shared_state_allowed") is False
+        and contract.get("runtime_context_exchange_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_product_pack_developer_kit(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/product-pack-developer-kit.json")
+    result = validate_file("product_pack_developer_kit", root / "examples/product-pack-developer-kit.json")
+    products = contract.get("example_products", [])
+    return {
+        "schema_version": "product-pack-developer-kit-evaluation/v1",
+        "evaluation_id": "v30.0-product-pack-developer-kit-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "scaffold_check_count": len(contract.get("scaffold_checklist", [])),
+        "validation_rule_count": len(contract.get("validation_rules", [])),
+        "example_product_count": len(products),
+        "runtime_authority_granted_count": len(
+            [product for product in products if product.get("runtime_authority") != "none"]
+        ),
+        "direct_database_access_allowed": any(
+            product.get("direct_database_access_allowed") is True for product in products
+        ),
+        "developer_kit_valid": result.get("passed") is True
+        and len(contract.get("scaffold_checklist", [])) >= 10
+        and len(contract.get("validation_rules", [])) >= 6
+        and len(products) >= 3
+        and all(product.get("runtime_authority") == "none" for product in products)
+        and all(product.get("direct_database_access_allowed") is False for product in products),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v30_platform_operating_model_closure(root: Path = ROOT) -> dict[str, Any]:
+    v26 = load_json(root / "reports/trust-loop/shared-capability-certification-workflow.json")
+    v27 = load_json(root / "reports/trust-loop/runtime-authority-gate-contract.json")
+    v28 = load_json(root / "reports/trust-loop/cost-usage-evidence-contract.json")
+    v29 = load_json(root / "reports/trust-loop/shared-context-semantic-projection-contract.json")
+    v30 = load_json(root / "reports/trust-loop/product-pack-developer-kit.json")
+    gates = {
+        "v26_certification_workflow_valid": v26.get("certification_workflow_valid") is True,
+        "v27_runtime_authority_gate_contract_valid": v27.get("runtime_authority_gate_contract_valid") is True,
+        "v28_cost_usage_evidence_contract_valid": v28.get("cost_usage_evidence_contract_valid") is True,
+        "v29_semantic_projection_contract_valid": v29.get("semantic_projection_contract_valid") is True,
+        "v30_developer_kit_valid": v30.get("developer_kit_valid") is True,
+    }
+    return {
+        "schema_version": "v30-platform-operating-model-closure-evaluation/v1",
+        "evaluation_id": "v30.0-safe-platform-operating-model-closure-1",
+        "computed": True,
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "v30_platform_operating_model_closure_valid": all(gates.values())
+        and v26.get("certified_count", 1) == 0
+        and v27.get("runtime_authority_granted") is False
+        and v28.get("billing_integration_enabled") is False
+        and v29.get("direct_database_access_allowed") is False
+        and v30.get("runtime_authority_granted_count", 1) == 0,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -3705,6 +3877,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     governance_store_logical_api = load_json(root / "reports/trust-loop/governance-store-logical-api.json")
     event_recovery_contract_v2 = load_json(root / "reports/trust-loop/event-recovery-contract-v2.json")
     v25_closure = load_json(root / "reports/trust-loop/v25-contract-closure.json")
+    certification_workflow = load_json(root / "reports/trust-loop/shared-capability-certification-workflow.json")
+    runtime_authority_gate_contract = load_json(root / "reports/trust-loop/runtime-authority-gate-contract.json")
+    cost_usage_evidence_contract = load_json(root / "reports/trust-loop/cost-usage-evidence-contract.json")
+    semantic_projection_contract = load_json(root / "reports/trust-loop/shared-context-semantic-projection-contract.json")
+    product_pack_developer_kit = load_json(root / "reports/trust-loop/product-pack-developer-kit.json")
+    v30_closure = load_json(root / "reports/trust-loop/v30-platform-operating-model-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -4334,6 +4512,70 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         "v25_0_contract_closure_valid": v25_closure.get("v25_contract_closure_valid") is True,
         "v25_0_closure_gate_complete_count": v25_closure.get("closure_gate_complete_count", 0),
         "v25_0_closure_gate_count": v25_closure.get("closure_gate_count", 0),
+        "v26_0_certification_workflow_valid": certification_workflow.get("certification_workflow_valid") is True,
+        "v26_0_certified_count": certification_workflow.get("certified_count", 0),
+        "v26_0_runtime_invocation_allowed_count": certification_workflow.get(
+            "runtime_invocation_allowed_count", 0
+        ),
+        "v26_0_evidence_complete_count": certification_workflow.get("evidence_complete_count", 0),
+        "v27_0_runtime_authority_gate_contract_valid": runtime_authority_gate_contract.get(
+            "runtime_authority_gate_contract_valid"
+        )
+        is True,
+        "v27_0_runtime_authority_granted": runtime_authority_gate_contract.get("runtime_authority_granted")
+        is True,
+        "v27_0_negative_fixtures_block_authority": runtime_authority_gate_contract.get(
+            "negative_fixtures_block_authority"
+        )
+        is True,
+        "v27_0_required_live_evidence_count": runtime_authority_gate_contract.get(
+            "required_live_evidence_count", 0
+        ),
+        "v28_0_cost_usage_evidence_contract_valid": cost_usage_evidence_contract.get(
+            "cost_usage_evidence_contract_valid"
+        )
+        is True,
+        "v28_0_billing_integration_enabled": cost_usage_evidence_contract.get("billing_integration_enabled")
+        is True,
+        "v28_0_usage_record_type_count": cost_usage_evidence_contract.get("usage_record_type_count", 0),
+        "v28_0_live_invocation_observed_count": cost_usage_evidence_contract.get(
+            "live_invocation_observed_count", 0
+        ),
+        "v29_0_semantic_projection_contract_valid": semantic_projection_contract.get(
+            "semantic_projection_contract_valid"
+        )
+        is True,
+        "v29_0_direct_database_access_allowed": semantic_projection_contract.get(
+            "direct_database_access_allowed"
+        )
+        is True,
+        "v29_0_hidden_shared_state_allowed": semantic_projection_contract.get("hidden_shared_state_allowed")
+        is True,
+        "v29_0_runtime_context_exchange_authorized": semantic_projection_contract.get(
+            "runtime_context_exchange_authorized"
+        )
+        is True,
+        "v29_0_all_projections_require_approval": semantic_projection_contract.get(
+            "all_projections_require_approval"
+        )
+        is True,
+        "v29_0_all_projections_have_policy_evidence": semantic_projection_contract.get(
+            "all_projections_have_policy_evidence"
+        )
+        is True,
+        "v30_0_product_pack_developer_kit_valid": product_pack_developer_kit.get("developer_kit_valid") is True,
+        "v30_0_example_product_count": product_pack_developer_kit.get("example_product_count", 0),
+        "v30_0_runtime_authority_granted_count": product_pack_developer_kit.get(
+            "runtime_authority_granted_count", 0
+        ),
+        "v30_0_direct_database_access_allowed": product_pack_developer_kit.get("direct_database_access_allowed")
+        is True,
+        "v30_0_platform_operating_model_closure_valid": v30_closure.get(
+            "v30_platform_operating_model_closure_valid"
+        )
+        is True,
+        "v30_0_closure_gate_complete_count": v30_closure.get("closure_gate_complete_count", 0),
+        "v30_0_closure_gate_count": v30_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -4532,6 +4774,23 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and event_recovery_contract_v2.get("rest_event_log_required") is True
         and event_recovery_contract_v2.get("reconnect_recovery_required") is True
         and v25_closure.get("v25_contract_closure_valid") is True
+        and certification_workflow.get("certification_workflow_valid") is True
+        and certification_workflow.get("certified_count", 1) == 0
+        and certification_workflow.get("runtime_invocation_allowed_count", 1) == 0
+        and runtime_authority_gate_contract.get("runtime_authority_gate_contract_valid") is True
+        and runtime_authority_gate_contract.get("runtime_authority_granted") is False
+        and runtime_authority_gate_contract.get("negative_fixtures_block_authority") is True
+        and cost_usage_evidence_contract.get("cost_usage_evidence_contract_valid") is True
+        and cost_usage_evidence_contract.get("billing_integration_enabled") is False
+        and cost_usage_evidence_contract.get("live_invocation_observed_count", 1) == 0
+        and semantic_projection_contract.get("semantic_projection_contract_valid") is True
+        and semantic_projection_contract.get("direct_database_access_allowed") is False
+        and semantic_projection_contract.get("hidden_shared_state_allowed") is False
+        and semantic_projection_contract.get("runtime_context_exchange_authorized") is False
+        and product_pack_developer_kit.get("developer_kit_valid") is True
+        and product_pack_developer_kit.get("runtime_authority_granted_count", 1) == 0
+        and product_pack_developer_kit.get("direct_database_access_allowed") is False
+        and v30_closure.get("v30_platform_operating_model_closure_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -4581,6 +4840,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "adapter evidence contracts invoke live shared services",
             "governance-store logical API selects production storage",
             "event recovery v2 makes WebSocket authoritative",
+            "shared capability certification workflow certifies services",
+            "runtime authority gate grants authority from local fixtures",
+            "cost usage evidence is live billing integration",
+            "shared context projections allow product database access",
+            "product-pack developer kit grants runtime authority",
         ],
     }
 
@@ -4878,6 +5142,30 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v25.0 reconnect recovery required: `{payload['v25_0_reconnect_recovery_required']}`",
         f"v25.0 contract closure valid: `{payload['v25_0_contract_closure_valid']}`",
         f"v25.0 closure gates complete: `{payload['v25_0_closure_gate_complete_count']}/{payload['v25_0_closure_gate_count']}`",
+        f"v26.0 certification workflow valid: `{payload['v26_0_certification_workflow_valid']}`",
+        f"v26.0 certified count: `{payload['v26_0_certified_count']}`",
+        f"v26.0 runtime invocation allowed count: `{payload['v26_0_runtime_invocation_allowed_count']}`",
+        f"v26.0 evidence complete count: `{payload['v26_0_evidence_complete_count']}`",
+        f"v27.0 runtime authority gate valid: `{payload['v27_0_runtime_authority_gate_contract_valid']}`",
+        f"v27.0 runtime authority granted: `{payload['v27_0_runtime_authority_granted']}`",
+        f"v27.0 negative fixtures block authority: `{payload['v27_0_negative_fixtures_block_authority']}`",
+        f"v27.0 required live evidence count: `{payload['v27_0_required_live_evidence_count']}`",
+        f"v28.0 cost usage evidence valid: `{payload['v28_0_cost_usage_evidence_contract_valid']}`",
+        f"v28.0 billing integration enabled: `{payload['v28_0_billing_integration_enabled']}`",
+        f"v28.0 usage record types: `{payload['v28_0_usage_record_type_count']}`",
+        f"v28.0 live invocation observed count: `{payload['v28_0_live_invocation_observed_count']}`",
+        f"v29.0 semantic projection valid: `{payload['v29_0_semantic_projection_contract_valid']}`",
+        f"v29.0 direct database access allowed: `{payload['v29_0_direct_database_access_allowed']}`",
+        f"v29.0 hidden shared state allowed: `{payload['v29_0_hidden_shared_state_allowed']}`",
+        f"v29.0 runtime context exchange authorized: `{payload['v29_0_runtime_context_exchange_authorized']}`",
+        f"v29.0 projections require approval: `{payload['v29_0_all_projections_require_approval']}`",
+        f"v29.0 projections have policy evidence: `{payload['v29_0_all_projections_have_policy_evidence']}`",
+        f"v30.0 product-pack developer kit valid: `{payload['v30_0_product_pack_developer_kit_valid']}`",
+        f"v30.0 example products: `{payload['v30_0_example_product_count']}`",
+        f"v30.0 runtime authority granted count: `{payload['v30_0_runtime_authority_granted_count']}`",
+        f"v30.0 direct database access allowed: `{payload['v30_0_direct_database_access_allowed']}`",
+        f"v30.0 platform operating model closure valid: `{payload['v30_0_platform_operating_model_closure_valid']}`",
+        f"v30.0 closure gates complete: `{payload['v30_0_closure_gate_complete_count']}/{payload['v30_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -5052,6 +5340,18 @@ def write_v0_2_evidence(
     write_json(target / "event-recovery-contract-v2.json", event_recovery_contract_v2)
     v25_closure = evaluate_v25_contract_closure(root)
     write_json(target / "v25-contract-closure.json", v25_closure)
+    certification_workflow = evaluate_shared_capability_certification_workflow(root)
+    write_json(target / "shared-capability-certification-workflow.json", certification_workflow)
+    runtime_authority_gate_contract = evaluate_runtime_authority_gate_contract(root)
+    write_json(target / "runtime-authority-gate-contract.json", runtime_authority_gate_contract)
+    cost_usage_evidence_contract = evaluate_cost_usage_evidence_contract(root)
+    write_json(target / "cost-usage-evidence-contract.json", cost_usage_evidence_contract)
+    semantic_projection_contract = evaluate_shared_context_semantic_projection_contract(root)
+    write_json(target / "shared-context-semantic-projection-contract.json", semantic_projection_contract)
+    product_pack_developer_kit = evaluate_product_pack_developer_kit(root)
+    write_json(target / "product-pack-developer-kit.json", product_pack_developer_kit)
+    v30_closure = evaluate_v30_platform_operating_model_closure(root)
+    write_json(target / "v30-platform-operating-model-closure.json", v30_closure)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -5128,6 +5428,12 @@ def write_v0_2_evidence(
         "governance_store_logical_api": governance_store_logical_api,
         "event_recovery_contract_v2": event_recovery_contract_v2,
         "v25_closure": v25_closure,
+        "certification_workflow": certification_workflow,
+        "runtime_authority_gate_contract": runtime_authority_gate_contract,
+        "cost_usage_evidence_contract": cost_usage_evidence_contract,
+        "semantic_projection_contract": semantic_projection_contract,
+        "product_pack_developer_kit": product_pack_developer_kit,
+        "v30_closure": v30_closure,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

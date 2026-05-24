@@ -1,0 +1,15 @@
+{
+  "all_projections_have_policy_evidence": true,
+  "all_projections_require_approval": true,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v29.0-shared-context-semantic-projection-contract-1",
+  "hidden_shared_state_allowed": false,
+  "production_decision_execution_authorized": false,
+  "projection_count": 2,
+  "runtime_context_exchange_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "shared-context-semantic-projection-contract-evaluation/v1",
+  "semantic_projection_contract_valid": true
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "runtime-authority-gate-contract/v1",
+  "contract_id": "dip-runtime-authority-gate-contract-v27",
+  "default_authority": "blocked",
+  "default_production_decision_authority": "blocked",
+  "operations": [
+    {"operation": "request", "path": "/api/v1/runtime-authority/requests", "method": "POST", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"operation": "review", "path": "/api/v1/runtime-authority/requests/{request_id}/review", "method": "POST", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"operation": "deny", "path": "/api/v1/runtime-authority/requests/{request_id}/deny", "method": "POST", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"operation": "grant", "path": "/api/v1/runtime-authority/requests/{request_id}/grant", "method": "POST", "headers_required": ["Idempotency-Key", "Correlation-Id"], "blocked_without_live_evidence": true},
+    {"operation": "revoke", "path": "/api/v1/runtime-authority/requests/{request_id}/revoke", "method": "POST", "headers_required": ["Idempotency-Key", "Correlation-Id"]}
+  ],
+  "required_live_evidence": [
+    "live_identity_authority",
+    "live_approval_provider",
+    "production_case_store",
+    "promotion_chain_execution",
+    "runtime_control_plane"
+  ],
+  "negative_fixtures": [
+    {"fixture_id": "local_fixture_only", "authority_granted": false, "blocked_reason": "live evidence missing"},
+    {"fixture_id": "ai_generated_request", "authority_granted": false, "blocked_reason": "AI cannot approve runtime authority"},
+    {"fixture_id": "missing_case_store", "authority_granted": false, "blocked_reason": "production case store missing"}
+  ],
+  "runtime_authority_granted": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

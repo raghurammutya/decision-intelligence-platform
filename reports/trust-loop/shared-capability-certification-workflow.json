@@ -1,0 +1,14 @@
+{
+  "capability_state_count": 6,
+  "certification_workflow_valid": true,
+  "certified_count": 0,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v26.0-shared-capability-certification-workflow-1",
+  "evidence_complete_count": 0,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "runtime_invocation_allowed_count": 0,
+  "schema_version": "shared-capability-certification-workflow-evaluation/v1",
+  "state_count": 5
+}

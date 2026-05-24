@@ -10,7 +10,7 @@
   "durable_evidence_backend_valid": true,
   "evaluation_id": "durable-evidence-backend-v2.8-pre-runtime-1",
   "manifest_chain_verification_from_backend": true,
-  "manifest_hash": "9b993f44601123f4bd24a5efc4a8522ca061e5ef7db555483d4c94b2607fcd97",
+  "manifest_hash": "1e084186c8e5898e1cf61cd4f6bd10e54609a7a95227bee7424fc30fa8cc7509",
   "mutation_denied_observed": true,
   "production_decision_execution_authorized": false,
   "production_storage_backend_observed": false,

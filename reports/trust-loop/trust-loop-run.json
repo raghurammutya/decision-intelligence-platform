@@ -75,6 +75,12 @@
     "evaluate_governance_store_logical_api",
     "evaluate_event_recovery_contract_v2",
     "evaluate_v25_contract_closure",
+    "evaluate_shared_capability_certification_workflow",
+    "evaluate_runtime_authority_gate_contract",
+    "evaluate_cost_usage_evidence_contract",
+    "evaluate_shared_context_semantic_projection_contract",
+    "evaluate_product_pack_developer_kit",
+    "evaluate_v30_platform_operating_model_closure",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

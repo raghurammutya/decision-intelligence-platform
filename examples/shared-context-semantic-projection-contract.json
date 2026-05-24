@@ -1,0 +1,33 @@
+{
+  "schema_version": "shared-context-semantic-projection-contract/v1",
+  "contract_id": "dip-shared-context-semantic-projection-v29",
+  "direct_database_access_allowed": false,
+  "hidden_shared_state_allowed": false,
+  "projection_contracts": [
+    {
+      "projection_id": "engineering-governance-summary",
+      "purpose": "review readiness summary",
+      "ttl_seconds": 86400,
+      "masking_rules": ["mask_personal_tokens", "mask_secret_values"],
+      "consent_or_approval_required": true,
+      "source_lineage": ["edi_case_pack"],
+      "freshness_rule": "generated_at_within_ttl",
+      "validity_rule": "policy_decision_allow_or_approval_required",
+      "policy_decision_evidence_uri": "/api/v1/evidence/policy_decision_1"
+    },
+    {
+      "projection_id": "market-signal-semantic-projection",
+      "purpose": "pre-runtime trading decision review",
+      "ttl_seconds": 3600,
+      "masking_rules": ["aggregate_positions", "mask_account_identifiers"],
+      "consent_or_approval_required": true,
+      "source_lineage": ["ml_signal_case_pack"],
+      "freshness_rule": "market_context_within_window",
+      "validity_rule": "risk_policy_preflight_required",
+      "policy_decision_evidence_uri": "/api/v1/evidence/policy_decision_2"
+    }
+  ],
+  "runtime_context_exchange_authorized": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

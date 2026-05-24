@@ -1,0 +1,14 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v27.0-runtime-authority-gate-contract-1",
+  "negative_fixture_count": 3,
+  "negative_fixtures_block_authority": true,
+  "operation_count": 5,
+  "production_decision_execution_authorized": false,
+  "required_live_evidence_count": 5,
+  "runtime_authority_gate_contract_valid": true,
+  "runtime_authority_granted": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "runtime-authority-gate-contract-evaluation/v1"
+}

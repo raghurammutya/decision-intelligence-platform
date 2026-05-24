@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 41,
-  "record_count": 41,
+  "passed_count": 46,
+  "record_count": 46,
   "records": [
     {
       "errors": [],
@@ -248,6 +248,36 @@
       "kind": "event_recovery_contract_v2",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/event-recovery-contract-v2.json"
+    },
+    {
+      "errors": [],
+      "kind": "shared_capability_certification_workflow",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/shared-capability-certification-workflow.json"
+    },
+    {
+      "errors": [],
+      "kind": "runtime_authority_gate_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/runtime-authority-gate-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "cost_usage_evidence_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/cost-usage-evidence-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "shared_context_semantic_projection_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/shared-context-semantic-projection-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_developer_kit",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-developer-kit.json"
     }
   ]
 }

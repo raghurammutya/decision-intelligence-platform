@@ -1,0 +1,34 @@
+{
+  "schema_version": "cost-usage-evidence-contract/v1",
+  "contract_id": "dip-cost-usage-evidence-contract-v28",
+  "billing_integration_enabled": false,
+  "usage_record_types": [
+    "simulation_run",
+    "decision_diff",
+    "approval_request",
+    "adapter_call",
+    "product_pack_review",
+    "replay_run",
+    "case_evidence_export"
+  ],
+  "required_fields": [
+    "usage_id",
+    "tenant_id",
+    "product_id",
+    "case_id",
+    "resource_type",
+    "resource_id",
+    "meter_name",
+    "quantity",
+    "unit",
+    "cost_center",
+    "correlation_id",
+    "lineage"
+  ],
+  "sample_records": [
+    {"usage_id": "usage_sim_1", "tenant_id": "tenant_1", "product_id": "support-ticket-routing", "case_id": "case_1", "resource_type": "simulation_run", "resource_id": "sim_1", "meter_name": "simulation_case", "quantity": 13, "unit": "case", "cost_center": "support", "correlation_id": "corr_1", "lineage": ["decision_spec", "simulation_evidence"]},
+    {"usage_id": "usage_adapter_1", "tenant_id": "tenant_1", "product_id": "ml-trading-decisions", "case_id": "case_2", "resource_type": "adapter_call", "resource_id": "adapter_1", "meter_name": "candidate_adapter_call", "quantity": 0, "unit": "call", "cost_center": "trading", "correlation_id": "corr_2", "lineage": ["adapter_contract"], "live_invocation": false}
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

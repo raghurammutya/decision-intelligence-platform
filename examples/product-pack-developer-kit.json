@@ -1,0 +1,32 @@
+{
+  "schema_version": "product-pack-developer-kit/v1",
+  "kit_id": "dip-product-pack-developer-kit-v30",
+  "scaffold_checklist": [
+    "product_manifest",
+    "decision_specs",
+    "capability_graph",
+    "policy_bindings",
+    "simulation_cases",
+    "approval_boundary",
+    "case_evidence_contract",
+    "replay_contract",
+    "shared_context_contracts",
+    "cost_model",
+    "runtime_authority_none"
+  ],
+  "example_products": [
+    {"product_id": "edi-engineering-governance", "admission_stage": "pre_runtime_review_simulation", "runtime_authority": "none", "direct_database_access_allowed": false},
+    {"product_id": "ml-trading-decisions", "admission_stage": "pre_runtime_review_simulation", "runtime_authority": "none", "direct_database_access_allowed": false},
+    {"product_id": "support-ticket-routing", "admission_stage": "pre_runtime_review_simulation", "runtime_authority": "none", "direct_database_access_allowed": false}
+  ],
+  "validation_rules": [
+    "must_declare_owned_decisions",
+    "must_declare_consumed_capabilities",
+    "must_emit_evidence",
+    "must_support_replay",
+    "must_block_direct_database_access",
+    "must_block_runtime_authority"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

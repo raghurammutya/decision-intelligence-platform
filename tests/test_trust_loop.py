@@ -73,6 +73,12 @@ from dip_framework.v02 import (
     evaluate_governance_store_logical_api,
     evaluate_event_recovery_contract_v2,
     evaluate_v25_contract_closure,
+    evaluate_shared_capability_certification_workflow,
+    evaluate_runtime_authority_gate_contract,
+    evaluate_cost_usage_evidence_contract,
+    evaluate_shared_context_semantic_projection_contract,
+    evaluate_product_pack_developer_kit,
+    evaluate_v30_platform_operating_model_closure,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1128,6 +1134,53 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["v25_0_websocket_authoritative"])
         self.assertFalse(result["release"]["v25_0_events_mutate_business_state"])
         self.assertTrue(result["release"]["v25_0_contract_closure_valid"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v30_platform_operating_model_closure_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v30.0.0-pre")
+        certification = evaluate_shared_capability_certification_workflow(ROOT)
+        runtime_gate = evaluate_runtime_authority_gate_contract(ROOT)
+        cost_usage = evaluate_cost_usage_evidence_contract(ROOT)
+        semantic_projection = evaluate_shared_context_semantic_projection_contract(ROOT)
+        developer_kit = evaluate_product_pack_developer_kit(ROOT)
+        closure = evaluate_v30_platform_operating_model_closure(ROOT)
+
+        self.assertTrue(certification["certification_workflow_valid"])
+        self.assertEqual(certification["certified_count"], 0)
+        self.assertEqual(certification["runtime_invocation_allowed_count"], 0)
+        self.assertTrue(runtime_gate["runtime_authority_gate_contract_valid"])
+        self.assertFalse(runtime_gate["runtime_authority_granted"])
+        self.assertTrue(runtime_gate["negative_fixtures_block_authority"])
+        self.assertTrue(cost_usage["cost_usage_evidence_contract_valid"])
+        self.assertFalse(cost_usage["billing_integration_enabled"])
+        self.assertEqual(cost_usage["live_invocation_observed_count"], 0)
+        self.assertTrue(semantic_projection["semantic_projection_contract_valid"])
+        self.assertFalse(semantic_projection["direct_database_access_allowed"])
+        self.assertFalse(semantic_projection["hidden_shared_state_allowed"])
+        self.assertFalse(semantic_projection["runtime_context_exchange_authorized"])
+        self.assertTrue(developer_kit["developer_kit_valid"])
+        self.assertEqual(developer_kit["runtime_authority_granted_count"], 0)
+        self.assertFalse(developer_kit["direct_database_access_allowed"])
+        self.assertTrue(closure["v30_platform_operating_model_closure_valid"])
+        self.assertEqual(closure["closure_gate_complete_count"], closure["closure_gate_count"])
+        self.assertTrue(result["release"]["v26_0_certification_workflow_valid"])
+        self.assertEqual(result["release"]["v26_0_certified_count"], 0)
+        self.assertEqual(result["release"]["v26_0_runtime_invocation_allowed_count"], 0)
+        self.assertTrue(result["release"]["v27_0_runtime_authority_gate_contract_valid"])
+        self.assertFalse(result["release"]["v27_0_runtime_authority_granted"])
+        self.assertTrue(result["release"]["v27_0_negative_fixtures_block_authority"])
+        self.assertTrue(result["release"]["v28_0_cost_usage_evidence_contract_valid"])
+        self.assertFalse(result["release"]["v28_0_billing_integration_enabled"])
+        self.assertEqual(result["release"]["v28_0_live_invocation_observed_count"], 0)
+        self.assertTrue(result["release"]["v29_0_semantic_projection_contract_valid"])
+        self.assertFalse(result["release"]["v29_0_direct_database_access_allowed"])
+        self.assertFalse(result["release"]["v29_0_runtime_context_exchange_authorized"])
+        self.assertTrue(result["release"]["v30_0_product_pack_developer_kit_valid"])
+        self.assertEqual(result["release"]["v30_0_runtime_authority_granted_count"], 0)
+        self.assertFalse(result["release"]["v30_0_direct_database_access_allowed"])
+        self.assertTrue(result["release"]["v30_0_platform_operating_model_closure_valid"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

@@ -640,6 +640,82 @@ Required evidence:
 - events do not mutate business state
 - WebSocket is not authoritative
 
+### v26.0 Shared Capability Certification Workflow
+
+Purpose: define the certification lifecycle for shared capabilities without
+certifying any service for runtime use.
+
+Required evidence:
+
+- canonical certification states
+- required evidence gates
+- candidate capability states
+- certified count remains `0`
+- runtime invocation allowed count remains `0`
+
+### v27.0 Runtime Authority Gate Contract
+
+Purpose: define runtime authority request/review/deny/grant/revoke contracts
+while keeping authority blocked by default.
+
+Required evidence:
+
+- request, review, deny, grant, and revoke operations
+- idempotency and correlation headers
+- required live evidence list
+- negative fixtures block authority
+- runtime authority remains blocked
+- production decision authority remains blocked
+
+### v28.0 Cost And Usage Evidence Contract
+
+Purpose: define cost attribution evidence without integrating billing.
+
+Required evidence:
+
+- usage record types
+- required usage fields
+- simulation, adapter, approval, replay, and evidence export usage support
+- sample usage records
+- billing integration disabled
+- live invocation not observed
+
+### v29.0 Shared Context Semantic Projection Contract
+
+Purpose: define product collaboration through semantic projections, not direct
+database access.
+
+Required evidence:
+
+- purpose
+- TTL
+- masking rules
+- consent or approval requirement
+- source lineage
+- freshness rule
+- validity rule
+- policy decision evidence
+- direct database access denied
+- hidden shared state denied
+
+### v30.0 Product Pack Developer Kit
+
+Purpose: make product onboarding repeatable without granting runtime authority.
+
+Required evidence:
+
+- product manifest checklist
+- decision spec checklist
+- capability graph checklist
+- policy binding checklist
+- simulation case checklist
+- approval boundary checklist
+- evidence and replay checklist
+- shared context checklist
+- cost model checklist
+- runtime authority remains `none`
+- direct database access denied
+
 ### v2.7 Live Identity/RBAC Evidence
 
 Purpose: observe live identity and repository RBAC evidence without claiming a
