@@ -1,0 +1,23 @@
+{
+  "authority_prerequisites": {
+    "governed_advisory_runtime_complete": true,
+    "limited_runtime_authority_gate_complete": true,
+    "live_approval_provider_ready": false,
+    "live_identity_authority_ready": false,
+    "production_case_store_live_ready": false
+  },
+  "blocked_reasons": [
+    "live_identity_authority_ready",
+    "live_approval_provider_ready",
+    "production_case_store_live_ready"
+  ],
+  "computed": true,
+  "controlled_runtime_execution_authorized": false,
+  "controlled_runtime_execution_gate_complete": true,
+  "evaluation_id": "controlled-runtime-execution-v5.5-gate-1",
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "controlled-runtime-execution-gate/v1"
+}

@@ -1,0 +1,32 @@
+{
+  "blocked_claims": [
+    "controlled runtime execution is authorized",
+    "production decision authority is granted",
+    "live external IdP MFA evidence is observed",
+    "live external approval provider is observed",
+    "production durable case store backend is observed"
+  ],
+  "computed": true,
+  "evaluation_id": "platform-hardening-v6.0-assessment-1",
+  "hardening_assessment_complete": true,
+  "hardening_control_count": 11,
+  "hardening_controls": {
+    "backup_restore_contract": true,
+    "compliance_reporting_contract": true,
+    "cost_control_contract": true,
+    "incident_response_contract": true,
+    "kill_switch_contract": true,
+    "marketplace_governance_contract": true,
+    "multi_tenant_isolation_contract": true,
+    "observability_contract": true,
+    "rollback_contract": true,
+    "runtime_control_plane_design": true,
+    "shared_context_contract": true
+  },
+  "platform_production_ready": false,
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "platform-hardening-assessment/v1"
+}

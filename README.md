@@ -221,3 +221,27 @@ runtime authority:
 - v4.0 records the limited-runtime-authority gate as complete but authority
   remains blocked until live IdP/MFA, live approval provider, and production case
   store evidence exist.
+
+## v4.1-v6.0 Readiness Gates
+
+```bash
+python3 -m dip_framework release-pack --version v6.0.0-pre
+```
+
+v4.1 through v6.0 complete the next readiness sequence without granting hidden
+runtime authority:
+
+- v4.1 records the live identity evidence gate and keeps authority blocked while
+  live external IdP/MFA evidence is unavailable.
+- v4.2 records the live approval provider gate and keeps approval-provider
+  readiness blocked while no live provider is observed.
+- v4.3 records the production case-store gate and keeps storage readiness blocked
+  while no production backend is observed.
+- v4.4 records the release-promotion execution gate and keeps production
+  promotion blocked while no prod deployment was executed.
+- v5.0 records governed advisory runtime evidence with recommendations only, no
+  side effects, and no production mutation.
+- v5.5 records the controlled-runtime execution gate and keeps execution
+  authority blocked until all live prerequisites pass.
+- v6.0 records platform-hardening assessment evidence while keeping production
+  readiness false.

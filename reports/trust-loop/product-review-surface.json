@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 27,
+  "surface_count": 34,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -137,6 +137,41 @@
     {
       "id": "limited_runtime_authority_gate",
       "state": "authority_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "live_identity_evidence_gate",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "live_approval_provider_gate",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "production_case_store_gate",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "release_promotion_execution_gate",
+      "state": "blocked",
+      "summary": "False"
+    },
+    {
+      "id": "governed_advisory_runtime",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "controlled_runtime_execution_gate",
+      "state": "authority_blocked",
+      "summary": "False"
+    },
+    {
+      "id": "platform_hardening_assessment",
+      "state": "assessment_complete_runtime_blocked",
       "summary": "False"
     },
     {
