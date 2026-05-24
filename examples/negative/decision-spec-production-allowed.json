@@ -1,0 +1,26 @@
+{
+  "schema_version": "decision-spec/v1",
+  "decision_id": "negative-production-decision",
+  "decision_version": "0.0.0-negative",
+  "owner": "dip-test",
+  "environment_scope": {
+    "production_allowed": true
+  },
+  "intent": "Negative fixture proving production authority is blocked by validation.",
+  "inputs": [],
+  "capability_requirements": [],
+  "decision_logic": {},
+  "outputs": [],
+  "side_effects": [],
+  "risk": {
+    "risk_tier": 1
+  },
+  "approval": {
+    "required": true
+  },
+  "simulation": {
+    "required": true
+  },
+  "evidence_requirements": [],
+  "source_labels": []
+}

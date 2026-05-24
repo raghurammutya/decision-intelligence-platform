@@ -16,8 +16,7 @@ decision execution are blocked until separately evidenced and approved.
 ## Local Validation
 
 ```bash
-python3 -m dip_framework validate
-python3 -m unittest discover -s tests -p 'test_*.py'
+./scripts/validate.sh
 ```
 
 ## Trust Loop
@@ -90,3 +89,15 @@ The completion release adds review-surface evidence, a third concrete decision
 domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
+
+## v2.1 Governance Exception and Schema Stability
+
+```bash
+python3 -m dip_framework release-pack --version v2.1.0-pre
+```
+
+v2.1 records the solo-maintainer GitHub review workaround as a governed
+exception rather than independent review evidence. It also freezes first-wedge
+schema versions and validates negative fixtures for blocked production
+authority and AI approval. Runtime execution and production decision authority
+remain blocked.

@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 21,
+  "artifact_count": 27,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -46,6 +46,26 @@
       "artifact_type": "durable_evidence_store_policy",
       "path": "examples/durable-evidence-store-policy.json",
       "sha256": "d30e5b92d4c4fb6af5b04284bed8e40109d3a8981cdf01fe6cbc3fb99a1f744e"
+    },
+    {
+      "artifact_type": "solo_maintainer_governance_exception",
+      "path": "examples/solo-maintainer-governance-exception.json",
+      "sha256": "1cfd8014f6a4cf407c048d0bc22887b961967beb36553d5c9b1e3ba085c146a3"
+    },
+    {
+      "artifact_type": "schema_stability_policy",
+      "path": "examples/schema-stability-policy.json",
+      "sha256": "79038be8cfe30d812d3448c6e45574ac04dcabf44909f57531cd499ea0942a8d"
+    },
+    {
+      "artifact_type": "negative_decision_spec_fixture",
+      "path": "examples/negative/decision-spec-production-allowed.json",
+      "sha256": "f403146f63dcca3c5c17e98e90cf71b6adc4555c0c3364210e86b465151a59bf"
+    },
+    {
+      "artifact_type": "negative_approval_fixture",
+      "path": "examples/negative/approval-ai-approved.json",
+      "sha256": "22d22620ec70b0d9272fb8b97da05738a104327fac2aa21f34e142179843cfab"
     },
     {
       "artifact_type": "support_ticket_case_set",
@@ -103,6 +123,16 @@
       "sha256": "38fd376993481cd206135f6a6de7c55afea8ece4fa6f20c4a0fb8967ef513af1"
     },
     {
+      "artifact_type": "solo_maintainer_exception",
+      "path": "reports/trust-loop/solo-maintainer-exception.json",
+      "sha256": "c3d624d91fb684cba3631d0d8f7d3eccfa5c98f8b9c7f69651cfcea149cb407c"
+    },
+    {
+      "artifact_type": "schema_stability",
+      "path": "reports/trust-loop/schema-stability.json",
+      "sha256": "2d69c670091990e6cd036f9283931733ad58843e7219c13e27a4ff9278314eff"
+    },
+    {
       "artifact_type": "case_evidence",
       "path": "reports/trust-loop/case-evidence.json",
       "sha256": "41866953e4e036642056c8156abb3633b17380bb847bee678e3667efd2e2feeb"
@@ -110,11 +140,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "cbc044fb7acef890f520c2cd98b5e310158a5f48e36849e30feeff5406d0ae36",
+  "manifest_hash": "f106aa9410171285233886be23212483f7a00bc07c8e577f9f179ab95c6da813",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "b515a2e269dd7908a2d983315cf96d9c5f0ed572653f29bbef0721fa624d2340",
+  "parent_manifest_hash": "4188cf2f8bca2c8049cdc534e7f924eea4d492bf55011a8ff4b35ba869183404",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

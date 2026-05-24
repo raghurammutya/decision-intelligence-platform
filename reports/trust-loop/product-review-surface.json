@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 9,
+  "surface_count": 11,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -48,6 +48,16 @@
       "id": "shared_context",
       "state": "ready",
       "summary": "support-ticket-risk-context"
+    },
+    {
+      "id": "solo_maintainer_exception",
+      "state": "exception_recorded",
+      "summary": "True"
+    },
+    {
+      "id": "schema_stability",
+      "state": "ready",
+      "summary": "16 frozen contracts"
     },
     {
       "id": "runtime_readiness",

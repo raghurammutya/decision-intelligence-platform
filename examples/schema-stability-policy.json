@@ -1,0 +1,45 @@
+{
+  "schema_version": "schema-stability-policy/v1",
+  "policy_id": "dip-schema-stability",
+  "policy_version": "2.1.0-pre",
+  "source_boundary": "declared_schema_stability_policy_not_runtime_execution",
+  "frozen_contracts": [
+    {"kind": "decision_spec", "schema_version": "decision-spec/v1"},
+    {"kind": "capability_registry", "schema_version": "capability-registry/v1"},
+    {"kind": "policy_definitions", "schema_version": "policy-definitions/v1"},
+    {"kind": "preflight", "schema_version": "policy-preflight/v1"},
+    {"kind": "simulation", "schema_version": "simulation-evidence/v1"},
+    {"kind": "decision_diff", "schema_version": "decision-diff/v1"},
+    {"kind": "approval", "schema_version": "approval-record/v1"},
+    {"kind": "identity_rbac_registry", "schema_version": "identity-rbac-registry/v1"},
+    {"kind": "repository_governance_policy", "schema_version": "repository-governance-policy/v1"},
+    {"kind": "release_lifecycle_policy", "schema_version": "release-lifecycle-policy/v1"},
+    {"kind": "external_identity_evidence", "schema_version": "external-identity-evidence/v1"},
+    {"kind": "durable_evidence_store_policy", "schema_version": "durable-evidence-store-policy/v1"},
+    {"kind": "shared_context_contract", "schema_version": "shared-context-contract/v1"},
+    {"kind": "case_evidence", "schema_version": "case-evidence-pack/v1"},
+    {"kind": "replay", "schema_version": "replay-result/v1"},
+    {"kind": "solo_maintainer_governance_exception", "schema_version": "solo-maintainer-governance-exception/v1"}
+  ],
+  "compatibility_rules": [
+    "new optional fields may be added within the same major schema version",
+    "required field removal requires a new major schema version",
+    "runtime authority fields must remain explicit booleans",
+    "unknown runtime authorization defaults to denied",
+    "negative fixtures must remain failing for blocked authority paths"
+  ],
+  "negative_fixtures": [
+    {
+      "kind": "decision_spec",
+      "path": "examples/negative/decision-spec-production-allowed.json",
+      "expected_error_contains": "production_allowed must be false"
+    },
+    {
+      "kind": "approval",
+      "path": "examples/negative/approval-ai-approved.json",
+      "expected_error_contains": "approval cannot be AI-approved"
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}
