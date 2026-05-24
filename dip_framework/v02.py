@@ -24,8 +24,13 @@ ARTIFACTS = [
     ("durable_evidence_store_policy", "examples/durable-evidence-store-policy.json"),
     ("solo_maintainer_governance_exception", "examples/solo-maintainer-governance-exception.json"),
     ("schema_stability_policy", "examples/schema-stability-policy.json"),
+    ("external_approval_boundary", "examples/external-approval-boundary.json"),
     ("negative_decision_spec_fixture", "examples/negative/decision-spec-production-allowed.json"),
     ("negative_approval_fixture", "examples/negative/approval-ai-approved.json"),
+    (
+        "negative_external_approval_fixture",
+        "examples/negative/external-approval-github-review-as-decision-approval.json",
+    ),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -39,6 +44,7 @@ ARTIFACTS = [
     ("shared_context_governance", "reports/trust-loop/shared-context-governance.json"),
     ("solo_maintainer_exception", "reports/trust-loop/solo-maintainer-exception.json"),
     ("schema_stability", "reports/trust-loop/schema-stability.json"),
+    ("external_approval_boundary", "reports/trust-loop/external-approval-boundary.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
 ]
 
@@ -525,6 +531,7 @@ def evaluate_schema_stability(root: Path = ROOT) -> dict[str, Any]:
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
+        "external_approval_boundary": examples / "external-approval-boundary.json",
     }
     frozen_results = []
     for contract in policy.get("frozen_contracts", []):
@@ -584,6 +591,80 @@ def evaluate_schema_stability(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_external_approval_boundary(root: Path = ROOT) -> dict[str, Any]:
+    boundary = load_json(root / "examples/external-approval-boundary.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    required_evidence = set(boundary.get("required_evidence", []))
+    expected_evidence = {
+        "external_approval_record_id",
+        "approver_subject",
+        "approver_role",
+        "decision_scope",
+        "approval_timestamp",
+        "approval_expires_at",
+        "mfa_evidence",
+        "approval_reason",
+        "case_manifest_hash",
+        "audit_export_ref",
+    }
+    admission_controls = set(boundary.get("admission_controls", []))
+    expected_controls = {
+        "policy_preflight_requires_approval",
+        "approval_bound_to_case_manifest",
+        "approver_cannot_be_requester",
+        "ai_identity_excluded",
+        "runtime_authority_denied",
+    }
+    return {
+        "schema_version": "external-approval-boundary-evaluation/v1",
+        "evaluation_id": "external-approval-boundary-v2.2-pre-runtime-1",
+        "computed": True,
+        "boundary_id": boundary.get("boundary_id"),
+        "boundary_version": boundary.get("boundary_version"),
+        "boundary_hash": _sha256(root / "examples/external-approval-boundary.json"),
+        "source_boundary": boundary.get("source_boundary"),
+        "purpose": boundary.get("purpose"),
+        "live_approval_system_observed": boundary.get("live_approval_system_observed") is True,
+        "decision_approval_required": boundary.get("decision_approval_required") is True,
+        "decision_approval_source": boundary.get("decision_approval_source"),
+        "github_code_review_is_decision_approval": boundary.get("github_code_review_is_decision_approval") is True,
+        "solo_maintainer_exception_is_decision_approval": boundary.get(
+            "solo_maintainer_exception_is_decision_approval"
+        )
+        is True,
+        "solo_maintainer_exception_observed": solo_exception.get("computed") is True,
+        "solo_maintainer_exception_valid": solo_exception.get("exception_valid") is True,
+        "decision_approval_separate_from_code_merge": boundary.get("github_code_review_is_decision_approval") is False
+        and boundary.get("solo_maintainer_exception_is_decision_approval") is False
+        and solo_exception.get("independent_human_review_observed") is False,
+        "approval_subject_binding_required": boundary.get("approval_subject_binding_required") is True,
+        "approval_role_scope_required": boundary.get("approval_role_scope_required") is True,
+        "approval_expiry_required": boundary.get("approval_expiry_required") is True,
+        "approval_mfa_required": boundary.get("approval_mfa_required") is True,
+        "approval_audit_export_required": boundary.get("approval_audit_export_required") is True,
+        "ai_approval_allowed": boundary.get("ai_approval_allowed") is True,
+        "required_evidence_count": len(required_evidence),
+        "required_evidence_complete": expected_evidence.issubset(required_evidence),
+        "admission_control_count": len(admission_controls),
+        "admission_controls_complete": expected_controls.issubset(admission_controls),
+        "external_approval_boundary_valid": boundary.get("decision_approval_required") is True
+        and boundary.get("github_code_review_is_decision_approval") is False
+        and boundary.get("solo_maintainer_exception_is_decision_approval") is False
+        and boundary.get("approval_subject_binding_required") is True
+        and boundary.get("approval_role_scope_required") is True
+        and boundary.get("approval_expiry_required") is True
+        and boundary.get("approval_mfa_required") is True
+        and boundary.get("approval_audit_export_required") is True
+        and boundary.get("ai_approval_allowed") is False
+        and expected_evidence.issubset(required_evidence)
+        and expected_controls.issubset(admission_controls)
+        and boundary.get("runtime_integration_authorized") is False
+        and boundary.get("production_decision_execution_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
@@ -628,6 +709,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
+    external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -647,6 +729,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "schema_stability",
             "state": "ready",
             "summary": f"{schema_stability.get('frozen_contract_count')} frozen contracts",
+        },
+        {
+            "id": "external_approval_boundary",
+            "state": "ready",
+            "summary": str(external_approval.get("external_approval_boundary_valid")),
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -1059,6 +1146,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
+    external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -1143,6 +1231,23 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "compatibility_rule_count": schema_stability.get("compatibility_rule_count", 0),
         "negative_fixture_count": schema_stability.get("negative_fixture_count", 0),
         "negative_fixtures_valid": schema_stability.get("negative_fixtures_valid") is True,
+        "external_approval_boundary_observed": external_approval.get("computed") is True,
+        "external_approval_boundary_valid": external_approval.get("external_approval_boundary_valid") is True,
+        "live_external_approval_system_observed": external_approval.get("live_approval_system_observed") is True,
+        "decision_approval_required": external_approval.get("decision_approval_required") is True,
+        "decision_approval_separate_from_code_merge": external_approval.get(
+            "decision_approval_separate_from_code_merge"
+        )
+        is True,
+        "github_code_review_is_decision_approval": external_approval.get("github_code_review_is_decision_approval")
+        is True,
+        "solo_maintainer_exception_is_decision_approval": external_approval.get(
+            "solo_maintainer_exception_is_decision_approval"
+        )
+        is True,
+        "external_approval_required_evidence_count": external_approval.get("required_evidence_count", 0),
+        "external_approval_required_evidence_complete": external_approval.get("required_evidence_complete") is True,
+        "external_approval_admission_controls_complete": external_approval.get("admission_controls_complete") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -1178,6 +1283,9 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and solo_exception.get("exception_valid") is True
         and solo_exception.get("independent_human_review_observed") is False
         and schema_stability.get("schema_stability_valid") is True
+        and external_approval.get("external_approval_boundary_valid") is True
+        and external_approval.get("live_approval_system_observed") is False
+        and external_approval.get("decision_approval_separate_from_code_merge") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -1186,6 +1294,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
             "runtime integration is authorized",
             "production decision execution is authorized",
             "independent human review was observed for solo-maintainer merges",
+            "live external decision approval system is observed",
         ],
     }
 
@@ -1252,6 +1361,16 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Compatibility rule count: `{payload['compatibility_rule_count']}`",
         f"Negative fixture count: `{payload['negative_fixture_count']}`",
         f"Negative fixtures valid: `{payload['negative_fixtures_valid']}`",
+        f"External approval boundary observed: `{payload['external_approval_boundary_observed']}`",
+        f"External approval boundary valid: `{payload['external_approval_boundary_valid']}`",
+        f"Live external approval system observed: `{payload['live_external_approval_system_observed']}`",
+        f"Decision approval required: `{payload['decision_approval_required']}`",
+        f"Decision approval separate from code merge: `{payload['decision_approval_separate_from_code_merge']}`",
+        f"GitHub code review is decision approval: `{payload['github_code_review_is_decision_approval']}`",
+        f"Solo-maintainer exception is decision approval: `{payload['solo_maintainer_exception_is_decision_approval']}`",
+        f"External approval required evidence count: `{payload['external_approval_required_evidence_count']}`",
+        f"External approval required evidence complete: `{payload['external_approval_required_evidence_complete']}`",
+        f"External approval admission controls complete: `{payload['external_approval_admission_controls_complete']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -1290,6 +1409,8 @@ def write_v0_2_evidence(
     write_json(target / "solo-maintainer-exception.json", solo_exception)
     schema_stability = evaluate_schema_stability(root)
     write_json(target / "schema-stability.json", schema_stability)
+    external_approval = evaluate_external_approval_boundary(root)
+    write_json(target / "external-approval-boundary.json", external_approval)
     case_evidence = build_case_evidence()
     write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
@@ -1327,6 +1448,7 @@ def write_v0_2_evidence(
         "shared_context": shared_context,
         "solo_exception": solo_exception,
         "schema_stability": schema_stability,
+        "external_approval": external_approval,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "case_evidence": case_evidence,

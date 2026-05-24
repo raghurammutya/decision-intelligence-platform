@@ -17,6 +17,7 @@
     "evaluate_shared_context_contract",
     "evaluate_solo_maintainer_exception",
     "evaluate_schema_stability",
+    "evaluate_external_approval_boundary",
     "assess_runtime_readiness",
     "materialize_product_review_surface",
     "write_case_evidence",

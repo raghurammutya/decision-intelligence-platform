@@ -148,6 +148,28 @@ Required schema stability evidence:
 - validation that negative fixtures continue to fail
 - runtime authority remains explicit and denied by default
 
+### v2.2 External Approval Boundary
+
+Purpose: separate decision approval authority from GitHub code review and the
+solo-maintainer merge exception.
+
+This is not a live external approval integration. It defines the boundary and
+evidence required before a live approval system can contribute to runtime
+admission.
+
+Required evidence:
+
+- GitHub code review is not decision approval
+- solo-maintainer merge exception is not decision approval
+- decision approval remains required
+- approval subject binding required
+- approval role and scope required
+- approval expiry required
+- MFA evidence required
+- approval audit export required
+- AI approval blocked
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

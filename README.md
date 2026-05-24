@@ -101,3 +101,15 @@ exception rather than independent review evidence. It also freezes first-wedge
 schema versions and validates negative fixtures for blocked production
 authority and AI approval. Runtime execution and production decision authority
 remain blocked.
+
+## v2.2 External Approval Boundary
+
+```bash
+python3 -m dip_framework release-pack --version v2.2.0-pre
+```
+
+v2.2 separates decision approval authority from GitHub code review and the
+solo-maintainer merge exception. It defines the external decision-approval
+evidence required before runtime can be considered, but does not claim a live
+external approval system. Runtime execution and production decision authority
+remain blocked.

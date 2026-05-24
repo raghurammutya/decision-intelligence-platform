@@ -3,7 +3,7 @@
   "compatibility_rules_declared": true,
   "computed": true,
   "evaluation_id": "schema-stability-v2.1-pre-runtime-1",
-  "frozen_contract_count": 16,
+  "frozen_contract_count": 17,
   "frozen_contracts": [
     {
       "expected_schema_version": "decision-spec/v1",
@@ -100,10 +100,16 @@
       "kind": "solo_maintainer_governance_exception",
       "matches": true,
       "observed_schema_version": "solo-maintainer-governance-exception/v1"
+    },
+    {
+      "expected_schema_version": "external-approval-boundary/v1",
+      "kind": "external_approval_boundary",
+      "matches": true,
+      "observed_schema_version": "external-approval-boundary/v1"
     }
   ],
   "frozen_contracts_valid": true,
-  "negative_fixture_count": 2,
+  "negative_fixture_count": 3,
   "negative_fixtures": [
     {
       "errors": [
@@ -122,12 +128,28 @@
       "kind": "approval",
       "passed_negative_check": true,
       "path": "examples/negative/approval-ai-approved.json"
+    },
+    {
+      "errors": [
+        "external approval boundary cannot treat GitHub review as decision approval",
+        "external approval boundary cannot treat solo-maintainer exception as decision approval",
+        "external approval boundary must require subject binding",
+        "external approval boundary must require role and scope",
+        "external approval boundary must require MFA",
+        "external approval boundary must require audit export",
+        "external approval boundary must declare required evidence",
+        "external approval boundary must declare admission controls"
+      ],
+      "expected_error_contains": "cannot treat GitHub review as decision approval",
+      "kind": "external_approval_boundary",
+      "passed_negative_check": true,
+      "path": "examples/negative/external-approval-github-review-as-decision-approval.json"
     }
   ],
   "negative_fixtures_valid": true,
-  "policy_hash": "79038be8cfe30d812d3448c6e45574ac04dcabf44909f57531cd499ea0942a8d",
+  "policy_hash": "9948bc5e8fede7c7d68dcedbf204216a1803df648ca6b34c0d3f9b3de07416d1",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.1.0-pre",
+  "policy_version": "2.2.0-pre",
   "production_decision_execution_authorized": false,
   "runtime_integration_authorized": false,
   "schema_stability_valid": true,
