@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 55,
+  "artifact_count": 60,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -216,6 +216,31 @@
       "artifact_type": "event_recovery_contract",
       "path": "examples/event-recovery-contract.json",
       "sha256": "3f0446d7819a114febc96a1302138771405d21b1962dbf2cf0f6dd020600c43c"
+    },
+    {
+      "artifact_type": "certification_evidence_packs",
+      "path": "examples/certification-evidence-packs.json",
+      "sha256": "19a5c97e2e18586ebc1a4b1098564b245badd3d9d220787d9749eb6709d1d1c4"
+    },
+    {
+      "artifact_type": "product_pack_admission",
+      "path": "examples/product-pack-admission.json",
+      "sha256": "751a46664e149ce56ec7a3d00bd7614f687f6571d4ab438c499696bce9e38b0b"
+    },
+    {
+      "artifact_type": "openapi_skeleton",
+      "path": "examples/openapi-skeleton.json",
+      "sha256": "20984576c923c474915228d9da99848215d927af4c030c31e7dfe15a9cc89fdc"
+    },
+    {
+      "artifact_type": "event_recovery_fixtures",
+      "path": "examples/event-recovery-fixtures.json",
+      "sha256": "46cc2cba950bb777e12ef591b3d1e04b73175e826536a30adc4570939202d74b"
+    },
+    {
+      "artifact_type": "governance_store_logical_schema",
+      "path": "examples/governance-store-logical-schema.json",
+      "sha256": "66075f8f951407c6308e0c95f7877dc904c463c62a28c14c5b16dbbb2c9cc75d"
     },
     {
       "artifact_type": "policy_preflight",

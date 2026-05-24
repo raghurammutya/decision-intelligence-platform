@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 55,
+  "artifact_count": 60,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -218,6 +218,31 @@
       "sha256": "3f0446d7819a114febc96a1302138771405d21b1962dbf2cf0f6dd020600c43c"
     },
     {
+      "artifact_type": "certification_evidence_packs",
+      "path": "examples/certification-evidence-packs.json",
+      "sha256": "19a5c97e2e18586ebc1a4b1098564b245badd3d9d220787d9749eb6709d1d1c4"
+    },
+    {
+      "artifact_type": "product_pack_admission",
+      "path": "examples/product-pack-admission.json",
+      "sha256": "751a46664e149ce56ec7a3d00bd7614f687f6571d4ab438c499696bce9e38b0b"
+    },
+    {
+      "artifact_type": "openapi_skeleton",
+      "path": "examples/openapi-skeleton.json",
+      "sha256": "20984576c923c474915228d9da99848215d927af4c030c31e7dfe15a9cc89fdc"
+    },
+    {
+      "artifact_type": "event_recovery_fixtures",
+      "path": "examples/event-recovery-fixtures.json",
+      "sha256": "46cc2cba950bb777e12ef591b3d1e04b73175e826536a30adc4570939202d74b"
+    },
+    {
+      "artifact_type": "governance_store_logical_schema",
+      "path": "examples/governance-store-logical-schema.json",
+      "sha256": "66075f8f951407c6308e0c95f7877dc904c463c62a28c14c5b16dbbb2c9cc75d"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "16068013badb74ff1e0c2052a27cb6038f515282cee6092c741f14ade3898298"
@@ -280,11 +305,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "0754a15b64b8db23a37a07d34c01b8daf1a939a924e856331d7cb53ea455d894",
+  "manifest_hash": "e1882b25c146f7f1bacaf33264713df7582122bddad9a10f0b09bdf37e036db2",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "9710e5d0c2201d9afe63b09ea58381bc691ba54312f2ad61e78f00f67e9e089b",
+  "parent_manifest_hash": "c9b9919cb7422457b32b978e35e751b3e63591dd7c61e03917e1e441eacd82c5",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

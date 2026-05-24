@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 31,
-  "record_count": 31,
+  "passed_count": 36,
+  "record_count": 36,
   "records": [
     {
       "errors": [],
@@ -188,6 +188,36 @@
       "kind": "event_recovery_contract",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/event-recovery-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "certification_evidence_packs",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/certification-evidence-packs.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_admission",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-admission.json"
+    },
+    {
+      "errors": [],
+      "kind": "openapi_skeleton",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/openapi-skeleton.json"
+    },
+    {
+      "errors": [],
+      "kind": "event_recovery_fixtures",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/event-recovery-fixtures.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_store_logical_schema",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-store-logical-schema.json"
     }
   ]
 }

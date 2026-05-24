@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v15.0.0-pre")
+    write_v0_2_evidence(root, version="v20.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -80,6 +80,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     rest_api_contracts = load_json(root / "reports/trust-loop/rest-api-contracts.json")
     event_recovery_contract = load_json(root / "reports/trust-loop/event-recovery-contract.json")
     v15_foundation = load_json(root / "reports/trust-loop/v15-api-foundation.json")
+    certification_evidence_packs = load_json(root / "reports/trust-loop/certification-evidence-packs.json")
+    product_pack_admission = load_json(root / "reports/trust-loop/product-pack-admission.json")
+    openapi_skeleton = load_json(root / "reports/trust-loop/openapi-skeleton.json")
+    event_recovery_fixtures = load_json(root / "reports/trust-loop/event-recovery-fixtures.json")
+    governance_store_logical_schema = load_json(root / "reports/trust-loop/governance-store-logical-schema.json")
+    v20_closure = load_json(root / "reports/trust-loop/v20-architecture-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -150,6 +156,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_rest_api_contracts",
             "evaluate_event_recovery_contract",
             "evaluate_v15_api_foundation",
+            "evaluate_certification_evidence_packs",
+            "evaluate_product_pack_admission",
+            "evaluate_openapi_skeleton",
+            "evaluate_event_recovery_fixtures",
+            "evaluate_governance_store_logical_schema",
+            "evaluate_v20_architecture_closure",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -448,6 +460,43 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "v15_0_websocket_authoritative": event_recovery_contract.get("websocket_authoritative") is True,
         "v15_0_events_mutate_business_state": event_recovery_contract.get("events_mutate_business_state") is True,
         "v15_0_api_foundation_valid": v15_foundation.get("v15_api_foundation_valid") is True,
+        "v16_0_certification_evidence_packs_valid": certification_evidence_packs.get(
+            "certification_evidence_packs_valid"
+        )
+        is True,
+        "v16_0_certified_service_count": certification_evidence_packs.get("certified_service_count", 0),
+        "v16_0_runtime_invocation_allowed_count": certification_evidence_packs.get(
+            "runtime_invocation_allowed_count", 0
+        ),
+        "v17_0_product_pack_admission_valid": product_pack_admission.get("product_pack_admission_valid")
+        is True,
+        "v17_0_direct_database_access_allowed": product_pack_admission.get("direct_database_access_allowed")
+        is True,
+        "v17_0_hidden_shared_state_allowed": product_pack_admission.get("hidden_shared_state_allowed") is True,
+        "v17_0_runtime_authority_granted_count": product_pack_admission.get("runtime_authority_granted_count", 0),
+        "v18_0_openapi_skeleton_valid": openapi_skeleton.get("openapi_skeleton_valid") is True,
+        "v18_0_rest_authoritative": openapi_skeleton.get("rest_authoritative") is True,
+        "v18_0_runtime_authority_blocked_response": openapi_skeleton.get("runtime_authority_blocked_response")
+        is True,
+        "v19_0_event_recovery_fixtures_valid": event_recovery_fixtures.get("event_recovery_fixtures_valid")
+        is True,
+        "v19_0_websocket_authoritative": event_recovery_fixtures.get("websocket_authoritative") is True,
+        "v19_0_events_mutate_business_state": event_recovery_fixtures.get("events_mutate_business_state")
+        is True,
+        "v19_0_all_events_recoverable": event_recovery_fixtures.get("all_events_recoverable") is True,
+        "v20_0_governance_store_logical_schema_valid": governance_store_logical_schema.get(
+            "governance_store_logical_schema_valid"
+        )
+        is True,
+        "v20_0_storage_backend_selected": governance_store_logical_schema.get("storage_backend_selected") is True,
+        "v20_0_direct_database_access_allowed": governance_store_logical_schema.get(
+            "direct_database_access_allowed"
+        )
+        is True,
+        "v20_0_append_only_required": governance_store_logical_schema.get("append_only_required") is True,
+        "v20_0_architecture_closure_valid": v20_closure.get("v20_architecture_closure_valid") is True,
+        "v20_0_closure_gate_complete_count": v20_closure.get("closure_gate_complete_count", 0),
+        "v20_0_closure_gate_count": v20_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,

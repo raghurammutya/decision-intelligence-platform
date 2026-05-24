@@ -1,0 +1,35 @@
+{
+  "schema_version": "openapi-skeleton/v1",
+  "openapi_version": "3.1.0",
+  "api_id": "dip-openapi-skeleton-v18",
+  "authority": "rest",
+  "mutation_headers_required": [
+    "Idempotency-Key",
+    "Correlation-Id"
+  ],
+  "paths": [
+    "/api/v1/products",
+    "/api/v1/product-packs",
+    "/api/v1/decisions",
+    "/api/v1/capabilities",
+    "/api/v1/policies",
+    "/api/v1/simulations",
+    "/api/v1/diffs",
+    "/api/v1/approvals",
+    "/api/v1/cases",
+    "/api/v1/replay",
+    "/api/v1/shared-context",
+    "/api/v1/governance-store",
+    "/api/v1/runtime-authority",
+    "/api/v1/service-certification",
+    "/api/v1/evidence",
+    "/api/v1/usage",
+    "/api/v1/events"
+  ],
+  "runtime_authority_response": {
+    "authority": "blocked",
+    "production_decision_authority": "blocked"
+  },
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

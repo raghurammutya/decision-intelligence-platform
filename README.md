@@ -90,10 +90,10 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
-## v11.0-v15.0 API-First Platform Foundation
+## v11.0-v20.0 API-First Platform Foundation
 
 ```bash
-python3 -m dip_framework release-pack --version v15.0.0-pre
+python3 -m dip_framework release-pack --version v20.0.0-pre
 ```
 
 v11.0 adds the API-first modular platform architecture, product-pack registry,
@@ -101,10 +101,15 @@ ML shared-capability inventory, adapter evidence contract, governance-store
 contract, and runtime-authority blocked model. v12.0 adds stateful shared
 capability certification. v13.0 adds explicit product-pack contract gates.
 v14.0 adds REST command/query contracts. v15.0 adds WebSocket event recovery
-contracts with REST recovery twins. These releases remain contract and evidence
+contracts with REST recovery twins. v16.0 adds certification evidence packs for
+candidate shared capabilities. v17.0 adds product-pack admission records.
+v18.0 adds the REST-authoritative OpenAPI skeleton. v19.0 adds concrete event
+recovery fixtures. v20.0 adds the neutral governance-store logical schema and
+architecture closure gate. These releases remain contract and evidence
 foundation only: no service is certified for runtime use, no product pack has
-runtime authority, WebSocket is not authoritative, and production decision
-execution remains blocked.
+runtime authority, no product can use direct database access, WebSocket is not
+authoritative, no production governance-store backend is selected, and
+production decision execution remains blocked.
 
 ## v2.1 Governance Exception and Schema Stability
 

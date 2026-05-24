@@ -1,0 +1,13 @@
+{
+  "certification_evidence_packs_valid": true,
+  "certified_service_count": 0,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v16.0-certification-evidence-packs-1",
+  "evidence_complete_count": 0,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "runtime_invocation_allowed_count": 0,
+  "schema_version": "certification-evidence-packs-evaluation/v1",
+  "service_pack_count": 8
+}

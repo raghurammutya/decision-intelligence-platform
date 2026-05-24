@@ -1,0 +1,15 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "correlation_required": true,
+  "evaluation_id": "v18.0-openapi-skeleton-1",
+  "idempotency_required": true,
+  "openapi_skeleton_valid": true,
+  "openapi_version": "3.1.0",
+  "path_count": 17,
+  "production_decision_execution_authorized": false,
+  "rest_authoritative": true,
+  "runtime_authority_blocked_response": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "openapi-skeleton-evaluation/v1"
+}

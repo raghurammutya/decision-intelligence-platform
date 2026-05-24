@@ -409,6 +409,57 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "certification_evidence_packs": [
+        "schema_version",
+        "pack_id",
+        "required_evidence",
+        "service_packs",
+        "certified_service_count",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_admission": [
+        "schema_version",
+        "admission_id",
+        "required_checks",
+        "admission_records",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "openapi_skeleton": [
+        "schema_version",
+        "openapi_version",
+        "api_id",
+        "authority",
+        "mutation_headers_required",
+        "paths",
+        "runtime_authority_response",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "event_recovery_fixtures": [
+        "schema_version",
+        "fixture_id",
+        "websocket_authoritative",
+        "rest_recovery_required",
+        "events_mutate_business_state",
+        "events",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_store_logical_schema": [
+        "schema_version",
+        "schema_id",
+        "storage_backend_selected",
+        "append_only_required",
+        "projection_rebuild_required",
+        "direct_database_access_allowed",
+        "record_types",
+        "retention",
+        "masking",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -916,6 +967,92 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("event recovery cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("event recovery cannot authorize production decisions")
+    if kind == "certification_evidence_packs":
+        if len(payload.get("required_evidence", [])) < 10:
+            errors.append("certification packs must declare required evidence")
+        if int(payload.get("certified_service_count", -1)) != 0:
+            errors.append("certification packs cannot claim certified services yet")
+        for pack in payload.get("service_packs", []):
+            if pack.get("evidence_complete") is not False:
+                errors.append(f"service {pack.get('service_id')} cannot claim evidence complete")
+            if pack.get("runtime_invocation_allowed") is not False:
+                errors.append(f"service {pack.get('service_id')} cannot allow runtime invocation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("certification packs cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("certification packs cannot authorize production decisions")
+    if kind == "product_pack_admission":
+        if len(payload.get("required_checks", [])) < 8:
+            errors.append("product-pack admission must declare admission checks")
+        if len(payload.get("admission_records", [])) < 3:
+            errors.append("product-pack admission must include initial products")
+        for record in payload.get("admission_records", []):
+            if record.get("admitted") is not True:
+                errors.append(f"product {record.get('product_id')} must be admitted by contract evidence")
+            if record.get("runtime_authority") != "none":
+                errors.append(f"product {record.get('product_id')} cannot have runtime authority")
+            if record.get("direct_database_access_allowed") is not False:
+                errors.append(f"product {record.get('product_id')} cannot allow direct database access")
+            if record.get("hidden_shared_state_allowed") is not False:
+                errors.append(f"product {record.get('product_id')} cannot allow hidden shared state")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("product-pack admission cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("product-pack admission cannot authorize production decisions")
+    if kind == "openapi_skeleton":
+        if payload.get("openapi_version") != "3.1.0":
+            errors.append("OpenAPI skeleton must use 3.1.0")
+        if payload.get("authority") != "rest":
+            errors.append("OpenAPI skeleton must keep REST authoritative")
+        if set(payload.get("mutation_headers_required", [])) != {"Idempotency-Key", "Correlation-Id"}:
+            errors.append("OpenAPI skeleton must require idempotency and correlation")
+        if len(payload.get("paths", [])) < 15:
+            errors.append("OpenAPI skeleton must include core paths")
+        if payload.get("runtime_authority_response", {}).get("authority") != "blocked":
+            errors.append("OpenAPI skeleton must expose blocked runtime authority")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("OpenAPI skeleton cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("OpenAPI skeleton cannot authorize production decisions")
+    if kind == "event_recovery_fixtures":
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("event fixtures cannot make WebSocket authoritative")
+        if payload.get("events_mutate_business_state") is not False:
+            errors.append("event fixtures cannot mutate business state")
+        if payload.get("rest_recovery_required") is not True:
+            errors.append("event fixtures must require REST recovery")
+        if len(payload.get("events", [])) < 4:
+            errors.append("event fixtures must include core event types")
+        for event in payload.get("events", []):
+            if event.get("recoverable_by_rest") is not True:
+                errors.append(f"event {event.get('event_type')} must be REST recoverable")
+            if not event.get("resource_uri") or not event.get("evidence_uri"):
+                errors.append(f"event {event.get('event_type')} missing resource/evidence URI")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("event fixtures cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("event fixtures cannot authorize production decisions")
+    if kind == "governance_store_logical_schema":
+        if payload.get("storage_backend_selected") is not False:
+            errors.append("governance store logical schema cannot select storage backend yet")
+        if payload.get("append_only_required") is not True:
+            errors.append("governance store logical schema must require append-only records")
+        if payload.get("projection_rebuild_required") is not True:
+            errors.append("governance store logical schema must require projection rebuild")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("governance store logical schema cannot allow direct database access")
+        if len(payload.get("record_types", [])) < 12:
+            errors.append("governance store logical schema must include core record types")
+        if int(payload.get("retention", {}).get("minimum_days", 0) or 0) < 365:
+            errors.append("governance store logical schema must retain evidence for at least 365 days")
+        if payload.get("retention", {}).get("delete_allowed") is not False:
+            errors.append("governance store logical schema cannot allow deletes")
+        if payload.get("masking", {}).get("purpose_bound_access_required") is not True:
+            errors.append("governance store logical schema must require purpose-bound access")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("governance store logical schema cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("governance store logical schema cannot authorize production decisions")
     return errors
 
 
@@ -959,6 +1096,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "product_pack_contracts": examples / "product-pack-contracts.json",
         "rest_api_contracts": examples / "rest-api-contracts.json",
         "event_recovery_contract": examples / "event-recovery-contract.json",
+        "certification_evidence_packs": examples / "certification-evidence-packs.json",
+        "product_pack_admission": examples / "product-pack-admission.json",
+        "openapi_skeleton": examples / "openapi-skeleton.json",
+        "event_recovery_fixtures": examples / "event-recovery-fixtures.json",
+        "governance_store_logical_schema": examples / "governance-store-logical-schema.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

@@ -1,0 +1,14 @@
+{
+  "admission_record_count": 3,
+  "admitted_count": 3,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v17.0-product-pack-admission-1",
+  "hidden_shared_state_allowed": false,
+  "product_pack_admission_valid": true,
+  "production_decision_execution_authorized": false,
+  "runtime_authority_granted_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-admission-evaluation/v1"
+}

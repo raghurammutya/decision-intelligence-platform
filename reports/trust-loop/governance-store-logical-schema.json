@@ -1,0 +1,15 @@
+{
+  "append_only_required": true,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v20.0-governance-store-logical-schema-1",
+  "governance_store_logical_schema_valid": true,
+  "minimum_retention_days": 365,
+  "production_decision_execution_authorized": false,
+  "projection_rebuild_required": true,
+  "record_type_count": 14,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-store-logical-schema-evaluation/v1",
+  "storage_backend_selected": false
+}

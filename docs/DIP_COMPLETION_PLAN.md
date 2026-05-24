@@ -462,6 +462,98 @@ Required records:
 - lineage records
 - runtime and production authority remain blocked
 
+### v16.0 Certification Evidence Packs
+
+Purpose: make shared-service certification auditable before any candidate ML or
+infrastructure service is treated as a reusable DIP capability.
+
+Required evidence:
+
+- candidate service id
+- neutral candidate contract
+- domain-coupling review
+- authorization boundary
+- tenant isolation requirement
+- policy hooks
+- audit and lineage export
+- failure-mode and observability requirements
+- cost attribution
+- promotion and rollback evidence
+- evidence remains incomplete until observed
+- runtime invocation remains blocked
+
+### v17.0 Product Pack Admission
+
+Purpose: admit product packs to the DIP contract surface without granting direct
+shared-state access or runtime authority.
+
+Required evidence:
+
+- decision specs declared
+- capability graph declared
+- approval boundary declared
+- shared context contracts declared
+- cost model declared
+- replay guarantees declared
+- direct database access denied
+- hidden shared state denied
+- runtime authority remains `none`
+
+### v18.0 REST-Authoritative OpenAPI Skeleton
+
+Purpose: define the durable API surface before service decomposition or runtime
+execution.
+
+Required evidence:
+
+- OpenAPI 3.1 contract skeleton
+- REST authority declared
+- product, decision, capability, policy, simulation, diff, approval, case,
+  replay, shared-context, governance-store, runtime-authority,
+  service-certification, evidence, usage, and event resources declared
+- mutation commands require `Idempotency-Key`
+- mutation commands require `Correlation-Id`
+- runtime authority response is blocked by default
+
+### v19.0 Event Recovery Fixtures
+
+Purpose: prove that realtime remains notification/progress only.
+
+Required evidence:
+
+- representative realtime events
+- each event includes REST resource recovery
+- each event includes evidence recovery
+- WebSocket is not authoritative
+- events do not mutate business state
+- REST recovery remains required
+
+### v20.0 Governance Store Logical Schema
+
+Purpose: define the neutral governance-store record model without choosing a
+production backend prematurely.
+
+Required evidence:
+
+- product registry records
+- product-pack versions
+- decision specs
+- capability graph snapshots
+- policy decisions
+- simulation evidence
+- decision diffs
+- approval records
+- case evidence
+- replay packs
+- shared context contracts
+- runtime authority records
+- release evidence
+- lineage records
+- append-only storage required
+- projections can be rebuilt
+- direct database access denied
+- production backend selection remains blocked
+
 ### v2.7 Live Identity/RBAC Evidence
 
 Purpose: observe live identity and repository RBAC evidence without claiming a

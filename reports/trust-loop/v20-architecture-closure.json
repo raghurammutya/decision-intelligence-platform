@@ -1,0 +1,17 @@
+{
+  "closure_gate_complete_count": 5,
+  "closure_gate_count": 5,
+  "closure_gates": {
+    "v16_certification_evidence_packs_valid": true,
+    "v17_product_pack_admission_valid": true,
+    "v18_openapi_skeleton_valid": true,
+    "v19_event_recovery_fixtures_valid": true,
+    "v20_governance_store_logical_schema_valid": true
+  },
+  "computed": true,
+  "evaluation_id": "v20.0-safe-architecture-closure-1",
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "v20-architecture-closure-evaluation/v1",
+  "v20_architecture_closure_valid": true
+}

@@ -1,0 +1,14 @@
+{
+  "all_events_recoverable": true,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v19.0-event-recovery-fixtures-1",
+  "event_count": 4,
+  "event_recovery_fixtures_valid": true,
+  "events_mutate_business_state": false,
+  "production_decision_execution_authorized": false,
+  "rest_recovery_required": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "event-recovery-fixtures-evaluation/v1",
+  "websocket_authoritative": false
+}

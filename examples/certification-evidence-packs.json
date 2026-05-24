@@ -1,0 +1,79 @@
+{
+  "schema_version": "certification-evidence-packs/v1",
+  "pack_id": "dip-certification-evidence-packs-v16",
+  "required_evidence": [
+    "neutral_contract",
+    "domain_coupling_review",
+    "auth_boundary",
+    "tenant_isolation",
+    "policy_hooks",
+    "audit_export",
+    "lineage_export",
+    "failure_mode_tests",
+    "observability",
+    "cost_attribution",
+    "promotion_evidence",
+    "rollback_evidence"
+  ],
+  "service_packs": [
+    {
+      "service_id": "user_service",
+      "candidate_contract": "IdentityProviderContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "config_service",
+      "candidate_contract": "PolicyConfigProviderContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "algo_engine",
+      "candidate_contract": "ComputationRuntimeContract",
+      "evidence_complete": false,
+      "certification_state": "observed",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "alert_service",
+      "candidate_contract": "NotificationAdapterContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "calendar_service",
+      "candidate_contract": "CalendarWorkflowAdapterContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "api_gateway",
+      "candidate_contract": "GatewayBoundaryContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "postgres_timescaledb",
+      "candidate_contract": "EvidenceStoreAdapterContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    },
+    {
+      "service_id": "redis",
+      "candidate_contract": "CacheAndProgressAdapterContract",
+      "evidence_complete": false,
+      "certification_state": "candidate",
+      "runtime_invocation_allowed": false
+    }
+  ],
+  "certified_service_count": 0,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

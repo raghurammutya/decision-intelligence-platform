@@ -61,6 +61,12 @@ from dip_framework.v02 import (
     evaluate_rest_api_contracts,
     evaluate_event_recovery_contract,
     evaluate_v15_api_foundation,
+    evaluate_certification_evidence_packs,
+    evaluate_product_pack_admission,
+    evaluate_openapi_skeleton,
+    evaluate_event_recovery_fixtures,
+    evaluate_governance_store_logical_schema,
+    evaluate_v20_architecture_closure,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1009,6 +1015,57 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["v15_0_events_mutate_business_state"])
         self.assertTrue(result["release"]["v15_0_rest_recovery_required"])
         self.assertTrue(result["release"]["v15_0_api_foundation_valid"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v20_architecture_closure_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v20.0.0-pre")
+        certification = evaluate_certification_evidence_packs(ROOT)
+        admission = evaluate_product_pack_admission(ROOT)
+        openapi = evaluate_openapi_skeleton(ROOT)
+        events = evaluate_event_recovery_fixtures(ROOT)
+        governance_schema = evaluate_governance_store_logical_schema(ROOT)
+        closure = evaluate_v20_architecture_closure(ROOT)
+
+        self.assertTrue(certification["certification_evidence_packs_valid"])
+        self.assertEqual(certification["certified_service_count"], 0)
+        self.assertEqual(certification["runtime_invocation_allowed_count"], 0)
+        self.assertTrue(admission["product_pack_admission_valid"])
+        self.assertFalse(admission["direct_database_access_allowed"])
+        self.assertFalse(admission["hidden_shared_state_allowed"])
+        self.assertEqual(admission["runtime_authority_granted_count"], 0)
+        self.assertTrue(openapi["openapi_skeleton_valid"])
+        self.assertTrue(openapi["rest_authoritative"])
+        self.assertTrue(openapi["runtime_authority_blocked_response"])
+        self.assertTrue(events["event_recovery_fixtures_valid"])
+        self.assertFalse(events["websocket_authoritative"])
+        self.assertFalse(events["events_mutate_business_state"])
+        self.assertTrue(events["all_events_recoverable"])
+        self.assertTrue(governance_schema["governance_store_logical_schema_valid"])
+        self.assertFalse(governance_schema["storage_backend_selected"])
+        self.assertFalse(governance_schema["direct_database_access_allowed"])
+        self.assertTrue(governance_schema["append_only_required"])
+        self.assertTrue(closure["v20_architecture_closure_valid"])
+        self.assertEqual(closure["closure_gate_complete_count"], closure["closure_gate_count"])
+        self.assertTrue(result["release"]["v16_0_certification_evidence_packs_valid"])
+        self.assertEqual(result["release"]["v16_0_certified_service_count"], 0)
+        self.assertEqual(result["release"]["v16_0_runtime_invocation_allowed_count"], 0)
+        self.assertTrue(result["release"]["v17_0_product_pack_admission_valid"])
+        self.assertFalse(result["release"]["v17_0_direct_database_access_allowed"])
+        self.assertFalse(result["release"]["v17_0_hidden_shared_state_allowed"])
+        self.assertEqual(result["release"]["v17_0_runtime_authority_granted_count"], 0)
+        self.assertTrue(result["release"]["v18_0_openapi_skeleton_valid"])
+        self.assertTrue(result["release"]["v18_0_runtime_authority_blocked_response"])
+        self.assertTrue(result["release"]["v19_0_event_recovery_fixtures_valid"])
+        self.assertFalse(result["release"]["v19_0_websocket_authoritative"])
+        self.assertFalse(result["release"]["v19_0_events_mutate_business_state"])
+        self.assertTrue(result["release"]["v19_0_all_events_recoverable"])
+        self.assertTrue(result["release"]["v20_0_governance_store_logical_schema_valid"])
+        self.assertFalse(result["release"]["v20_0_storage_backend_selected"])
+        self.assertFalse(result["release"]["v20_0_direct_database_access_allowed"])
+        self.assertTrue(result["release"]["v20_0_append_only_required"])
+        self.assertTrue(result["release"]["v20_0_architecture_closure_valid"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

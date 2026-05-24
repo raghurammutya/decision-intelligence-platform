@@ -1,0 +1,35 @@
+{
+  "schema_version": "event-recovery-fixtures/v1",
+  "fixture_id": "dip-event-recovery-fixtures-v19",
+  "websocket_authoritative": false,
+  "rest_recovery_required": true,
+  "events_mutate_business_state": false,
+  "events": [
+    {
+      "event_type": "simulation.completed",
+      "resource_uri": "/api/v1/simulations/sim_123",
+      "evidence_uri": "/api/v1/cases/case_123/evidence-pack",
+      "recoverable_by_rest": true
+    },
+    {
+      "event_type": "approval.status_changed",
+      "resource_uri": "/api/v1/approvals/app_123",
+      "evidence_uri": "/api/v1/cases/case_123/evidence-pack",
+      "recoverable_by_rest": true
+    },
+    {
+      "event_type": "case.evidence_added",
+      "resource_uri": "/api/v1/cases/case_123",
+      "evidence_uri": "/api/v1/cases/case_123/evidence-pack",
+      "recoverable_by_rest": true
+    },
+    {
+      "event_type": "runtime_authority.blocked",
+      "resource_uri": "/api/v1/runtime-authority/requests/ra_123",
+      "evidence_uri": "/api/v1/cases/case_123/evidence-pack",
+      "recoverable_by_rest": true
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

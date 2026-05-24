@@ -1,0 +1,39 @@
+{
+  "schema_version": "product-pack-admission/v1",
+  "admission_id": "dip-product-pack-admission-v17",
+  "required_checks": [
+    "decision_specs_declared",
+    "capability_graph_declared",
+    "approval_boundary_declared",
+    "shared_context_contracts_declared",
+    "cost_model_declared",
+    "replay_guarantees_declared",
+    "no_direct_database_access",
+    "runtime_authority_none"
+  ],
+  "admission_records": [
+    {
+      "product_id": "edi-engineering-governance",
+      "admitted": true,
+      "runtime_authority": "none",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    },
+    {
+      "product_id": "ml-trading-decisions",
+      "admitted": true,
+      "runtime_authority": "none",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    },
+    {
+      "product_id": "support-ticket-routing",
+      "admitted": true,
+      "runtime_authority": "none",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

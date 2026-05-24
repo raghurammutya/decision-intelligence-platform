@@ -63,6 +63,12 @@
     "evaluate_rest_api_contracts",
     "evaluate_event_recovery_contract",
     "evaluate_v15_api_foundation",
+    "evaluate_certification_evidence_packs",
+    "evaluate_product_pack_admission",
+    "evaluate_openapi_skeleton",
+    "evaluate_event_recovery_fixtures",
+    "evaluate_governance_store_logical_schema",
+    "evaluate_v20_architecture_closure",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

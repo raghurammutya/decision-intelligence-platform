@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `55`
+Case manifest artifacts: `60`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -239,6 +239,27 @@ v15.0 events mutate business state: `False`
 v15.0 REST recovery required: `True`
 v15.0 API foundation valid: `True`
 v15.0 foundation gates complete: `5/5`
+v16.0 certification evidence packs valid: `True`
+v16.0 certified service count: `0`
+v16.0 runtime invocation allowed count: `0`
+v17.0 product pack admission valid: `True`
+v17.0 direct database access allowed: `False`
+v17.0 hidden shared state allowed: `False`
+v17.0 runtime authority granted count: `0`
+v18.0 OpenAPI skeleton valid: `True`
+v18.0 REST authoritative: `True`
+v18.0 path count: `17`
+v18.0 runtime authority blocked response: `True`
+v19.0 event recovery fixtures valid: `True`
+v19.0 WebSocket authoritative: `False`
+v19.0 events mutate business state: `False`
+v19.0 all events recoverable: `True`
+v20.0 governance store logical schema valid: `True`
+v20.0 storage backend selected: `False`
+v20.0 direct database access allowed: `False`
+v20.0 append-only required: `True`
+v20.0 architecture closure valid: `True`
+v20.0 closure gates complete: `5/5`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -283,3 +304,9 @@ Release acceptance passed: `True`
 - `cross-product database access is allowed`
 - `REST API contracts authorize production decisions`
 - `WebSocket events can mutate business state`
+- `shared capability certification evidence packs are complete`
+- `shared services are certified for runtime invocation`
+- `product packs can use direct database access`
+- `OpenAPI contracts authorize runtime decisions`
+- `event recovery exists only in WebSocket state`
+- `governance store production backend is selected`
