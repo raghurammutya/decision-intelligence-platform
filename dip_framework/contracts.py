@@ -404,8 +404,8 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("durable case store adapter must require replay export")
         if payload.get("audit_export_required") is not True:
             errors.append("durable case store adapter must require audit export")
-        if int(payload.get("retention", {}).get("minimum_days", 0) or 0) <= 0:
-            errors.append("durable case store adapter must declare positive retention")
+        if int(payload.get("retention", {}).get("minimum_days", 0) or 0) < 365:
+            errors.append("durable case store adapter must require at least 365 days retention")
         if payload.get("runtime_integration_authorized") is not False:
             errors.append("durable case store adapter cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:

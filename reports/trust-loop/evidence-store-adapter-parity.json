@@ -1,0 +1,78 @@
+{
+  "adapter_id": "dip-durable-case-store-adapter",
+  "adapter_parity_valid": true,
+  "adapter_version": "2.4.0-pre",
+  "append_case_record_valid": true,
+  "computed": true,
+  "denied_operation_count": 3,
+  "denied_operation_records": [
+    {
+      "contract_denied": true,
+      "mutation_blocked": true,
+      "operation": "update_case_record",
+      "side_effects_executed": false
+    },
+    {
+      "contract_denied": true,
+      "mutation_blocked": true,
+      "operation": "delete_case_record",
+      "side_effects_executed": false
+    },
+    {
+      "contract_denied": true,
+      "mutation_blocked": true,
+      "operation": "overwrite_manifest_hash",
+      "side_effects_executed": false
+    }
+  ],
+  "denied_operations_enforced": true,
+  "evaluation_id": "evidence-store-adapter-parity-v2.4-pre-runtime-1",
+  "export_audit_pack_valid": true,
+  "export_replay_pack_valid": true,
+  "operation_records": [
+    {
+      "contract_declared": true,
+      "evidence_ref": "reports/trust-loop/durable-case-manifest.json",
+      "evidence_valid": true,
+      "operation": "append_case_record",
+      "side_effects_executed": false
+    },
+    {
+      "contract_declared": true,
+      "evidence_ref": "reports/trust-loop/case-evidence.json",
+      "evidence_valid": true,
+      "operation": "read_case_record",
+      "side_effects_executed": false
+    },
+    {
+      "contract_declared": true,
+      "evidence_ref": "reports/trust-loop/durable-case-manifest.json",
+      "evidence_valid": true,
+      "operation": "verify_manifest_chain",
+      "side_effects_executed": false
+    },
+    {
+      "contract_declared": true,
+      "evidence_ref": "reports/trust-loop/replay-result.json",
+      "evidence_valid": true,
+      "operation": "export_replay_pack",
+      "side_effects_executed": false
+    },
+    {
+      "contract_declared": true,
+      "evidence_ref": "reports/release",
+      "evidence_valid": true,
+      "operation": "export_audit_pack",
+      "side_effects_executed": false
+    }
+  ],
+  "production_decision_execution_authorized": false,
+  "production_storage_backend_observed": false,
+  "read_case_record_valid": true,
+  "required_operation_count": 5,
+  "required_operations_valid": true,
+  "runtime_backend_invoked": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "evidence-store-adapter-parity/v1",
+  "verify_manifest_chain_valid": true
+}

@@ -125,3 +125,15 @@ content-addressed case records, manifest-chain verification, replay export,
 audit export, retention controls, and denied mutation operations. It remains a
 contract-backed adapter boundary, not an observed production storage backend.
 Runtime execution and production decision authority remain blocked.
+
+## v2.4 Evidence Store Adapter Parity
+
+```bash
+python3 -m dip_framework release-pack --version v2.4.0-pre
+```
+
+v2.4 computes adapter parity evidence for append, read, manifest verification,
+replay export, and audit export operations. It also validates denied mutation
+operations and adds negative fixtures for missing hash-chain enforcement,
+delete-enabled behavior, and weak retention. This remains pre-runtime evidence:
+no production storage backend is observed and no runtime backend is invoked.

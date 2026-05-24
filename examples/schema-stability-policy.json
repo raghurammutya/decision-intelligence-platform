@@ -1,7 +1,7 @@
 {
   "schema_version": "schema-stability-policy/v1",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.3.0-pre",
+  "policy_version": "2.4.0-pre",
   "source_boundary": "declared_schema_stability_policy_not_runtime_execution",
   "frozen_contracts": [
     {"kind": "decision_spec", "schema_version": "decision-spec/v1"},
@@ -50,6 +50,21 @@
       "kind": "durable_case_store_adapter",
       "path": "examples/negative/durable-case-store-mutable-adapter.json",
       "expected_error_contains": "must require append-only writes"
+    },
+    {
+      "kind": "durable_case_store_adapter",
+      "path": "examples/negative/durable-case-store-missing-hash-chain.json",
+      "expected_error_contains": "must require manifest hash chain"
+    },
+    {
+      "kind": "durable_case_store_adapter",
+      "path": "examples/negative/durable-case-store-delete-enabled.json",
+      "expected_error_contains": "must deny deletes"
+    },
+    {
+      "kind": "durable_case_store_adapter",
+      "path": "examples/negative/durable-case-store-weak-retention.json",
+      "expected_error_contains": "must require at least 365 days retention"
     }
   ],
   "runtime_integration_authorized": false,

@@ -115,7 +115,7 @@
     }
   ],
   "frozen_contracts_valid": true,
-  "negative_fixture_count": 4,
+  "negative_fixture_count": 7,
   "negative_fixtures": [
     {
       "errors": [
@@ -160,18 +160,45 @@
         "durable case store adapter must require mutation detection",
         "durable case store adapter must require replay export",
         "durable case store adapter must require audit export",
-        "durable case store adapter must declare positive retention"
+        "durable case store adapter must require at least 365 days retention"
       ],
       "expected_error_contains": "must require append-only writes",
       "kind": "durable_case_store_adapter",
       "passed_negative_check": true,
       "path": "examples/negative/durable-case-store-mutable-adapter.json"
+    },
+    {
+      "errors": [
+        "durable case store adapter must require manifest hash chain"
+      ],
+      "expected_error_contains": "must require manifest hash chain",
+      "kind": "durable_case_store_adapter",
+      "passed_negative_check": true,
+      "path": "examples/negative/durable-case-store-missing-hash-chain.json"
+    },
+    {
+      "errors": [
+        "durable case store adapter must deny deletes"
+      ],
+      "expected_error_contains": "must deny deletes",
+      "kind": "durable_case_store_adapter",
+      "passed_negative_check": true,
+      "path": "examples/negative/durable-case-store-delete-enabled.json"
+    },
+    {
+      "errors": [
+        "durable case store adapter must require at least 365 days retention"
+      ],
+      "expected_error_contains": "must require at least 365 days retention",
+      "kind": "durable_case_store_adapter",
+      "passed_negative_check": true,
+      "path": "examples/negative/durable-case-store-weak-retention.json"
     }
   ],
   "negative_fixtures_valid": true,
-  "policy_hash": "c66fd7d705c4f928978ab1a6745fdeb923f99e69b2eb60775588fed79914d776",
+  "policy_hash": "73e5d69f1a22bee6744f0ea51898c8c60e32507fcbfa9de9b282975a171405f4",
   "policy_id": "dip-schema-stability",
-  "policy_version": "2.3.0-pre",
+  "policy_version": "2.4.0-pre",
   "production_decision_execution_authorized": false,
   "runtime_integration_authorized": false,
   "schema_stability_valid": true,

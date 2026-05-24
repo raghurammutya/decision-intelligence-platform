@@ -1,14 +1,14 @@
 {
   "schema_version": "durable-case-store-adapter/v1",
-  "adapter_id": "dip-durable-case-store-adapter",
-  "adapter_version": "2.4.0-pre",
-  "source_boundary": "adapter_contract_not_production_storage_backend",
+  "adapter_id": "negative-delete-enabled-adapter",
+  "adapter_version": "0.0.0-negative",
+  "source_boundary": "negative_fixture",
   "storage_backend_type": "contract_only",
   "production_storage_backend_observed": false,
   "append_only_writes_required": true,
   "content_addressed_records_required": true,
   "manifest_hash_chain_required": true,
-  "delete_denied_required": true,
+  "delete_denied_required": false,
   "mutation_detection_required": true,
   "retention_policy_required": true,
   "replay_export_required": true,
@@ -25,12 +25,11 @@
   ],
   "denied_operations": [
     "update_case_record",
-    "delete_case_record",
     "overwrite_manifest_hash"
   ],
   "retention": {
     "minimum_days": 365,
-    "delete_mode": "deny_delete_before_retention_expiry",
+    "delete_mode": "allow_delete",
     "legal_hold_supported": true
   },
   "runtime_integration_authorized": false,
