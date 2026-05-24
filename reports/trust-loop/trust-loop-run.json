@@ -87,6 +87,11 @@
     "evaluate_case_evidence_query_contract",
     "evaluate_governance_dashboard_data_contract",
     "evaluate_v35_usability_governance_closure",
+    "evaluate_product_pack_authoring_ux_contract",
+    "evaluate_governance_review_queue_contract",
+    "evaluate_capability_lineage_explorer_contract",
+    "evaluate_replay_workspace_contract",
+    "evaluate_v40_usability_acceptance_pack",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

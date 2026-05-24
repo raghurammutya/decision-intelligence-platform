@@ -85,6 +85,11 @@ from dip_framework.v02 import (
     evaluate_case_evidence_query_contract,
     evaluate_governance_dashboard_data_contract,
     evaluate_v35_usability_governance_closure,
+    evaluate_product_pack_authoring_ux_contract,
+    evaluate_governance_review_queue_contract,
+    evaluate_capability_lineage_explorer_contract,
+    evaluate_replay_workspace_contract,
+    evaluate_v40_usability_acceptance_pack,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1230,6 +1235,52 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["v35_0_dashboard_is_source_of_truth"])
         self.assertFalse(result["release"]["v35_0_websocket_authoritative"])
         self.assertTrue(result["release"]["v35_0_usability_governance_closure_valid"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v40_usability_acceptance_pack_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v40.0.0-pre")
+
+        authoring = evaluate_product_pack_authoring_ux_contract(ROOT)
+        queue = evaluate_governance_review_queue_contract(ROOT)
+        lineage = evaluate_capability_lineage_explorer_contract(ROOT)
+        replay_workspace = evaluate_replay_workspace_contract(ROOT)
+        acceptance = evaluate_v40_usability_acceptance_pack(ROOT)
+
+        self.assertTrue(authoring["product_pack_authoring_ux_valid"])
+        self.assertTrue(authoring["rest_authoritative"])
+        self.assertFalse(authoring["websocket_authoritative"])
+        self.assertFalse(authoring["broad_no_code_builder"])
+        self.assertFalse(authoring["direct_database_access_allowed"])
+        self.assertTrue(queue["governance_review_queue_valid"])
+        self.assertTrue(queue["solo_maintainer_exception_visible"])
+        self.assertFalse(queue["approval_automation_allowed"])
+        self.assertTrue(lineage["capability_lineage_explorer_valid"])
+        self.assertTrue(lineage["capability_version_lineage_required"])
+        self.assertFalse(lineage["direct_runtime_invocation_allowed"])
+        self.assertTrue(replay_workspace["replay_workspace_valid"])
+        self.assertTrue(replay_workspace["drift_comparison_required"])
+        self.assertFalse(replay_workspace["runtime_execution_allowed"])
+        self.assertFalse(replay_workspace["side_effects_allowed"])
+        self.assertTrue(acceptance["v40_usability_acceptance_pack_valid"])
+        self.assertTrue(acceptance["runtime_remains_blocked"])
+        self.assertFalse(acceptance["websocket_authoritative"])
+        self.assertFalse(acceptance["runtime_integration_authorized"])
+        self.assertFalse(acceptance["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["v36_0_product_pack_authoring_ux_valid"])
+        self.assertFalse(result["release"]["v36_0_websocket_authoritative"])
+        self.assertFalse(result["release"]["v36_0_broad_no_code_builder"])
+        self.assertTrue(result["release"]["v37_0_governance_review_queue_valid"])
+        self.assertFalse(result["release"]["v37_0_approval_automation_allowed"])
+        self.assertTrue(result["release"]["v38_0_capability_lineage_explorer_valid"])
+        self.assertFalse(result["release"]["v38_0_direct_runtime_invocation_allowed"])
+        self.assertTrue(result["release"]["v39_0_replay_workspace_valid"])
+        self.assertFalse(result["release"]["v39_0_runtime_execution_allowed"])
+        self.assertFalse(result["release"]["v39_0_side_effects_allowed"])
+        self.assertTrue(result["release"]["v40_0_usability_acceptance_pack_valid"])
+        self.assertTrue(result["release"]["v40_0_runtime_remains_blocked"])
+        self.assertFalse(result["release"]["v40_0_websocket_authoritative"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

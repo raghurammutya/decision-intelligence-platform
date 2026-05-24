@@ -1,0 +1,52 @@
+{
+  "capability_version_lineage_required": true,
+  "contract_id": "dip-capability-lineage-explorer",
+  "contract_version": "38.0.0",
+  "direct_runtime_invocation_allowed": false,
+  "lineage_resources": [
+    "decision_spec",
+    "capability_graph",
+    "capability_versions",
+    "policy_preflight",
+    "simulation_run",
+    "decision_diff",
+    "approval_record",
+    "case_evidence_pack",
+    "replay_run"
+  ],
+  "production_decision_execution_authorized": false,
+  "required_lineage_fields": [
+    "capability_id",
+    "capability_version",
+    "source_ref",
+    "contract_id",
+    "input_ref",
+    "output_ref",
+    "evidence_uri",
+    "correlation_id"
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "capability-lineage-explorer-contract/v1",
+  "version_trace_examples": [
+    {
+      "capability_id": "support-ticket-priority-transform",
+      "capability_version": "1.2.0",
+      "contributed_to": [
+        "simulation_run",
+        "decision_diff",
+        "case_evidence_pack"
+      ],
+      "evidence_uri": "/api/v1/cases/case-support-ticket-routing-1/evidence-pack"
+    },
+    {
+      "capability_id": "engineering-review-readiness-policy",
+      "capability_version": "0.4.0",
+      "contributed_to": [
+        "policy_preflight",
+        "approval_record",
+        "replay_run"
+      ],
+      "evidence_uri": "/api/v1/cases/case-engineering-readiness-1/evidence-pack"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "authoring_states": [
+    "draft",
+    "validate",
+    "simulate",
+    "diff",
+    "approval_ready",
+    "blocked"
+  ],
+  "broad_no_code_builder": false,
+  "contract_id": "dip-product-pack-authoring-ux",
+  "contract_version": "36.0.0",
+  "direct_database_access_allowed": false,
+  "production_decision_execution_authorized": false,
+  "required_panels": [
+    "product_manifest",
+    "decision_specs",
+    "capability_graph",
+    "policy_preflight",
+    "simulation_cases",
+    "decision_diff",
+    "approval_boundary",
+    "case_evidence"
+  ],
+  "rest_authoritative": true,
+  "runtime_authority_default": "none",
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-authoring-ux-contract/v1",
+  "state_transitions": [
+    {
+      "from": "draft",
+      "requires_rest_command": true,
+      "to": "validate"
+    },
+    {
+      "from": "validate",
+      "requires_rest_command": true,
+      "to": "simulate"
+    },
+    {
+      "from": "simulate",
+      "requires_rest_command": true,
+      "to": "diff"
+    },
+    {
+      "from": "diff",
+      "requires_rest_command": true,
+      "to": "approval_ready"
+    },
+    {
+      "from": "validate",
+      "requires_rest_command": true,
+      "to": "blocked"
+    }
+  ],
+  "websocket_authoritative": false
+}

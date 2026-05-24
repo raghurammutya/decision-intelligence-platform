@@ -1,0 +1,46 @@
+{
+  "approval_automation_allowed": false,
+  "assignment_model": {
+    "assignment_required": true,
+    "self_assignment_allowed": true,
+    "solo_maintainer_exception_visible": true
+  },
+  "contract_id": "dip-governance-review-queue",
+  "contract_version": "37.0.0",
+  "escalation_states": [
+    "needs_evidence",
+    "policy_blocked",
+    "approval_pending",
+    "solo_maintainer_exception",
+    "runtime_blocked"
+  ],
+  "filters": [
+    "product_id",
+    "decision_id",
+    "risk_tier",
+    "policy_result",
+    "blocked_claim",
+    "evidence_status",
+    "assignee",
+    "updated_after"
+  ],
+  "production_decision_execution_authorized": false,
+  "required_evidence": [
+    "decision_spec",
+    "policy_preflight",
+    "simulation_evidence",
+    "decision_diff",
+    "approval_boundary",
+    "case_manifest",
+    "lineage"
+  ],
+  "reviewer_actions": [
+    "request_evidence",
+    "mark_ready_for_approval",
+    "block_runtime_authority",
+    "record_exception",
+    "escalate"
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-review-queue-contract/v1"
+}

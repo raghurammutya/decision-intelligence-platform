@@ -1,0 +1,18 @@
+{
+  "all_transitions_require_rest": true,
+  "authoring_state_count": 6,
+  "broad_no_code_builder": false,
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v36.0-product-pack-authoring-ux-contract-1",
+  "product_pack_authoring_ux_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_panel_count": 8,
+  "rest_authoritative": true,
+  "runtime_authority_default": "none",
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-authoring-ux-contract-evaluation/v1",
+  "state_transition_count": 5,
+  "websocket_authoritative": false
+}

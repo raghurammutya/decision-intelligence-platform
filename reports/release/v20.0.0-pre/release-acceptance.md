@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `75`
+Case manifest artifacts: `80`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -341,6 +341,42 @@ v35.0 WebSocket authoritative: `False`
 v35.0 blocked claims visible: `True`
 v35.0 usability governance closure valid: `True`
 v35.0 closure gates complete: `5/5`
+v36.0 product-pack authoring UX valid: `True`
+v36.0 authoring states: `6`
+v36.0 required panels: `8`
+v36.0 transitions require REST: `True`
+v36.0 REST authoritative: `True`
+v36.0 WebSocket authoritative: `False`
+v36.0 broad no-code builder: `False`
+v36.0 direct database access allowed: `False`
+v37.0 governance review queue valid: `True`
+v37.0 filters: `8`
+v37.0 required evidence items: `7`
+v37.0 reviewer actions: `5`
+v37.0 solo-maintainer exception visible: `True`
+v37.0 approval automation allowed: `False`
+v38.0 capability lineage explorer valid: `True`
+v38.0 lineage resources: `9`
+v38.0 version trace examples: `2`
+v38.0 capability version lineage required: `True`
+v38.0 direct runtime invocation allowed: `False`
+v38.0 traces have evidence: `True`
+v39.0 replay workspace valid: `True`
+v39.0 replay inputs: `6`
+v39.0 replay outputs: `6`
+v39.0 REST recovery endpoints: `3`
+v39.0 drift comparison required: `True`
+v39.0 evidence references required: `True`
+v39.0 WebSocket authoritative: `False`
+v39.0 runtime execution allowed: `False`
+v39.0 side effects allowed: `False`
+v40.0 usability acceptance pack valid: `True`
+v40.0 usability surfaces: `4`
+v40.0 REST authoritative: `True`
+v40.0 WebSocket authoritative: `False`
+v40.0 evidence backed: `True`
+v40.0 runtime remains blocked: `True`
+v40.0 closure gates complete: `4/4`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -406,3 +442,8 @@ Release acceptance passed: `True`
 - `product-pack CLI scaffold is a broad no-code builder`
 - `case evidence queries select a production backend`
 - `governance dashboard is the source of truth`
+- `product-pack authoring UX is a broad no-code builder`
+- `governance review queue automates approvals`
+- `capability lineage explorer invokes runtime capabilities`
+- `replay workspace executes runtime side effects`
+- `v40 usability acceptance grants runtime authority`

@@ -1,0 +1,23 @@
+{
+  "acceptance_id": "dip-v40-usability-acceptance-pack",
+  "contract_version": "40.0.0",
+  "evidence_backed": true,
+  "production_decision_execution_authorized": false,
+  "required_closure_gates": [
+    "product_pack_authoring_ux_valid",
+    "governance_review_queue_valid",
+    "capability_lineage_explorer_valid",
+    "replay_workspace_valid"
+  ],
+  "rest_authoritative": true,
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "v40-usability-acceptance-pack-contract/v1",
+  "usability_surfaces": [
+    "product_pack_authoring",
+    "governance_review_queue",
+    "capability_lineage_explorer",
+    "replay_workspace"
+  ],
+  "websocket_authoritative": false
+}

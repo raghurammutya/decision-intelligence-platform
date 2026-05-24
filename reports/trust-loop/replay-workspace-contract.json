@@ -1,0 +1,17 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "drift_comparison_required": true,
+  "evaluation_id": "v39.0-replay-workspace-contract-1",
+  "evidence_references_required": true,
+  "production_decision_execution_authorized": false,
+  "replay_input_count": 6,
+  "replay_output_count": 6,
+  "replay_workspace_valid": true,
+  "rest_recovery_endpoint_count": 3,
+  "runtime_execution_allowed": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "replay-workspace-contract-evaluation/v1",
+  "side_effects_allowed": false,
+  "websocket_authoritative": false
+}

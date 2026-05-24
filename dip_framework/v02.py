@@ -80,6 +80,11 @@ ARTIFACTS = [
     ("product_pack_cli_scaffold_contract", "examples/product-pack-cli-scaffold-contract.json"),
     ("case_evidence_query_contract", "examples/case-evidence-query-contract.json"),
     ("governance_dashboard_data_contract", "examples/governance-dashboard-data-contract.json"),
+    ("product_pack_authoring_ux_contract", "examples/product-pack-authoring-ux-contract.json"),
+    ("governance_review_queue_contract", "examples/governance-review-queue-contract.json"),
+    ("capability_lineage_explorer_contract", "examples/capability-lineage-explorer-contract.json"),
+    ("replay_workspace_contract", "examples/replay-workspace-contract.json"),
+    ("v40_usability_acceptance_pack_contract", "examples/v40-usability-acceptance-pack-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -3277,6 +3282,174 @@ def evaluate_v35_usability_governance_closure(root: Path = ROOT) -> dict[str, An
     }
 
 
+def evaluate_product_pack_authoring_ux_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/product-pack-authoring-ux-contract.json")
+    result = validate_file(
+        "product_pack_authoring_ux_contract",
+        root / "examples/product-pack-authoring-ux-contract.json",
+    )
+    transitions = contract.get("state_transitions", [])
+    return {
+        "schema_version": "product-pack-authoring-ux-contract-evaluation/v1",
+        "evaluation_id": "v36.0-product-pack-authoring-ux-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "authoring_state_count": len(contract.get("authoring_states", [])),
+        "required_panel_count": len(contract.get("required_panels", [])),
+        "state_transition_count": len(transitions),
+        "all_transitions_require_rest": all(
+            transition.get("requires_rest_command") is True for transition in transitions
+        ),
+        "rest_authoritative": contract.get("rest_authoritative") is True,
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "runtime_authority_default": contract.get("runtime_authority_default"),
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "broad_no_code_builder": contract.get("broad_no_code_builder") is True,
+        "product_pack_authoring_ux_valid": result.get("passed") is True
+        and contract.get("rest_authoritative") is True
+        and contract.get("websocket_authoritative") is False
+        and contract.get("runtime_authority_default") == "none"
+        and contract.get("direct_database_access_allowed") is False
+        and contract.get("broad_no_code_builder") is False
+        and all(transition.get("requires_rest_command") is True for transition in transitions),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_governance_review_queue_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/governance-review-queue-contract.json")
+    result = validate_file("governance_review_queue_contract", root / "examples/governance-review-queue-contract.json")
+    assignment = contract.get("assignment_model", {})
+    return {
+        "schema_version": "governance-review-queue-contract-evaluation/v1",
+        "evaluation_id": "v37.0-governance-review-queue-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "filter_count": len(contract.get("filters", [])),
+        "required_evidence_count": len(contract.get("required_evidence", [])),
+        "reviewer_action_count": len(contract.get("reviewer_actions", [])),
+        "escalation_state_count": len(contract.get("escalation_states", [])),
+        "assignment_required": assignment.get("assignment_required") is True,
+        "solo_maintainer_exception_visible": assignment.get("solo_maintainer_exception_visible") is True,
+        "approval_automation_allowed": contract.get("approval_automation_allowed") is True,
+        "governance_review_queue_valid": result.get("passed") is True
+        and len(contract.get("filters", [])) >= 8
+        and len(contract.get("required_evidence", [])) >= 7
+        and len(contract.get("reviewer_actions", [])) >= 5
+        and len(contract.get("escalation_states", [])) >= 5
+        and assignment.get("assignment_required") is True
+        and assignment.get("solo_maintainer_exception_visible") is True
+        and contract.get("approval_automation_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_capability_lineage_explorer_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/capability-lineage-explorer-contract.json")
+    result = validate_file(
+        "capability_lineage_explorer_contract",
+        root / "examples/capability-lineage-explorer-contract.json",
+    )
+    traces = contract.get("version_trace_examples", [])
+    return {
+        "schema_version": "capability-lineage-explorer-contract-evaluation/v1",
+        "evaluation_id": "v38.0-capability-lineage-explorer-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "lineage_resource_count": len(contract.get("lineage_resources", [])),
+        "required_lineage_field_count": len(contract.get("required_lineage_fields", [])),
+        "version_trace_example_count": len(traces),
+        "capability_version_lineage_required": contract.get("capability_version_lineage_required") is True,
+        "direct_runtime_invocation_allowed": contract.get("direct_runtime_invocation_allowed") is True,
+        "all_traces_have_evidence": all(bool(trace.get("evidence_uri")) for trace in traces),
+        "capability_lineage_explorer_valid": result.get("passed") is True
+        and len(contract.get("lineage_resources", [])) >= 8
+        and len(traces) >= 2
+        and contract.get("capability_version_lineage_required") is True
+        and contract.get("direct_runtime_invocation_allowed") is False
+        and all(bool(trace.get("capability_id")) and bool(trace.get("capability_version")) for trace in traces),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_replay_workspace_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/replay-workspace-contract.json")
+    result = validate_file("replay_workspace_contract", root / "examples/replay-workspace-contract.json")
+    return {
+        "schema_version": "replay-workspace-contract-evaluation/v1",
+        "evaluation_id": "v39.0-replay-workspace-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "replay_input_count": len(contract.get("replay_inputs", [])),
+        "replay_output_count": len(contract.get("replay_outputs", [])),
+        "rest_recovery_endpoint_count": len(contract.get("rest_recovery_endpoints", [])),
+        "drift_comparison_required": contract.get("drift_comparison_required") is True,
+        "evidence_references_required": contract.get("evidence_references_required") is True,
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "runtime_execution_allowed": contract.get("runtime_execution_allowed") is True,
+        "side_effects_allowed": contract.get("side_effects_allowed") is True,
+        "replay_workspace_valid": result.get("passed") is True
+        and len(contract.get("replay_inputs", [])) >= 6
+        and len(contract.get("replay_outputs", [])) >= 6
+        and len(contract.get("rest_recovery_endpoints", [])) >= 3
+        and contract.get("drift_comparison_required") is True
+        and contract.get("evidence_references_required") is True
+        and contract.get("websocket_authoritative") is False
+        and contract.get("runtime_execution_allowed") is False
+        and contract.get("side_effects_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v40_usability_acceptance_pack(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/v40-usability-acceptance-pack-contract.json")
+    result = validate_file(
+        "v40_usability_acceptance_pack_contract",
+        root / "examples/v40-usability-acceptance-pack-contract.json",
+    )
+    v36 = load_json(root / "reports/trust-loop/product-pack-authoring-ux-contract.json")
+    v37 = load_json(root / "reports/trust-loop/governance-review-queue-contract.json")
+    v38 = load_json(root / "reports/trust-loop/capability-lineage-explorer-contract.json")
+    v39 = load_json(root / "reports/trust-loop/replay-workspace-contract.json")
+    gates = {
+        "product_pack_authoring_ux_valid": v36.get("product_pack_authoring_ux_valid") is True,
+        "governance_review_queue_valid": v37.get("governance_review_queue_valid") is True,
+        "capability_lineage_explorer_valid": v38.get("capability_lineage_explorer_valid") is True,
+        "replay_workspace_valid": v39.get("replay_workspace_valid") is True,
+    }
+    return {
+        "schema_version": "v40-usability-acceptance-pack-evaluation/v1",
+        "evaluation_id": "v40.0-usability-acceptance-pack-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "usability_surface_count": len(contract.get("usability_surfaces", [])),
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "rest_authoritative": contract.get("rest_authoritative") is True,
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "evidence_backed": contract.get("evidence_backed") is True,
+        "runtime_remains_blocked": contract.get("runtime_remains_blocked") is True,
+        "v40_usability_acceptance_pack_valid": result.get("passed") is True
+        and all(gates.values())
+        and contract.get("rest_authoritative") is True
+        and contract.get("websocket_authoritative") is False
+        and contract.get("evidence_backed") is True
+        and contract.get("runtime_remains_blocked") is True
+        and v36.get("broad_no_code_builder") is False
+        and v37.get("approval_automation_allowed") is False
+        and v38.get("direct_runtime_invocation_allowed") is False
+        and v39.get("runtime_execution_allowed") is False
+        and v39.get("side_effects_allowed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -4074,6 +4247,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     case_evidence_query = load_json(root / "reports/trust-loop/case-evidence-query-contract.json")
     governance_dashboard_data = load_json(root / "reports/trust-loop/governance-dashboard-data-contract.json")
     v35_closure = load_json(root / "reports/trust-loop/v35-usability-governance-closure.json")
+    product_pack_authoring_ux = load_json(root / "reports/trust-loop/product-pack-authoring-ux-contract.json")
+    governance_review_queue = load_json(root / "reports/trust-loop/governance-review-queue-contract.json")
+    capability_lineage_explorer = load_json(root / "reports/trust-loop/capability-lineage-explorer-contract.json")
+    replay_workspace = load_json(root / "reports/trust-loop/replay-workspace-contract.json")
+    v40_usability_acceptance = load_json(root / "reports/trust-loop/v40-usability-acceptance-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -4824,6 +5002,67 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         is True,
         "v35_0_closure_gate_complete_count": v35_closure.get("closure_gate_complete_count", 0),
         "v35_0_closure_gate_count": v35_closure.get("closure_gate_count", 0),
+        "v36_0_product_pack_authoring_ux_valid": product_pack_authoring_ux.get(
+            "product_pack_authoring_ux_valid"
+        )
+        is True,
+        "v36_0_authoring_state_count": product_pack_authoring_ux.get("authoring_state_count", 0),
+        "v36_0_required_panel_count": product_pack_authoring_ux.get("required_panel_count", 0),
+        "v36_0_all_transitions_require_rest": product_pack_authoring_ux.get("all_transitions_require_rest")
+        is True,
+        "v36_0_rest_authoritative": product_pack_authoring_ux.get("rest_authoritative") is True,
+        "v36_0_websocket_authoritative": product_pack_authoring_ux.get("websocket_authoritative") is True,
+        "v36_0_broad_no_code_builder": product_pack_authoring_ux.get("broad_no_code_builder") is True,
+        "v36_0_direct_database_access_allowed": product_pack_authoring_ux.get(
+            "direct_database_access_allowed"
+        )
+        is True,
+        "v37_0_governance_review_queue_valid": governance_review_queue.get("governance_review_queue_valid")
+        is True,
+        "v37_0_filter_count": governance_review_queue.get("filter_count", 0),
+        "v37_0_required_evidence_count": governance_review_queue.get("required_evidence_count", 0),
+        "v37_0_reviewer_action_count": governance_review_queue.get("reviewer_action_count", 0),
+        "v37_0_solo_maintainer_exception_visible": governance_review_queue.get(
+            "solo_maintainer_exception_visible"
+        )
+        is True,
+        "v37_0_approval_automation_allowed": governance_review_queue.get("approval_automation_allowed")
+        is True,
+        "v38_0_capability_lineage_explorer_valid": capability_lineage_explorer.get(
+            "capability_lineage_explorer_valid"
+        )
+        is True,
+        "v38_0_lineage_resource_count": capability_lineage_explorer.get("lineage_resource_count", 0),
+        "v38_0_version_trace_example_count": capability_lineage_explorer.get("version_trace_example_count", 0),
+        "v38_0_capability_version_lineage_required": capability_lineage_explorer.get(
+            "capability_version_lineage_required"
+        )
+        is True,
+        "v38_0_direct_runtime_invocation_allowed": capability_lineage_explorer.get(
+            "direct_runtime_invocation_allowed"
+        )
+        is True,
+        "v38_0_all_traces_have_evidence": capability_lineage_explorer.get("all_traces_have_evidence") is True,
+        "v39_0_replay_workspace_valid": replay_workspace.get("replay_workspace_valid") is True,
+        "v39_0_replay_input_count": replay_workspace.get("replay_input_count", 0),
+        "v39_0_replay_output_count": replay_workspace.get("replay_output_count", 0),
+        "v39_0_rest_recovery_endpoint_count": replay_workspace.get("rest_recovery_endpoint_count", 0),
+        "v39_0_drift_comparison_required": replay_workspace.get("drift_comparison_required") is True,
+        "v39_0_evidence_references_required": replay_workspace.get("evidence_references_required") is True,
+        "v39_0_websocket_authoritative": replay_workspace.get("websocket_authoritative") is True,
+        "v39_0_runtime_execution_allowed": replay_workspace.get("runtime_execution_allowed") is True,
+        "v39_0_side_effects_allowed": replay_workspace.get("side_effects_allowed") is True,
+        "v40_0_usability_acceptance_pack_valid": v40_usability_acceptance.get(
+            "v40_usability_acceptance_pack_valid"
+        )
+        is True,
+        "v40_0_usability_surface_count": v40_usability_acceptance.get("usability_surface_count", 0),
+        "v40_0_rest_authoritative": v40_usability_acceptance.get("rest_authoritative") is True,
+        "v40_0_websocket_authoritative": v40_usability_acceptance.get("websocket_authoritative") is True,
+        "v40_0_evidence_backed": v40_usability_acceptance.get("evidence_backed") is True,
+        "v40_0_runtime_remains_blocked": v40_usability_acceptance.get("runtime_remains_blocked") is True,
+        "v40_0_closure_gate_complete_count": v40_usability_acceptance.get("closure_gate_complete_count", 0),
+        "v40_0_closure_gate_count": v40_usability_acceptance.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -5058,6 +5297,23 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and governance_dashboard_data.get("dashboard_is_source_of_truth") is False
         and governance_dashboard_data.get("websocket_authoritative") is False
         and v35_closure.get("v35_usability_governance_closure_valid") is True
+        and product_pack_authoring_ux.get("product_pack_authoring_ux_valid") is True
+        and product_pack_authoring_ux.get("rest_authoritative") is True
+        and product_pack_authoring_ux.get("websocket_authoritative") is False
+        and product_pack_authoring_ux.get("broad_no_code_builder") is False
+        and product_pack_authoring_ux.get("direct_database_access_allowed") is False
+        and governance_review_queue.get("governance_review_queue_valid") is True
+        and governance_review_queue.get("approval_automation_allowed") is False
+        and capability_lineage_explorer.get("capability_lineage_explorer_valid") is True
+        and capability_lineage_explorer.get("direct_runtime_invocation_allowed") is False
+        and replay_workspace.get("replay_workspace_valid") is True
+        and replay_workspace.get("websocket_authoritative") is False
+        and replay_workspace.get("runtime_execution_allowed") is False
+        and replay_workspace.get("side_effects_allowed") is False
+        and v40_usability_acceptance.get("v40_usability_acceptance_pack_valid") is True
+        and v40_usability_acceptance.get("rest_authoritative") is True
+        and v40_usability_acceptance.get("websocket_authoritative") is False
+        and v40_usability_acceptance.get("runtime_remains_blocked") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -5117,6 +5373,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "product-pack CLI scaffold is a broad no-code builder",
             "case evidence queries select a production backend",
             "governance dashboard is the source of truth",
+            "product-pack authoring UX is a broad no-code builder",
+            "governance review queue automates approvals",
+            "capability lineage explorer invokes runtime capabilities",
+            "replay workspace executes runtime side effects",
+            "v40 usability acceptance grants runtime authority",
         ],
     }
 
@@ -5466,6 +5727,42 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v35.0 blocked claims visible: `{payload['v35_0_blocked_claims_visible']}`",
         f"v35.0 usability governance closure valid: `{payload['v35_0_usability_governance_closure_valid']}`",
         f"v35.0 closure gates complete: `{payload['v35_0_closure_gate_complete_count']}/{payload['v35_0_closure_gate_count']}`",
+        f"v36.0 product-pack authoring UX valid: `{payload['v36_0_product_pack_authoring_ux_valid']}`",
+        f"v36.0 authoring states: `{payload['v36_0_authoring_state_count']}`",
+        f"v36.0 required panels: `{payload['v36_0_required_panel_count']}`",
+        f"v36.0 transitions require REST: `{payload['v36_0_all_transitions_require_rest']}`",
+        f"v36.0 REST authoritative: `{payload['v36_0_rest_authoritative']}`",
+        f"v36.0 WebSocket authoritative: `{payload['v36_0_websocket_authoritative']}`",
+        f"v36.0 broad no-code builder: `{payload['v36_0_broad_no_code_builder']}`",
+        f"v36.0 direct database access allowed: `{payload['v36_0_direct_database_access_allowed']}`",
+        f"v37.0 governance review queue valid: `{payload['v37_0_governance_review_queue_valid']}`",
+        f"v37.0 filters: `{payload['v37_0_filter_count']}`",
+        f"v37.0 required evidence items: `{payload['v37_0_required_evidence_count']}`",
+        f"v37.0 reviewer actions: `{payload['v37_0_reviewer_action_count']}`",
+        f"v37.0 solo-maintainer exception visible: `{payload['v37_0_solo_maintainer_exception_visible']}`",
+        f"v37.0 approval automation allowed: `{payload['v37_0_approval_automation_allowed']}`",
+        f"v38.0 capability lineage explorer valid: `{payload['v38_0_capability_lineage_explorer_valid']}`",
+        f"v38.0 lineage resources: `{payload['v38_0_lineage_resource_count']}`",
+        f"v38.0 version trace examples: `{payload['v38_0_version_trace_example_count']}`",
+        f"v38.0 capability version lineage required: `{payload['v38_0_capability_version_lineage_required']}`",
+        f"v38.0 direct runtime invocation allowed: `{payload['v38_0_direct_runtime_invocation_allowed']}`",
+        f"v38.0 traces have evidence: `{payload['v38_0_all_traces_have_evidence']}`",
+        f"v39.0 replay workspace valid: `{payload['v39_0_replay_workspace_valid']}`",
+        f"v39.0 replay inputs: `{payload['v39_0_replay_input_count']}`",
+        f"v39.0 replay outputs: `{payload['v39_0_replay_output_count']}`",
+        f"v39.0 REST recovery endpoints: `{payload['v39_0_rest_recovery_endpoint_count']}`",
+        f"v39.0 drift comparison required: `{payload['v39_0_drift_comparison_required']}`",
+        f"v39.0 evidence references required: `{payload['v39_0_evidence_references_required']}`",
+        f"v39.0 WebSocket authoritative: `{payload['v39_0_websocket_authoritative']}`",
+        f"v39.0 runtime execution allowed: `{payload['v39_0_runtime_execution_allowed']}`",
+        f"v39.0 side effects allowed: `{payload['v39_0_side_effects_allowed']}`",
+        f"v40.0 usability acceptance pack valid: `{payload['v40_0_usability_acceptance_pack_valid']}`",
+        f"v40.0 usability surfaces: `{payload['v40_0_usability_surface_count']}`",
+        f"v40.0 REST authoritative: `{payload['v40_0_rest_authoritative']}`",
+        f"v40.0 WebSocket authoritative: `{payload['v40_0_websocket_authoritative']}`",
+        f"v40.0 evidence backed: `{payload['v40_0_evidence_backed']}`",
+        f"v40.0 runtime remains blocked: `{payload['v40_0_runtime_remains_blocked']}`",
+        f"v40.0 closure gates complete: `{payload['v40_0_closure_gate_complete_count']}/{payload['v40_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -5664,6 +5961,16 @@ def write_v0_2_evidence(
     write_json(target / "governance-dashboard-data-contract.json", governance_dashboard_data)
     v35_closure = evaluate_v35_usability_governance_closure(root)
     write_json(target / "v35-usability-governance-closure.json", v35_closure)
+    product_pack_authoring_ux = evaluate_product_pack_authoring_ux_contract(root)
+    write_json(target / "product-pack-authoring-ux-contract.json", product_pack_authoring_ux)
+    governance_review_queue = evaluate_governance_review_queue_contract(root)
+    write_json(target / "governance-review-queue-contract.json", governance_review_queue)
+    capability_lineage_explorer = evaluate_capability_lineage_explorer_contract(root)
+    write_json(target / "capability-lineage-explorer-contract.json", capability_lineage_explorer)
+    replay_workspace = evaluate_replay_workspace_contract(root)
+    write_json(target / "replay-workspace-contract.json", replay_workspace)
+    v40_usability_acceptance = evaluate_v40_usability_acceptance_pack(root)
+    write_json(target / "v40-usability-acceptance-pack.json", v40_usability_acceptance)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -5752,6 +6059,11 @@ def write_v0_2_evidence(
         "case_evidence_query": case_evidence_query,
         "governance_dashboard_data": governance_dashboard_data,
         "v35_closure": v35_closure,
+        "product_pack_authoring_ux": product_pack_authoring_ux,
+        "governance_review_queue": governance_review_queue,
+        "capability_lineage_explorer": capability_lineage_explorer,
+        "replay_workspace": replay_workspace,
+        "v40_usability_acceptance": v40_usability_acceptance,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

@@ -1,0 +1,22 @@
+{
+  "closure_gate_complete_count": 4,
+  "closure_gate_count": 4,
+  "closure_gates": {
+    "capability_lineage_explorer_valid": true,
+    "governance_review_queue_valid": true,
+    "product_pack_authoring_ux_valid": true,
+    "replay_workspace_valid": true
+  },
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v40.0-usability-acceptance-pack-1",
+  "evidence_backed": true,
+  "production_decision_execution_authorized": false,
+  "rest_authoritative": true,
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "v40-usability-acceptance-pack-evaluation/v1",
+  "usability_surface_count": 4,
+  "v40_usability_acceptance_pack_valid": true,
+  "websocket_authoritative": false
+}

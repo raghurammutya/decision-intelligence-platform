@@ -635,6 +635,74 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "product_pack_authoring_ux_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "authoring_states",
+        "state_transitions",
+        "required_panels",
+        "rest_authoritative",
+        "websocket_authoritative",
+        "runtime_authority_default",
+        "direct_database_access_allowed",
+        "broad_no_code_builder",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_review_queue_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "filters",
+        "assignment_model",
+        "required_evidence",
+        "reviewer_actions",
+        "escalation_states",
+        "approval_automation_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "capability_lineage_explorer_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "lineage_resources",
+        "required_lineage_fields",
+        "version_trace_examples",
+        "capability_version_lineage_required",
+        "direct_runtime_invocation_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "replay_workspace_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "replay_inputs",
+        "replay_outputs",
+        "drift_comparison_required",
+        "evidence_references_required",
+        "rest_recovery_endpoints",
+        "websocket_authoritative",
+        "runtime_execution_allowed",
+        "side_effects_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "v40_usability_acceptance_pack_contract": [
+        "schema_version",
+        "acceptance_id",
+        "contract_version",
+        "usability_surfaces",
+        "required_closure_gates",
+        "rest_authoritative",
+        "websocket_authoritative",
+        "evidence_backed",
+        "runtime_remains_blocked",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1571,6 +1639,114 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("governance dashboard cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("governance dashboard cannot authorize production decisions")
+    if kind == "product_pack_authoring_ux_contract":
+        required_states = {"draft", "validate", "simulate", "diff", "approval_ready", "blocked"}
+        if not required_states.issubset(set(payload.get("authoring_states", []))):
+            errors.append("authoring UX contract must include review-first states")
+        if len(payload.get("required_panels", [])) < 8:
+            errors.append("authoring UX contract must include required trust panels")
+        if len(payload.get("state_transitions", [])) < 5:
+            errors.append("authoring UX contract must include state transitions")
+        for transition in payload.get("state_transitions", []):
+            if transition.get("requires_rest_command") is not True:
+                errors.append(f"transition {transition.get('from')}->{transition.get('to')} must require REST")
+        if payload.get("rest_authoritative") is not True:
+            errors.append("authoring UX contract must keep REST authoritative")
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("authoring UX contract cannot make WebSocket authoritative")
+        if payload.get("runtime_authority_default") != "none":
+            errors.append("authoring UX contract must default runtime authority to none")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("authoring UX contract cannot allow direct database access")
+        if payload.get("broad_no_code_builder") is not False:
+            errors.append("authoring UX contract cannot become a broad no-code builder")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("authoring UX contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("authoring UX contract cannot authorize production decisions")
+    if kind == "governance_review_queue_contract":
+        if len(payload.get("filters", [])) < 8:
+            errors.append("review queue contract must include filters")
+        assignment = payload.get("assignment_model", {})
+        if assignment.get("assignment_required") is not True:
+            errors.append("review queue contract must require assignment")
+        if assignment.get("solo_maintainer_exception_visible") is not True:
+            errors.append("review queue contract must expose solo-maintainer exception")
+        if len(payload.get("required_evidence", [])) < 7:
+            errors.append("review queue contract must include required evidence")
+        if len(payload.get("reviewer_actions", [])) < 5:
+            errors.append("review queue contract must include reviewer actions")
+        if len(payload.get("escalation_states", [])) < 5:
+            errors.append("review queue contract must include escalation states")
+        if payload.get("approval_automation_allowed") is not False:
+            errors.append("review queue contract cannot allow approval automation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("review queue contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("review queue contract cannot authorize production decisions")
+    if kind == "capability_lineage_explorer_contract":
+        if len(payload.get("lineage_resources", [])) < 8:
+            errors.append("lineage explorer contract must include lineage resources")
+        required_fields = set(payload.get("required_lineage_fields", []))
+        if not {"capability_id", "capability_version", "evidence_uri", "correlation_id"}.issubset(required_fields):
+            errors.append("lineage explorer contract missing required lineage fields")
+        if len(payload.get("version_trace_examples", [])) < 2:
+            errors.append("lineage explorer contract must include trace examples")
+        for trace in payload.get("version_trace_examples", []):
+            if not trace.get("capability_id") or not trace.get("capability_version") or not trace.get("evidence_uri"):
+                errors.append("lineage trace example missing capability version evidence")
+        if payload.get("capability_version_lineage_required") is not True:
+            errors.append("lineage explorer contract must require capability version lineage")
+        if payload.get("direct_runtime_invocation_allowed") is not False:
+            errors.append("lineage explorer contract cannot allow direct runtime invocation")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("lineage explorer contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("lineage explorer contract cannot authorize production decisions")
+    if kind == "replay_workspace_contract":
+        if len(payload.get("replay_inputs", [])) < 6:
+            errors.append("replay workspace contract must include replay inputs")
+        if len(payload.get("replay_outputs", [])) < 6:
+            errors.append("replay workspace contract must include replay outputs")
+        if payload.get("drift_comparison_required") is not True:
+            errors.append("replay workspace contract must require drift comparison")
+        if payload.get("evidence_references_required") is not True:
+            errors.append("replay workspace contract must require evidence references")
+        if len(payload.get("rest_recovery_endpoints", [])) < 3:
+            errors.append("replay workspace contract must include REST recovery endpoints")
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("replay workspace contract cannot make WebSocket authoritative")
+        if payload.get("runtime_execution_allowed") is not False:
+            errors.append("replay workspace contract cannot allow runtime execution")
+        if payload.get("side_effects_allowed") is not False:
+            errors.append("replay workspace contract cannot allow side effects")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("replay workspace contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("replay workspace contract cannot authorize production decisions")
+    if kind == "v40_usability_acceptance_pack_contract":
+        if len(payload.get("usability_surfaces", [])) < 4:
+            errors.append("v40 usability acceptance must include usability surfaces")
+        required_gates = {
+            "product_pack_authoring_ux_valid",
+            "governance_review_queue_valid",
+            "capability_lineage_explorer_valid",
+            "replay_workspace_valid",
+        }
+        if set(payload.get("required_closure_gates", [])) != required_gates:
+            errors.append("v40 usability acceptance must declare required closure gates")
+        if payload.get("rest_authoritative") is not True:
+            errors.append("v40 usability acceptance must keep REST authoritative")
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("v40 usability acceptance cannot make WebSocket authoritative")
+        if payload.get("evidence_backed") is not True:
+            errors.append("v40 usability acceptance must be evidence backed")
+        if payload.get("runtime_remains_blocked") is not True:
+            errors.append("v40 usability acceptance must keep runtime blocked")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("v40 usability acceptance cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("v40 usability acceptance cannot authorize production decisions")
     return errors
 
 
@@ -1634,6 +1810,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "product_pack_cli_scaffold_contract": examples / "product-pack-cli-scaffold-contract.json",
         "case_evidence_query_contract": examples / "case-evidence-query-contract.json",
         "governance_dashboard_data_contract": examples / "governance-dashboard-data-contract.json",
+        "product_pack_authoring_ux_contract": examples / "product-pack-authoring-ux-contract.json",
+        "governance_review_queue_contract": examples / "governance-review-queue-contract.json",
+        "capability_lineage_explorer_contract": examples / "capability-lineage-explorer-contract.json",
+        "replay_workspace_contract": examples / "replay-workspace-contract.json",
+        "v40_usability_acceptance_pack_contract": examples / "v40-usability-acceptance-pack-contract.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

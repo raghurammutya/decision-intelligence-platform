@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 51,
-  "record_count": 51,
+  "passed_count": 56,
+  "record_count": 56,
   "records": [
     {
       "errors": [],
@@ -308,6 +308,36 @@
       "kind": "governance_dashboard_data_contract",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-dashboard-data-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_authoring_ux_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-authoring-ux-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_review_queue_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-review-queue-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "capability_lineage_explorer_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/capability-lineage-explorer-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "replay_workspace_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/replay-workspace-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "v40_usability_acceptance_pack_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/v40-usability-acceptance-pack-contract.json"
     }
   ]
 }

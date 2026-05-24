@@ -1,0 +1,15 @@
+{
+  "all_traces_have_evidence": true,
+  "capability_lineage_explorer_valid": true,
+  "capability_version_lineage_required": true,
+  "computed": true,
+  "contract_valid": true,
+  "direct_runtime_invocation_allowed": false,
+  "evaluation_id": "v38.0-capability-lineage-explorer-contract-1",
+  "lineage_resource_count": 9,
+  "production_decision_execution_authorized": false,
+  "required_lineage_field_count": 8,
+  "runtime_integration_authorized": false,
+  "schema_version": "capability-lineage-explorer-contract-evaluation/v1",
+  "version_trace_example_count": 2
+}

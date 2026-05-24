@@ -1011,6 +1011,35 @@ Required evidence:
 - v35.0 usability governance closure requires all five contracts to pass while
   runtime integration and production decision execution remain false.
 
+### v36.0-v40.0 Review Workspace Contracts
+
+Status: complete on `v40.0.0-pre` as pre-runtime contract evidence, not as
+runtime authority or production readiness.
+
+Purpose: close the next product usability slice by making authoring, review,
+lineage, and replay workflows explicit without turning DIP into a broad builder
+or live runtime.
+
+Required evidence:
+
+- v36.0 product-pack authoring UX defines draft, validate, simulate, diff,
+  approval-ready, and blocked states, all transitioned through REST commands.
+  It keeps runtime authority at `none`, direct database access denied, WebSocket
+  non-authoritative, and broad no-code-builder scope false.
+- v37.0 governance review queue defines filters, assignments, blocked evidence,
+  reviewer actions, escalation states, and solo-maintainer exception visibility.
+  It does not automate approvals.
+- v38.0 capability lineage explorer makes capability version lineage explicit
+  across decision specs, capability graphs, policy preflight, simulations,
+  diffs, approvals, case evidence, and replay. It does not invoke runtime
+  capabilities.
+- v39.0 replay workspace defines replay inputs, replay outputs, drift
+  comparison, evidence references, and REST recovery endpoints. It does not
+  execute runtime decisions or side effects.
+- v40.0 usability acceptance pack requires v36-v39 to pass, keeps REST
+  authoritative, keeps WebSocket non-authoritative, and requires runtime to
+  remain blocked.
+
 ## Completion Gate
 
 The current phase is complete only if:

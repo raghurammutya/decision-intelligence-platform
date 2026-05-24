@@ -1,0 +1,33 @@
+{
+  "contract_id": "dip-replay-workspace",
+  "contract_version": "39.0.0",
+  "drift_comparison_required": true,
+  "evidence_references_required": true,
+  "production_decision_execution_authorized": false,
+  "replay_inputs": [
+    "case_id",
+    "decision_spec_version",
+    "capability_versions",
+    "policy_set_version",
+    "simulation_case_set",
+    "approval_record_ref"
+  ],
+  "replay_outputs": [
+    "replay_run_id",
+    "replay_status",
+    "output_comparison",
+    "drift_summary",
+    "lineage_refs",
+    "evidence_pack_uri"
+  ],
+  "rest_recovery_endpoints": [
+    "/api/v1/replay/{replay_run_id}",
+    "/api/v1/cases/{case_id}/evidence-pack",
+    "/api/v1/resources/replay_run/{replay_run_id}/events"
+  ],
+  "runtime_execution_allowed": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "replay-workspace-contract/v1",
+  "side_effects_allowed": false,
+  "websocket_authoritative": false
+}

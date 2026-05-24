@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v35.0.0-pre")
+    write_v0_2_evidence(root, version="v40.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -104,6 +104,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     case_evidence_query = load_json(root / "reports/trust-loop/case-evidence-query-contract.json")
     governance_dashboard_data = load_json(root / "reports/trust-loop/governance-dashboard-data-contract.json")
     v35_closure = load_json(root / "reports/trust-loop/v35-usability-governance-closure.json")
+    product_pack_authoring_ux = load_json(root / "reports/trust-loop/product-pack-authoring-ux-contract.json")
+    governance_review_queue = load_json(root / "reports/trust-loop/governance-review-queue-contract.json")
+    capability_lineage_explorer = load_json(root / "reports/trust-loop/capability-lineage-explorer-contract.json")
+    replay_workspace = load_json(root / "reports/trust-loop/replay-workspace-contract.json")
+    v40_usability_acceptance = load_json(root / "reports/trust-loop/v40-usability-acceptance-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -198,6 +203,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_case_evidence_query_contract",
             "evaluate_governance_dashboard_data_contract",
             "evaluate_v35_usability_governance_closure",
+            "evaluate_product_pack_authoring_ux_contract",
+            "evaluate_governance_review_queue_contract",
+            "evaluate_capability_lineage_explorer_contract",
+            "evaluate_replay_workspace_contract",
+            "evaluate_v40_usability_acceptance_pack",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -677,6 +687,33 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         is True,
         "v35_0_closure_gate_complete_count": v35_closure.get("closure_gate_complete_count", 0),
         "v35_0_closure_gate_count": v35_closure.get("closure_gate_count", 0),
+        "v36_0_product_pack_authoring_ux_valid": product_pack_authoring_ux.get(
+            "product_pack_authoring_ux_valid"
+        )
+        is True,
+        "v36_0_websocket_authoritative": product_pack_authoring_ux.get("websocket_authoritative") is True,
+        "v36_0_broad_no_code_builder": product_pack_authoring_ux.get("broad_no_code_builder") is True,
+        "v37_0_governance_review_queue_valid": governance_review_queue.get("governance_review_queue_valid")
+        is True,
+        "v37_0_approval_automation_allowed": governance_review_queue.get("approval_automation_allowed") is True,
+        "v38_0_capability_lineage_explorer_valid": capability_lineage_explorer.get(
+            "capability_lineage_explorer_valid"
+        )
+        is True,
+        "v38_0_direct_runtime_invocation_allowed": capability_lineage_explorer.get(
+            "direct_runtime_invocation_allowed"
+        )
+        is True,
+        "v39_0_replay_workspace_valid": replay_workspace.get("replay_workspace_valid") is True,
+        "v39_0_runtime_execution_allowed": replay_workspace.get("runtime_execution_allowed") is True,
+        "v39_0_side_effects_allowed": replay_workspace.get("side_effects_allowed") is True,
+        "v40_0_usability_acceptance_pack_valid": v40_usability_acceptance.get(
+            "v40_usability_acceptance_pack_valid"
+        )
+        is True,
+        "v40_0_runtime_remains_blocked": v40_usability_acceptance.get("runtime_remains_blocked") is True,
+        "v40_0_closure_gate_complete_count": v40_usability_acceptance.get("closure_gate_complete_count", 0),
+        "v40_0_closure_gate_count": v40_usability_acceptance.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,

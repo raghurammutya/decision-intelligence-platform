@@ -1,0 +1,16 @@
+{
+  "approval_automation_allowed": false,
+  "assignment_required": true,
+  "computed": true,
+  "contract_valid": true,
+  "escalation_state_count": 5,
+  "evaluation_id": "v37.0-governance-review-queue-contract-1",
+  "filter_count": 8,
+  "governance_review_queue_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_evidence_count": 7,
+  "reviewer_action_count": 5,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-review-queue-contract-evaluation/v1",
+  "solo_maintainer_exception_visible": true
+}
