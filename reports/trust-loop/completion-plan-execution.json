@@ -1,0 +1,96 @@
+{
+  "ai_policy_boundary_preserved": true,
+  "autopilot_execution_review_complete": true,
+  "blocked_live_completion_count": 9,
+  "blocked_live_completion_steps": [
+    "close_external_identity",
+    "close_live_decision_approval",
+    "close_durable_case_store",
+    "close_promotion_chain",
+    "controlled_advisory_runtime_pilot",
+    "marketplace_runtime_governance",
+    "shared_context_runtime_governance",
+    "limited_runtime_authority_gate",
+    "production_decision_authority_review"
+  ],
+  "completion_claim": "autopilot_evaluated_all_steps_live_completion_blocked_by_missing_prerequisites",
+  "computed": true,
+  "direct_database_access_blocked": true,
+  "evaluation_id": "completion-plan-execution-v10.0-1",
+  "evidence_gate_complete_count": 9,
+  "live_completion_achieved_count": 0,
+  "marketplace_unrestricted_execution_blocked": true,
+  "product_vision_alignment_valid": true,
+  "production_decision_authority_blocked": true,
+  "production_decision_execution_authorized": false,
+  "requested_scope": "steps_1_through_9",
+  "reviewed_step_count": 9,
+  "runtime_authority_grant_blocked": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "completion-plan-execution-review/v1",
+  "steps": [
+    {
+      "blocked_reason": "live_external_idp_mfa_evidence_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "close_external_identity",
+      "step": 1
+    },
+    {
+      "blocked_reason": "live_decision_approval_provider_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "close_live_decision_approval",
+      "step": 2
+    },
+    {
+      "blocked_reason": "production_durable_case_store_backend_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "close_durable_case_store",
+      "step": 3
+    },
+    {
+      "blocked_reason": "production_promotion_execution_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "close_promotion_chain",
+      "step": 4
+    },
+    {
+      "blocked_reason": "controlled_runtime_pilot_authority_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "controlled_advisory_runtime_pilot",
+      "step": 5
+    },
+    {
+      "blocked_reason": "controlled_runtime_required_before_marketplace_invocation",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "marketplace_runtime_governance",
+      "step": 6
+    },
+    {
+      "blocked_reason": "controlled_runtime_required_before_context_exchange",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "shared_context_runtime_governance",
+      "step": 7
+    },
+    {
+      "blocked_reason": "live_prerequisites_required_before_authority_grant",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "limited_runtime_authority_gate",
+      "step": 8
+    },
+    {
+      "blocked_reason": "production_decision_authority_prerequisites_missing",
+      "evidence_gate_complete": true,
+      "live_completion_achieved": false,
+      "name": "production_decision_authority_review",
+      "step": 9
+    }
+  ]
+}
