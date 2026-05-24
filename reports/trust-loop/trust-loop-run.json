@@ -13,6 +13,10 @@
     "evaluate_release_lifecycle_policy",
     "evaluate_external_identity_contract",
     "evaluate_durable_evidence_store_contract",
+    "evaluate_capability_governance",
+    "evaluate_shared_context_contract",
+    "assess_runtime_readiness",
+    "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"
   ],

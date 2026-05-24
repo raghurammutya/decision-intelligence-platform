@@ -147,6 +147,22 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "shared_context_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "source_boundary",
+        "purpose",
+        "ttl_seconds",
+        "fields",
+        "approval",
+        "lineage",
+        "freshness",
+        "policy_decision_evidence",
+        "producer",
+        "consumer",
+        "runtime_context_exchange_authorized",
+    ],
     "case_evidence": [
         "schema_version",
         "case_id",
@@ -242,6 +258,18 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("durable evidence store policy must require append-only contract")
         if payload.get("runtime_integration_authorized") is not False:
             errors.append("durable evidence store policy cannot authorize runtime integration")
+    if kind == "shared_context_contract":
+        if payload.get("runtime_context_exchange_authorized") is not False:
+            errors.append("shared context contract cannot authorize runtime exchange")
+        if not payload.get("purpose"):
+            errors.append("shared context contract must declare purpose")
+        if int(payload.get("ttl_seconds", 0) or 0) <= 0:
+            errors.append("shared context contract must declare TTL")
+        if payload.get("approval", {}).get("approval_required") is not True:
+            errors.append("shared context contract must require approval")
+        for field in payload.get("fields", []):
+            if not field.get("masking_rule"):
+                errors.append(f"shared context field {field.get('field_id')} missing masking rule")
     if kind == "case_evidence" and payload.get("mutable") is not False:
         errors.append("case evidence must be immutable or append-only")
     if kind == "replay" and payload.get("side_effects_executed") is not False:
@@ -270,6 +298,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "release_lifecycle_policy": examples / "release-lifecycle-policy.json",
         "external_identity_evidence": examples / "external-identity-evidence.json",
         "durable_evidence_store_policy": examples / "durable-evidence-store-policy.json",
+        "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",
     }

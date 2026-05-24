@@ -74,3 +74,19 @@ evidence for append-only content-addressed storage semantics without claiming a
 production storage backend. v1.1 closes the release-enforcement gap by
 requiring CODEOWNER review and conversation resolution on `main`. Runtime
 execution remains blocked.
+
+## Completion Plan
+
+The current completion plan is documented in
+[`docs/DIP_COMPLETION_PLAN.md`](docs/DIP_COMPLETION_PLAN.md). It keeps DIP
+focused on the governed pre-runtime wedge and treats EDI as an evidence
+observer, not the DIP runtime.
+
+```bash
+python3 -m dip_framework release-pack --version v2.0.0-pre
+```
+
+The completion release adds review-surface evidence, a third concrete decision
+domain, capability governance, shared context contract governance, and a
+runtime-readiness assessment. Runtime execution and production decision
+authority remain blocked.

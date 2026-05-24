@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 14,
-  "record_count": 14,
+  "passed_count": 15,
+  "record_count": 15,
   "records": [
     {
       "errors": [],
@@ -74,6 +74,12 @@
       "kind": "durable_evidence_store_policy",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/durable-evidence-store-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "shared_context_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/shared-context-contract.json"
     },
     {
       "errors": [],

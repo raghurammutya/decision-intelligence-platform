@@ -1,6 +1,6 @@
 {
   "baseline_decision_version": "0.9.0",
-  "case_count": 9,
+  "case_count": 13,
   "case_set": "v0.4-pre-runtime-cases",
   "changed_outcome_count": 3,
   "computed": true,
@@ -10,9 +10,9 @@
   },
   "decision_diff_ref": "reports/trust-loop/computed-decision-diff.json",
   "decision_id": "multi-decision-pre-runtime-review",
-  "decision_shape_count": 2,
+  "decision_shape_count": 3,
   "decision_version": "v0.4.0-pre",
-  "domain_count": 2,
+  "domain_count": 3,
   "engineering_review_results": [
     {
       "case_id": "eng-001",
@@ -32,6 +32,28 @@
     {
       "case_id": "eng-004",
       "decision_output": "blocked_runtime_requested",
+      "side_effects_executed": false
+    }
+  ],
+  "operational_risk_results": [
+    {
+      "case_id": "risk-low-001",
+      "decision_output": "standard_monitoring",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "risk-high-001",
+      "decision_output": "escalate_to_risk_owner",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "risk-stale-evidence-001",
+      "decision_output": "hold_for_fresh_evidence",
+      "side_effects_executed": false
+    },
+    {
+      "case_id": "risk-missing-approval-001",
+      "decision_output": "hold_for_approval",
       "side_effects_executed": false
     }
   ],

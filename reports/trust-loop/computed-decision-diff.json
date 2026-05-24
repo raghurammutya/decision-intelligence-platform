@@ -17,7 +17,7 @@
   ],
   "runtime_execution_requested": false,
   "schema_version": "decision-diff/v1",
-  "simulation_case_count": 9,
+  "simulation_case_count": 13,
   "simulation_changes": [
     "3 changed outcomes in v0.4-pre-runtime-cases"
   ],

@@ -1,0 +1,22 @@
+{
+  "approval_required": true,
+  "computed": true,
+  "consumer_declared": true,
+  "contract_id": "support-ticket-risk-context",
+  "contract_ref": "examples/shared-context-contract.json",
+  "direct_database_access_allowed": false,
+  "evaluation_id": "shared-context-v1.5-pre-runtime-1",
+  "freshness_rules_declared": true,
+  "masking_rules_declared": true,
+  "policy_decision_evidence_declared": true,
+  "producer_declared": true,
+  "production_decision_execution_authorized": false,
+  "purpose_declared": true,
+  "runtime_context_exchange_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "shared-context-governance-evaluation/v1",
+  "shared_context_contract_valid": true,
+  "source_lineage_declared": true,
+  "ttl_declared": true,
+  "ttl_seconds": 86400
+}

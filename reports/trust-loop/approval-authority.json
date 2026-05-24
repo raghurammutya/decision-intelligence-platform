@@ -3,7 +3,7 @@
   "approval_authority_valid": true,
   "approver_identity": "acct-support-platform-owner-001",
   "approver_subject": "Raghurammutya@gmail.com",
-  "case_manifest_hash": "d4c70eeb4aae5dc9cd8d8b12e810a59ae71ebd61e06c229b450c2d46935f0c6a",
+  "case_manifest_hash": "cbc044fb7acef890f520c2cd98b5e310158a5f48e36849e30feeff5406d0ae36",
   "computed": true,
   "decision_id": "support-ticket-routing",
   "decision_scope_authorized": true,

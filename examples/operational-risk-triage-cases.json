@@ -1,0 +1,38 @@
+{
+  "case_set_id": "operational-risk-triage-cases",
+  "cases": [
+    {
+      "case_id": "risk-low-001",
+      "inputs": {
+        "approval_observed": true,
+        "evidence_fresh": true,
+        "loss_exposure_usd": 5000
+      }
+    },
+    {
+      "case_id": "risk-high-001",
+      "inputs": {
+        "approval_observed": true,
+        "evidence_fresh": true,
+        "loss_exposure_usd": 250000
+      }
+    },
+    {
+      "case_id": "risk-stale-evidence-001",
+      "inputs": {
+        "approval_observed": true,
+        "evidence_fresh": false,
+        "loss_exposure_usd": 25000
+      }
+    },
+    {
+      "case_id": "risk-missing-approval-001",
+      "inputs": {
+        "approval_observed": false,
+        "evidence_fresh": true,
+        "loss_exposure_usd": 15000
+      }
+    }
+  ],
+  "schema_version": "simulation-case-set/v1"
+}

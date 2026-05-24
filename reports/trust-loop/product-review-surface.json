@@ -1,0 +1,58 @@
+{
+  "computed": true,
+  "policy_preflight_result": "approval_required",
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "runtime_readiness_percent": 0.0,
+  "schema_version": "product-review-surface/v1",
+  "surface_count": 9,
+  "surface_id": "dip-pre-runtime-review-workspace",
+  "surfaces": [
+    {
+      "id": "decision_review",
+      "state": "ready",
+      "summary": "support-ticket-routing"
+    },
+    {
+      "id": "simulation_evidence",
+      "state": "ready",
+      "summary": "13 cases"
+    },
+    {
+      "id": "decision_diff",
+      "state": "ready",
+      "summary": "3 changed outcomes"
+    },
+    {
+      "id": "approval_record",
+      "state": "ready",
+      "summary": "approved"
+    },
+    {
+      "id": "case_evidence",
+      "state": "ready",
+      "summary": "append_only_manifest"
+    },
+    {
+      "id": "replay_evidence",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "capability_lineage",
+      "state": "ready",
+      "summary": "3 capabilities"
+    },
+    {
+      "id": "shared_context",
+      "state": "ready",
+      "summary": "support-ticket-risk-context"
+    },
+    {
+      "id": "runtime_readiness",
+      "state": "blocked",
+      "summary": "runtime authority blocked"
+    }
+  ]
+}

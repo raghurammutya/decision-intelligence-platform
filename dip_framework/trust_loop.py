@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v1.1.0-pre")
+    write_v0_2_evidence(root, version="v2.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -31,6 +31,10 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
+    capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
+    shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
+    product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
         "schema_version": "trust-loop-run/v1",
         "run_id": "trust-loop-support-ticket-routing-1",
@@ -49,6 +53,10 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_release_lifecycle_policy",
             "evaluate_external_identity_contract",
             "evaluate_durable_evidence_store_contract",
+            "evaluate_capability_governance",
+            "evaluate_shared_context_contract",
+            "assess_runtime_readiness",
+            "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
         ],
@@ -89,6 +97,14 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "durable_evidence_store_policy_observed": durable_store.get("computed") is True,
         "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
         "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
+        "capability_governance_observed": capability_governance.get("computed") is True,
+        "capability_governance_valid": capability_governance.get("capability_governance_valid") is True,
+        "shared_context_contract_observed": shared_context.get("computed") is True,
+        "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
+        "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
+        "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
+        "product_review_surface_observed": product_surface.get("computed") is True,
+        "product_review_surface_count": product_surface.get("surface_count", 0),
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "blocked_claims": [
@@ -110,6 +126,10 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "release_lifecycle": release_lifecycle,
         "external_identity": external_identity,
         "durable_store": durable_store,
+        "capability_governance": capability_governance,
+        "shared_context": shared_context,
+        "runtime_readiness": runtime_readiness,
+        "product_surface": product_surface,
         "replay_result": replay_result,
         "trust_loop_run": trust_loop_run,
         "acceptance": acceptance,
@@ -131,6 +151,10 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "release-lifecycle.json", payload["release_lifecycle"])
     write_json(out / "external-identity.json", payload["external_identity"])
     write_json(out / "durable-evidence-store.json", payload["durable_store"])
+    write_json(out / "capability-governance.json", payload["capability_governance"])
+    write_json(out / "shared-context-governance.json", payload["shared_context"])
+    write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
+    write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])
     write_json(out / "trust-loop-run.json", payload["trust_loop_run"])
     write_json(out / "dip-mvp-acceptance.json", payload["acceptance"])

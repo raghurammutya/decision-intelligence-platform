@@ -1,0 +1,77 @@
+{
+  "blocked_capabilities": [],
+  "capability_count": 3,
+  "capability_governance_valid": true,
+  "capability_graph": [
+    {
+      "capability_id": "ticket-priority-normalizer",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "decision_id": "support-ticket-routing",
+      "entitlement_status": "entitled",
+      "evaluation_evidence_ref": "examples/support-ticket-simulation-evidence.json",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/support-ticket-capability-registry.json"
+      },
+      "revocation_status": "active",
+      "trust_class": "reviewed_fixture",
+      "version": "1.0.0"
+    },
+    {
+      "capability_id": "release-evidence-reader",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "decision_id": "engineering-review-readiness",
+      "entitlement_status": "entitled",
+      "evaluation_evidence_ref": "examples/engineering-review-readiness-cases.json",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/engineering-review-readiness-decision-spec.json"
+      },
+      "revocation_status": "active",
+      "trust_class": "reviewed_fixture",
+      "version": "1.0.0"
+    },
+    {
+      "capability_id": "risk-signal-threshold-evaluator",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "decision_id": "operational-risk-triage",
+      "entitlement_status": "entitled",
+      "evaluation_evidence_ref": "examples/operational-risk-triage-cases.json",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/operational-risk-triage-decision-spec.json"
+      },
+      "revocation_status": "active",
+      "trust_class": "reviewed_fixture",
+      "version": "1.0.0"
+    }
+  ],
+  "compatibility_recorded": true,
+  "computed": true,
+  "cost_profiles_recorded": true,
+  "decision_count": 3,
+  "entitlements_recorded": true,
+  "evaluation_evidence_recorded": true,
+  "evaluation_id": "capability-governance-v1.4-pre-runtime-1",
+  "exact_versions_resolved": true,
+  "missing_capabilities": [],
+  "production_decision_execution_authorized": false,
+  "provenance_recorded": true,
+  "registry_ref": "examples/support-ticket-capability-registry.json",
+  "resolved_capability_count": 3,
+  "revoked_capabilities_blocked": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "capability-governance-evaluation/v1"
+}
