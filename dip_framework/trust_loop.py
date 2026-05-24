@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v4.0.0-pre")
+    write_v0_2_evidence(root, version="v6.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -51,6 +51,13 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     runtime_control_plane = load_json(root / "reports/trust-loop/runtime-control-plane.json")
     advisory_pilot = load_json(root / "reports/trust-loop/advisory-runtime-pilot.json")
     runtime_authority_gate = load_json(root / "reports/trust-loop/limited-runtime-authority-gate.json")
+    live_identity_gate = load_json(root / "reports/trust-loop/live-identity-evidence-gate.json")
+    live_approval_gate = load_json(root / "reports/trust-loop/live-approval-provider-gate.json")
+    production_case_store_gate = load_json(root / "reports/trust-loop/production-case-store-gate.json")
+    promotion_execution_gate = load_json(root / "reports/trust-loop/release-promotion-execution-gate.json")
+    governed_advisory_runtime = load_json(root / "reports/trust-loop/governed-advisory-runtime.json")
+    controlled_runtime_gate = load_json(root / "reports/trust-loop/controlled-runtime-execution-gate.json")
+    platform_hardening = load_json(root / "reports/trust-loop/platform-hardening-assessment.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -92,6 +99,13 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_runtime_control_plane",
             "evaluate_advisory_runtime_pilot",
             "evaluate_limited_runtime_authority_gate",
+            "evaluate_live_identity_evidence_gate",
+            "evaluate_live_approval_provider_gate",
+            "evaluate_production_case_store_gate",
+            "evaluate_release_promotion_execution_gate",
+            "evaluate_governed_advisory_runtime",
+            "evaluate_controlled_runtime_execution_gate",
+            "evaluate_platform_hardening_assessment",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -228,6 +242,50 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "limited_runtime_authority_granted"
         )
         is True,
+        "v4_1_live_identity_evidence_gate_complete": live_identity_gate.get(
+            "live_identity_evidence_gate_complete"
+        )
+        is True,
+        "v4_1_live_identity_authority_ready": live_identity_gate.get("live_identity_authority_ready") is True,
+        "v4_1_mfa_claim_observed": live_identity_gate.get("mfa_claim_observed") is True,
+        "v4_2_live_approval_provider_gate_complete": live_approval_gate.get(
+            "live_approval_provider_gate_complete"
+        )
+        is True,
+        "v4_2_live_approval_provider_ready": live_approval_gate.get("live_approval_provider_ready") is True,
+        "v4_2_ai_approval_allowed": live_approval_gate.get("ai_approval_allowed") is True,
+        "v4_3_production_case_store_gate_complete": production_case_store_gate.get(
+            "production_case_store_gate_complete"
+        )
+        is True,
+        "v4_3_production_case_store_live_ready": production_case_store_gate.get(
+            "production_case_store_live_ready"
+        )
+        is True,
+        "v4_4_release_promotion_execution_gate_complete": promotion_execution_gate.get(
+            "release_promotion_execution_gate_complete"
+        )
+        is True,
+        "v4_4_prod_deployment_executed": promotion_execution_gate.get("prod_deployment_executed") is True,
+        "v5_0_governed_advisory_runtime_complete": governed_advisory_runtime.get(
+            "governed_advisory_runtime_complete"
+        )
+        is True,
+        "v5_0_runtime_recommendation_only": governed_advisory_runtime.get("runtime_recommendation_only") is True,
+        "v5_0_side_effects_executed": governed_advisory_runtime.get("side_effects_executed") is True,
+        "v5_5_controlled_runtime_execution_gate_complete": controlled_runtime_gate.get(
+            "controlled_runtime_execution_gate_complete"
+        )
+        is True,
+        "v5_5_controlled_runtime_execution_authorized": controlled_runtime_gate.get(
+            "controlled_runtime_execution_authorized"
+        )
+        is True,
+        "v6_0_platform_hardening_assessment_complete": platform_hardening.get(
+            "hardening_assessment_complete"
+        )
+        is True,
+        "v6_0_platform_production_ready": platform_hardening.get("platform_production_ready") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -243,6 +301,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "live external identity MFA claim is observed",
             "production durable case store backend is observed",
             "limited runtime authority is granted",
+            "live identity authority is ready",
+            "live approval provider is ready",
+            "production case store live backend is ready",
+            "controlled runtime execution is authorized",
+            "platform production readiness is complete",
         ],
     }
     return {
@@ -279,6 +342,13 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "runtime_control_plane": runtime_control_plane,
         "advisory_pilot": advisory_pilot,
         "runtime_authority_gate": runtime_authority_gate,
+        "live_identity_gate": live_identity_gate,
+        "live_approval_gate": live_approval_gate,
+        "production_case_store_gate": production_case_store_gate,
+        "promotion_execution_gate": promotion_execution_gate,
+        "governed_advisory_runtime": governed_advisory_runtime,
+        "controlled_runtime_gate": controlled_runtime_gate,
+        "platform_hardening": platform_hardening,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,

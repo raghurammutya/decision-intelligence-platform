@@ -1,0 +1,17 @@
+{
+  "blocked_claim": "production promotion execution was not performed",
+  "build_run_id_observed": true,
+  "computed": true,
+  "evaluation_id": "release-promotion-execution-v4.4-gate-1",
+  "immutable_artifact_digest_observed": true,
+  "prod_deployment_executed": false,
+  "production_decision_execution_authorized": false,
+  "production_promotion_ready": false,
+  "promotion_approval_record_observed": true,
+  "promotion_chain_declared": true,
+  "release_promotion_execution_gate_complete": true,
+  "rollback_evidence_valid": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "release-promotion-execution-gate/v1",
+  "source_commit_bound": true
+}

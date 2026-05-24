@@ -443,6 +443,40 @@ Required evidence:
 - blocked reasons recorded
 - limited runtime authority not granted while prerequisites are missing
 
+### v4.1-v6.0 Readiness Gates and Platform Hardening
+
+Status: complete on `v6.0.0-pre` as evidence gates and assessments, not
+production authority.
+
+Purpose: complete the post-v4 readiness sequence while preserving the product
+boundary that AI proposes and policy, approval, runtime controls, and evidence
+decide.
+
+Required evidence:
+
+- v4.1 live identity evidence gate is evaluated from observed identity/RBAC and
+  keeps authority blocked while live external IdP/MFA evidence is missing.
+- v4.2 live approval provider gate is evaluated from the approval boundary and
+  adapter contracts and keeps readiness blocked while no live provider is
+  observed.
+- v4.3 production case-store gate is evaluated from durable store/backend
+  evidence and keeps readiness blocked while no production backend is observed.
+- v4.4 release-promotion execution gate binds artifact digest, source commit,
+  build run id, promotion chain, and rollback evidence while recording that prod
+  deployment was not executed.
+- v5.0 governed advisory runtime can produce recommendations only, with policy,
+  approval, lineage, case evidence, and no side effects.
+- v5.5 controlled-runtime execution gate is complete but does not authorize
+  execution until live identity, live approval, and live case-store prerequisites
+  pass.
+- v6.0 platform-hardening assessment records isolation, marketplace governance,
+  shared context, observability, cost, kill switch, rollback, backup/restore,
+  incident response, and compliance-reporting controls while keeping platform
+  production readiness false.
+
+Runtime execution readiness and production decision authority remain `0%` until
+those live prerequisites are observed and approved.
+
 ## Completion Gate
 
 The current phase is complete only if:

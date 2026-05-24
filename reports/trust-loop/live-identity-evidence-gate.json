@@ -1,0 +1,17 @@
+{
+  "blocked_claim": "live external IdP authentication and MFA claim are not observed",
+  "computed": true,
+  "decision_scope_authorized": true,
+  "evaluation_id": "live-identity-evidence-v4.1-gate-1",
+  "live_external_idp_authenticated": false,
+  "live_identity_authority_ready": false,
+  "live_identity_evidence_gate_complete": true,
+  "mfa_claim_observed": false,
+  "permission_sufficient": true,
+  "production_decision_execution_authorized": false,
+  "provider": "github",
+  "repository_permission": "admin",
+  "runtime_integration_authorized": false,
+  "schema_version": "live-identity-evidence-gate/v1",
+  "subject": "raghurammutya"
+}

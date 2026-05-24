@@ -1,0 +1,16 @@
+{
+  "approval_gate_observed": true,
+  "case_record_observed": true,
+  "computed": true,
+  "evaluation_id": "governed-advisory-runtime-v5.0-1",
+  "governed_advisory_runtime_complete": true,
+  "lineage_capture_observed": true,
+  "policy_gate_observed": true,
+  "production_decision_execution_authorized": false,
+  "production_mutation_executed": false,
+  "runtime_integration_authorized": false,
+  "runtime_mode": "advisory_only",
+  "runtime_recommendation_only": true,
+  "schema_version": "governed-advisory-runtime/v1",
+  "side_effects_executed": false
+}

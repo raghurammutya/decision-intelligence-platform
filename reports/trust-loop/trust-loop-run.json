@@ -34,6 +34,13 @@
     "evaluate_runtime_control_plane",
     "evaluate_advisory_runtime_pilot",
     "evaluate_limited_runtime_authority_gate",
+    "evaluate_live_identity_evidence_gate",
+    "evaluate_live_approval_provider_gate",
+    "evaluate_production_case_store_gate",
+    "evaluate_release_promotion_execution_gate",
+    "evaluate_governed_advisory_runtime",
+    "evaluate_controlled_runtime_execution_gate",
+    "evaluate_platform_hardening_assessment",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

@@ -1,0 +1,15 @@
+{
+  "ai_approval_allowed": false,
+  "approval_adapter_valid": true,
+  "approval_boundary_valid": true,
+  "blocked_claim": "live external approval provider is not observed",
+  "computed": true,
+  "decision_approval_separate_from_code_merge": true,
+  "evaluation_id": "live-approval-provider-v4.2-gate-1",
+  "live_approval_provider_gate_complete": true,
+  "live_approval_provider_observed": false,
+  "live_approval_provider_ready": false,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "live-approval-provider-gate/v1"
+}
