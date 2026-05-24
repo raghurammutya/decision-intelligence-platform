@@ -260,6 +260,26 @@ Required evidence:
 - live external approval system remains unobserved
 - runtime and production authority remain blocked
 
+### v2.7 Live Identity/RBAC Evidence
+
+Purpose: observe live identity and repository RBAC evidence without claiming a
+complete external IdP/MFA integration.
+
+This uses the available GitHub identity and repository permission APIs as
+pre-runtime evidence. It does not claim full enterprise IdP integration because
+the available API path does not expose a usable MFA claim.
+
+Required evidence:
+
+- live provider authentication observed
+- authenticated identity subject recorded
+- repository permission observed
+- permission satisfies approval-role threshold
+- decision scope authorization recorded
+- MFA claim requirement remains explicit
+- MFA claim remains unobserved and blocked
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

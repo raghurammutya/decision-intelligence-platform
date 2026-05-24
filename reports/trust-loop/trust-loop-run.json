@@ -13,6 +13,7 @@
     "evaluate_repository_governance_policy",
     "evaluate_release_lifecycle_policy",
     "evaluate_external_identity_contract",
+    "evaluate_live_identity_rbac",
     "evaluate_durable_evidence_store_contract",
     "evaluate_capability_governance",
     "evaluate_shared_context_contract",

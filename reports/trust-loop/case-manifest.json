@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 43,
+  "artifact_count": 44,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -211,6 +211,11 @@
       "artifact_type": "external_approval_adapter",
       "path": "reports/trust-loop/external-approval-adapter.json",
       "sha256": "f337523f5088d1052b6560a7847831cdf08b04a36c1cc4383f1114d352212e0c"
+    },
+    {
+      "artifact_type": "live_identity_rbac",
+      "path": "reports/trust-loop/live-identity-rbac.json",
+      "sha256": "7c9e7dc63b97a3d45a3e6f5e06b0e9c4f66e0c3575a58e9d08cf5fb698483104"
     },
     {
       "artifact_type": "case_evidence",
