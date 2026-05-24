@@ -1,0 +1,22 @@
+{
+  "blocked_claim": "production promotion deployment was not executed",
+  "build_run_id_observed": true,
+  "computed": true,
+  "environment_approval_required": true,
+  "evaluation_id": "production-promotion-chain-v6.4-1",
+  "immutable_artifact_digest_observed": true,
+  "prod_deployment_executed": false,
+  "production_decision_execution_authorized": false,
+  "production_promotion_chain_contract_complete": true,
+  "production_promotion_ready": false,
+  "promotion_stages": [
+    "dev",
+    "test",
+    "staging",
+    "prod"
+  ],
+  "rollback_evidence_valid": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "production-promotion-chain-readiness/v1",
+  "source_commit_bound": true
+}

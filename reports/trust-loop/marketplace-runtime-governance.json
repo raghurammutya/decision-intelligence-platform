@@ -1,0 +1,18 @@
+{
+  "blocked_claim": "marketplace runtime invocation is blocked until controlled runtime pilot is authorized",
+  "capability_versions_pinned": true,
+  "compatibility_recorded": true,
+  "computed": true,
+  "cost_profiles_recorded": true,
+  "entitlements_recorded": true,
+  "evaluation_evidence_recorded": true,
+  "evaluation_id": "marketplace-runtime-governance-v7.5-1",
+  "marketplace_runtime_governance_complete": true,
+  "marketplace_runtime_invocation_authorized": false,
+  "production_decision_execution_authorized": false,
+  "provenance_recorded": true,
+  "runtime_integration_authorized": false,
+  "runtime_isolation_required": true,
+  "schema_version": "marketplace-runtime-governance/v1",
+  "unrestricted_marketplace_execution_allowed": false
+}

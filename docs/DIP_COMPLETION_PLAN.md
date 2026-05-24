@@ -445,7 +445,7 @@ Required evidence:
 
 ### v4.1-v6.0 Readiness Gates and Platform Hardening
 
-Status: complete on `v6.0.0-pre` as evidence gates and assessments, not
+Status: complete on `v9.0.0-pre` as evidence gates and assessments, not
 production authority.
 
 Purpose: complete the post-v4 readiness sequence while preserving the product
@@ -476,6 +476,34 @@ Required evidence:
 
 Runtime execution readiness and production decision authority remain `0%` until
 those live prerequisites are observed and approved.
+
+### v6.1-v9.0 Production Authority Readiness Gates
+
+Status: complete on `v9.0.0-pre` as evidence gates and readiness review, not
+production authority.
+
+Purpose: finish the production authority review path without converting DIP into
+a hidden runtime or granting production decision authority without live evidence.
+
+Required evidence:
+
+- v6.1 live identity authority contract is complete; live external IdP/MFA
+  authority remains blocked when not observed.
+- v6.2 live decision approval provider contract is complete; live approval
+  provider readiness remains blocked when not observed.
+- v6.3 production durable case-store contract is complete; production storage
+  readiness remains blocked when no backend is observed.
+- v6.4 production promotion-chain contract is complete; production promotion
+  readiness remains blocked when no prod deployment has executed.
+- v7.0 controlled-runtime pilot admission is complete; pilot authorization
+  remains blocked until live identity, live approval, live case store, and
+  promotion evidence pass.
+- v7.5 marketplace runtime governance is complete; unrestricted marketplace
+  execution remains denied and runtime invocation remains blocked.
+- v8.0 shared-context runtime governance is complete; direct database access and
+  hidden shared state remain denied and runtime context exchange remains blocked.
+- v9.0 production authority readiness review is complete; production decision
+  authority remains `0%` until every live prerequisite is observed and approved.
 
 ## Completion Gate
 
