@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 17,
+  "surface_count": 20,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -87,6 +87,21 @@
     {
       "id": "evidence_store_adapter_parity",
       "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "durable_evidence_backend",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "release_promotion_chain",
+      "state": "ready",
+      "summary": "True"
+    },
+    {
+      "id": "pre_runtime_ga",
+      "state": "complete_runtime_blocked",
       "summary": "True"
     },
     {

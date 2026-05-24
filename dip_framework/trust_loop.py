@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.7.0-pre")
+    write_v0_2_evidence(root, version="v3.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -41,6 +41,9 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
+    durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
+    promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -71,7 +74,10 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_external_approval_adapter",
             "evaluate_durable_case_store_adapter",
             "evaluate_evidence_store_adapter_parity",
+            "observe_durable_evidence_backend",
+            "evaluate_release_promotion_chain",
             "assess_runtime_readiness",
+            "evaluate_pre_runtime_ga",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -168,6 +174,14 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "evidence_store_adapter_parity_observed": adapter_parity.get("computed") is True,
         "evidence_store_adapter_parity_valid": adapter_parity.get("adapter_parity_valid") is True,
         "adapter_runtime_backend_invoked": adapter_parity.get("runtime_backend_invoked") is True,
+        "durable_evidence_backend_observed": durable_backend.get("computed") is True,
+        "durable_evidence_backend_valid": durable_backend.get("durable_evidence_backend_valid") is True,
+        "durable_backend_runtime_backend_invoked": durable_backend.get("runtime_backend_invoked") is True,
+        "release_promotion_chain_observed": promotion_chain.get("computed") is True,
+        "release_promotion_chain_valid": promotion_chain.get("release_promotion_chain_valid") is True,
+        "prod_deployment_executed": promotion_chain.get("prod_deployment_executed") is True,
+        "pre_runtime_ga_observed": pre_runtime_ga.get("computed") is True,
+        "pre_runtime_ga_valid": pre_runtime_ga.get("pre_runtime_ga_valid") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -208,6 +222,9 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "external_approval_adapter": external_approval_adapter,
         "durable_adapter": durable_adapter,
         "adapter_parity": adapter_parity,
+        "durable_backend": durable_backend,
+        "promotion_chain": promotion_chain,
+        "pre_runtime_ga": pre_runtime_ga,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,
@@ -241,6 +258,9 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "external-approval-adapter.json", payload["external_approval_adapter"])
     write_json(out / "durable-case-store-adapter.json", payload["durable_adapter"])
     write_json(out / "evidence-store-adapter-parity.json", payload["adapter_parity"])
+    write_json(out / "durable-evidence-backend.json", payload["durable_backend"])
+    write_json(out / "release-promotion-chain.json", payload["promotion_chain"])
+    write_json(out / "pre-runtime-ga-acceptance.json", payload["pre_runtime_ga"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
     write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])

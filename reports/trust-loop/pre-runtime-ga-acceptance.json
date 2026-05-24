@@ -1,0 +1,23 @@
+{
+  "approval_boundary_complete": true,
+  "computed": true,
+  "durable_evidence_backend_observed": true,
+  "edi_observer_required": true,
+  "evaluation_id": "pre-runtime-ga-v3.0-pre-runtime-1",
+  "governed_decision_review_and_simulation_complete": true,
+  "live_identity_mfa_claim_observed": false,
+  "live_identity_rbac_observed": true,
+  "maturity_claim": "pre_runtime_ga_complete_runtime_blocked",
+  "policy_engine_complete": true,
+  "pre_runtime_ga_valid": true,
+  "product_review_surface_complete": true,
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "promotion_chain_rollback_observed": true,
+  "runtime_blocked": true,
+  "runtime_execution_readiness_percent": 0.0,
+  "runtime_integration_authorized": false,
+  "schema_version": "pre-runtime-ga-acceptance/v1",
+  "simulation_diff_complete": true,
+  "trust_surface_complete": true
+}
