@@ -90,10 +90,10 @@ domain, capability governance, shared context contract governance, and a
 runtime-readiness assessment. Runtime execution and production decision
 authority remain blocked.
 
-## v11.0-v40.0 API-First Platform Foundation
+## v11.0-v45.0 API-First Platform Foundation
 
 ```bash
-python3 -m dip_framework release-pack --version v40.0.0-pre
+python3 -m dip_framework release-pack --version v45.0.0-pre
 ```
 
 v11.0 adds the API-first modular platform architecture, product-pack registry,
@@ -120,12 +120,17 @@ governance-dashboard data contracts and usability governance closure. v36.0 adds
 product-pack authoring UX contracts. v37.0 adds governance review queue
 contracts. v38.0 adds capability lineage explorer contracts. v39.0 adds replay
 workspace contracts. v40.0 adds the usability acceptance pack. These releases
-remain contract and evidence foundation only: no service is certified for
-runtime use, no product pack has runtime authority, no product can use direct
-database access, WebSocket is not authoritative, no production governance-store
-backend is selected, dashboard projections are not source of truth, review
-queues do not automate approval, replay workspaces do not execute side effects,
-and production decision execution remains blocked.
+workspace contracts. v40.0 adds the usability acceptance pack. v41.0 adds
+evidence retention and legal hold contracts. v42.0 adds tenant/workspace
+boundary contracts. v43.0 adds entitlement and usage gate contracts. v44.0 adds
+integration certification UX contracts. v45.0 adds the platform operator
+readiness pack. These releases remain contract and evidence foundation only: no
+service is certified for runtime use, no product pack has runtime authority, no
+product can use direct database access, WebSocket is not authoritative, no
+production governance-store backend is selected, dashboard projections are not
+source of truth, review queues do not automate approval, replay workspaces do
+not execute side effects, billing integration is not enabled, live multi-tenant
+enforcement is not claimed, and production decision execution remains blocked.
 
 ## v2.1 Governance Exception and Schema Stability
 

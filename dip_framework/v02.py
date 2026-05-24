@@ -85,6 +85,11 @@ ARTIFACTS = [
     ("capability_lineage_explorer_contract", "examples/capability-lineage-explorer-contract.json"),
     ("replay_workspace_contract", "examples/replay-workspace-contract.json"),
     ("v40_usability_acceptance_pack_contract", "examples/v40-usability-acceptance-pack-contract.json"),
+    ("evidence_retention_legal_hold_contract", "examples/evidence-retention-legal-hold-contract.json"),
+    ("tenant_workspace_boundary_contract", "examples/tenant-workspace-boundary-contract.json"),
+    ("entitlement_usage_gate_contract", "examples/entitlement-usage-gate-contract.json"),
+    ("integration_certification_ux_contract", "examples/integration-certification-ux-contract.json"),
+    ("platform_operator_readiness_pack_contract", "examples/platform-operator-readiness-pack-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -3450,6 +3455,161 @@ def evaluate_v40_usability_acceptance_pack(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_evidence_retention_legal_hold_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/evidence-retention-legal-hold-contract.json")
+    result = validate_file(
+        "evidence_retention_legal_hold_contract",
+        root / "examples/evidence-retention-legal-hold-contract.json",
+    )
+    classes = contract.get("retention_classes", [])
+    return {
+        "schema_version": "evidence-retention-legal-hold-contract-evaluation/v1",
+        "evaluation_id": "v41.0-evidence-retention-legal-hold-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "retention_class_count": len(classes),
+        "audit_rule_count": len(contract.get("audit_rules", [])),
+        "legal_hold_supported": contract.get("legal_hold_supported") is True,
+        "delete_denied_by_default": contract.get("delete_denied_by_default") is True,
+        "export_required": contract.get("export_required") is True,
+        "masking_required": contract.get("masking_required") is True,
+        "production_backend_selected": contract.get("production_backend_selected") is True,
+        "all_classes_have_ttl": all(int(item.get("ttl_days", 0) or 0) > 0 for item in classes),
+        "evidence_retention_legal_hold_valid": result.get("passed") is True
+        and len(classes) >= 3
+        and contract.get("legal_hold_supported") is True
+        and contract.get("delete_denied_by_default") is True
+        and contract.get("export_required") is True
+        and contract.get("masking_required") is True
+        and contract.get("production_backend_selected") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_tenant_workspace_boundary_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/tenant-workspace-boundary-contract.json")
+    result = validate_file("tenant_workspace_boundary_contract", root / "examples/tenant-workspace-boundary-contract.json")
+    return {
+        "schema_version": "tenant-workspace-boundary-contract-evaluation/v1",
+        "evaluation_id": "v42.0-tenant-workspace-boundary-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "namespace_key_count": len(contract.get("namespace_keys", [])),
+        "isolation_rule_count": len(contract.get("isolation_rules", [])),
+        "shared_context_requires_contract": contract.get("shared_context_requires_contract") is True,
+        "cross_tenant_access_allowed": contract.get("cross_tenant_access_allowed") is True,
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "live_multi_tenant_enforcement_observed": contract.get("live_multi_tenant_enforcement_observed") is True,
+        "tenant_workspace_boundary_valid": result.get("passed") is True
+        and len(contract.get("namespace_keys", [])) >= 6
+        and len(contract.get("isolation_rules", [])) >= 8
+        and contract.get("shared_context_requires_contract") is True
+        and contract.get("cross_tenant_access_allowed") is False
+        and contract.get("direct_database_access_allowed") is False
+        and contract.get("live_multi_tenant_enforcement_observed") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_entitlement_usage_gate_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/entitlement-usage-gate-contract.json")
+    result = validate_file("entitlement_usage_gate_contract", root / "examples/entitlement-usage-gate-contract.json")
+    return {
+        "schema_version": "entitlement-usage-gate-contract-evaluation/v1",
+        "evaluation_id": "v43.0-entitlement-usage-gate-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "entitlement_check_count": len(contract.get("entitlement_checks", [])),
+        "denied_action_count": len(contract.get("denied_actions", [])),
+        "usage_projection_record_count": len(contract.get("usage_projection_records", [])),
+        "quota_evidence_required": contract.get("quota_evidence_required") is True,
+        "billing_integration_enabled": contract.get("billing_integration_enabled") is True,
+        "runtime_enforcement_claimed": contract.get("runtime_enforcement_claimed") is True,
+        "pre_runtime_only": contract.get("pre_runtime_only") is True,
+        "entitlement_usage_gate_valid": result.get("passed") is True
+        and len(contract.get("entitlement_checks", [])) >= 6
+        and len(contract.get("denied_actions", [])) >= 5
+        and len(contract.get("usage_projection_records", [])) >= 6
+        and contract.get("quota_evidence_required") is True
+        and contract.get("billing_integration_enabled") is False
+        and contract.get("runtime_enforcement_claimed") is False
+        and contract.get("pre_runtime_only") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_integration_certification_ux_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/integration-certification-ux-contract.json")
+    result = validate_file(
+        "integration_certification_ux_contract",
+        root / "examples/integration-certification-ux-contract.json",
+    )
+    return {
+        "schema_version": "integration-certification-ux-contract-evaluation/v1",
+        "evaluation_id": "v44.0-integration-certification-ux-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "certification_state_count": len(contract.get("certification_states", [])),
+        "certification_action_count": len(contract.get("certification_actions", [])),
+        "required_evidence_panel_count": len(contract.get("required_evidence_panels", [])),
+        "certified_count": contract.get("certified_count", 0),
+        "runtime_invocation_allowed_count": contract.get("runtime_invocation_allowed_count", 0),
+        "ui_is_source_of_truth": contract.get("ui_is_source_of_truth") is True,
+        "integration_certification_ux_valid": result.get("passed") is True
+        and len(contract.get("required_evidence_panels", [])) >= 10
+        and contract.get("certified_count", 1) == 0
+        and contract.get("runtime_invocation_allowed_count", 1) == 0
+        and contract.get("ui_is_source_of_truth") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_platform_operator_readiness_pack(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/platform-operator-readiness-pack-contract.json")
+    result = validate_file(
+        "platform_operator_readiness_pack_contract",
+        root / "examples/platform-operator-readiness-pack-contract.json",
+    )
+    v41 = load_json(root / "reports/trust-loop/evidence-retention-legal-hold-contract.json")
+    v42 = load_json(root / "reports/trust-loop/tenant-workspace-boundary-contract.json")
+    v43 = load_json(root / "reports/trust-loop/entitlement-usage-gate-contract.json")
+    v44 = load_json(root / "reports/trust-loop/integration-certification-ux-contract.json")
+    gates = {
+        "evidence_retention_legal_hold_valid": v41.get("evidence_retention_legal_hold_valid") is True,
+        "tenant_workspace_boundary_valid": v42.get("tenant_workspace_boundary_valid") is True,
+        "entitlement_usage_gate_valid": v43.get("entitlement_usage_gate_valid") is True,
+        "integration_certification_ux_valid": v44.get("integration_certification_ux_valid") is True,
+    }
+    return {
+        "schema_version": "platform-operator-readiness-pack-evaluation/v1",
+        "evaluation_id": "v45.0-platform-operator-readiness-pack-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "readiness_section_count": len(contract.get("readiness_sections", [])),
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "unsafe_claims_visible": contract.get("unsafe_claims_visible") is True,
+        "runtime_remains_blocked": contract.get("runtime_remains_blocked") is True,
+        "platform_operator_readiness_pack_valid": result.get("passed") is True
+        and all(gates.values())
+        and contract.get("unsafe_claims_visible") is True
+        and contract.get("runtime_remains_blocked") is True
+        and v41.get("production_backend_selected") is False
+        and v42.get("live_multi_tenant_enforcement_observed") is False
+        and v43.get("billing_integration_enabled") is False
+        and v43.get("runtime_enforcement_claimed") is False
+        and v44.get("certified_count", 1) == 0
+        and v44.get("runtime_invocation_allowed_count", 1) == 0,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -4252,6 +4412,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     capability_lineage_explorer = load_json(root / "reports/trust-loop/capability-lineage-explorer-contract.json")
     replay_workspace = load_json(root / "reports/trust-loop/replay-workspace-contract.json")
     v40_usability_acceptance = load_json(root / "reports/trust-loop/v40-usability-acceptance-pack.json")
+    evidence_retention = load_json(root / "reports/trust-loop/evidence-retention-legal-hold-contract.json")
+    tenant_boundary = load_json(root / "reports/trust-loop/tenant-workspace-boundary-contract.json")
+    entitlement_usage = load_json(root / "reports/trust-loop/entitlement-usage-gate-contract.json")
+    integration_certification_ux = load_json(root / "reports/trust-loop/integration-certification-ux-contract.json")
+    platform_operator_readiness = load_json(root / "reports/trust-loop/platform-operator-readiness-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -5063,6 +5228,55 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         "v40_0_runtime_remains_blocked": v40_usability_acceptance.get("runtime_remains_blocked") is True,
         "v40_0_closure_gate_complete_count": v40_usability_acceptance.get("closure_gate_complete_count", 0),
         "v40_0_closure_gate_count": v40_usability_acceptance.get("closure_gate_count", 0),
+        "v41_0_evidence_retention_legal_hold_valid": evidence_retention.get(
+            "evidence_retention_legal_hold_valid"
+        )
+        is True,
+        "v41_0_retention_class_count": evidence_retention.get("retention_class_count", 0),
+        "v41_0_legal_hold_supported": evidence_retention.get("legal_hold_supported") is True,
+        "v41_0_delete_denied_by_default": evidence_retention.get("delete_denied_by_default") is True,
+        "v41_0_export_required": evidence_retention.get("export_required") is True,
+        "v41_0_masking_required": evidence_retention.get("masking_required") is True,
+        "v41_0_production_backend_selected": evidence_retention.get("production_backend_selected") is True,
+        "v42_0_tenant_workspace_boundary_valid": tenant_boundary.get("tenant_workspace_boundary_valid") is True,
+        "v42_0_namespace_key_count": tenant_boundary.get("namespace_key_count", 0),
+        "v42_0_isolation_rule_count": tenant_boundary.get("isolation_rule_count", 0),
+        "v42_0_shared_context_requires_contract": tenant_boundary.get("shared_context_requires_contract") is True,
+        "v42_0_cross_tenant_access_allowed": tenant_boundary.get("cross_tenant_access_allowed") is True,
+        "v42_0_direct_database_access_allowed": tenant_boundary.get("direct_database_access_allowed") is True,
+        "v42_0_live_multi_tenant_enforcement_observed": tenant_boundary.get(
+            "live_multi_tenant_enforcement_observed"
+        )
+        is True,
+        "v43_0_entitlement_usage_gate_valid": entitlement_usage.get("entitlement_usage_gate_valid") is True,
+        "v43_0_entitlement_check_count": entitlement_usage.get("entitlement_check_count", 0),
+        "v43_0_denied_action_count": entitlement_usage.get("denied_action_count", 0),
+        "v43_0_usage_projection_record_count": entitlement_usage.get("usage_projection_record_count", 0),
+        "v43_0_quota_evidence_required": entitlement_usage.get("quota_evidence_required") is True,
+        "v43_0_billing_integration_enabled": entitlement_usage.get("billing_integration_enabled") is True,
+        "v43_0_runtime_enforcement_claimed": entitlement_usage.get("runtime_enforcement_claimed") is True,
+        "v43_0_pre_runtime_only": entitlement_usage.get("pre_runtime_only") is True,
+        "v44_0_integration_certification_ux_valid": integration_certification_ux.get(
+            "integration_certification_ux_valid"
+        )
+        is True,
+        "v44_0_required_evidence_panel_count": integration_certification_ux.get(
+            "required_evidence_panel_count", 0
+        ),
+        "v44_0_certified_count": integration_certification_ux.get("certified_count", 0),
+        "v44_0_runtime_invocation_allowed_count": integration_certification_ux.get(
+            "runtime_invocation_allowed_count", 0
+        ),
+        "v44_0_ui_is_source_of_truth": integration_certification_ux.get("ui_is_source_of_truth") is True,
+        "v45_0_platform_operator_readiness_pack_valid": platform_operator_readiness.get(
+            "platform_operator_readiness_pack_valid"
+        )
+        is True,
+        "v45_0_readiness_section_count": platform_operator_readiness.get("readiness_section_count", 0),
+        "v45_0_unsafe_claims_visible": platform_operator_readiness.get("unsafe_claims_visible") is True,
+        "v45_0_runtime_remains_blocked": platform_operator_readiness.get("runtime_remains_blocked") is True,
+        "v45_0_closure_gate_complete_count": platform_operator_readiness.get("closure_gate_complete_count", 0),
+        "v45_0_closure_gate_count": platform_operator_readiness.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -5314,6 +5528,23 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and v40_usability_acceptance.get("rest_authoritative") is True
         and v40_usability_acceptance.get("websocket_authoritative") is False
         and v40_usability_acceptance.get("runtime_remains_blocked") is True
+        and evidence_retention.get("evidence_retention_legal_hold_valid") is True
+        and evidence_retention.get("production_backend_selected") is False
+        and tenant_boundary.get("tenant_workspace_boundary_valid") is True
+        and tenant_boundary.get("cross_tenant_access_allowed") is False
+        and tenant_boundary.get("direct_database_access_allowed") is False
+        and tenant_boundary.get("live_multi_tenant_enforcement_observed") is False
+        and entitlement_usage.get("entitlement_usage_gate_valid") is True
+        and entitlement_usage.get("billing_integration_enabled") is False
+        and entitlement_usage.get("runtime_enforcement_claimed") is False
+        and entitlement_usage.get("pre_runtime_only") is True
+        and integration_certification_ux.get("integration_certification_ux_valid") is True
+        and integration_certification_ux.get("certified_count", 1) == 0
+        and integration_certification_ux.get("runtime_invocation_allowed_count", 1) == 0
+        and integration_certification_ux.get("ui_is_source_of_truth") is False
+        and platform_operator_readiness.get("platform_operator_readiness_pack_valid") is True
+        and platform_operator_readiness.get("runtime_remains_blocked") is True
+        and platform_operator_readiness.get("unsafe_claims_visible") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -5378,6 +5609,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "capability lineage explorer invokes runtime capabilities",
             "replay workspace executes runtime side effects",
             "v40 usability acceptance grants runtime authority",
+            "evidence retention selects production backend",
+            "tenant workspace boundary has live enforcement",
+            "entitlement usage gate enables billing integration",
+            "integration certification UX certifies shared services",
+            "platform operator readiness grants runtime authority",
         ],
     }
 
@@ -5763,6 +5999,37 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v40.0 evidence backed: `{payload['v40_0_evidence_backed']}`",
         f"v40.0 runtime remains blocked: `{payload['v40_0_runtime_remains_blocked']}`",
         f"v40.0 closure gates complete: `{payload['v40_0_closure_gate_complete_count']}/{payload['v40_0_closure_gate_count']}`",
+        f"v41.0 evidence retention/legal hold valid: `{payload['v41_0_evidence_retention_legal_hold_valid']}`",
+        f"v41.0 retention classes: `{payload['v41_0_retention_class_count']}`",
+        f"v41.0 legal hold supported: `{payload['v41_0_legal_hold_supported']}`",
+        f"v41.0 delete denied by default: `{payload['v41_0_delete_denied_by_default']}`",
+        f"v41.0 export required: `{payload['v41_0_export_required']}`",
+        f"v41.0 masking required: `{payload['v41_0_masking_required']}`",
+        f"v41.0 production backend selected: `{payload['v41_0_production_backend_selected']}`",
+        f"v42.0 tenant/workspace boundary valid: `{payload['v42_0_tenant_workspace_boundary_valid']}`",
+        f"v42.0 namespace keys: `{payload['v42_0_namespace_key_count']}`",
+        f"v42.0 isolation rules: `{payload['v42_0_isolation_rule_count']}`",
+        f"v42.0 shared context requires contract: `{payload['v42_0_shared_context_requires_contract']}`",
+        f"v42.0 cross-tenant access allowed: `{payload['v42_0_cross_tenant_access_allowed']}`",
+        f"v42.0 direct database access allowed: `{payload['v42_0_direct_database_access_allowed']}`",
+        f"v42.0 live multi-tenant enforcement observed: `{payload['v42_0_live_multi_tenant_enforcement_observed']}`",
+        f"v43.0 entitlement usage gate valid: `{payload['v43_0_entitlement_usage_gate_valid']}`",
+        f"v43.0 entitlement checks: `{payload['v43_0_entitlement_check_count']}`",
+        f"v43.0 denied actions: `{payload['v43_0_denied_action_count']}`",
+        f"v43.0 usage projections: `{payload['v43_0_usage_projection_record_count']}`",
+        f"v43.0 quota evidence required: `{payload['v43_0_quota_evidence_required']}`",
+        f"v43.0 billing integration enabled: `{payload['v43_0_billing_integration_enabled']}`",
+        f"v43.0 runtime enforcement claimed: `{payload['v43_0_runtime_enforcement_claimed']}`",
+        f"v44.0 integration certification UX valid: `{payload['v44_0_integration_certification_ux_valid']}`",
+        f"v44.0 required evidence panels: `{payload['v44_0_required_evidence_panel_count']}`",
+        f"v44.0 certified count: `{payload['v44_0_certified_count']}`",
+        f"v44.0 runtime invocation allowed count: `{payload['v44_0_runtime_invocation_allowed_count']}`",
+        f"v44.0 UI source of truth: `{payload['v44_0_ui_is_source_of_truth']}`",
+        f"v45.0 platform operator readiness pack valid: `{payload['v45_0_platform_operator_readiness_pack_valid']}`",
+        f"v45.0 readiness sections: `{payload['v45_0_readiness_section_count']}`",
+        f"v45.0 unsafe claims visible: `{payload['v45_0_unsafe_claims_visible']}`",
+        f"v45.0 runtime remains blocked: `{payload['v45_0_runtime_remains_blocked']}`",
+        f"v45.0 closure gates complete: `{payload['v45_0_closure_gate_complete_count']}/{payload['v45_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -5971,6 +6238,16 @@ def write_v0_2_evidence(
     write_json(target / "replay-workspace-contract.json", replay_workspace)
     v40_usability_acceptance = evaluate_v40_usability_acceptance_pack(root)
     write_json(target / "v40-usability-acceptance-pack.json", v40_usability_acceptance)
+    evidence_retention = evaluate_evidence_retention_legal_hold_contract(root)
+    write_json(target / "evidence-retention-legal-hold-contract.json", evidence_retention)
+    tenant_boundary = evaluate_tenant_workspace_boundary_contract(root)
+    write_json(target / "tenant-workspace-boundary-contract.json", tenant_boundary)
+    entitlement_usage = evaluate_entitlement_usage_gate_contract(root)
+    write_json(target / "entitlement-usage-gate-contract.json", entitlement_usage)
+    integration_certification_ux = evaluate_integration_certification_ux_contract(root)
+    write_json(target / "integration-certification-ux-contract.json", integration_certification_ux)
+    platform_operator_readiness = evaluate_platform_operator_readiness_pack(root)
+    write_json(target / "platform-operator-readiness-pack.json", platform_operator_readiness)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -6064,6 +6341,11 @@ def write_v0_2_evidence(
         "capability_lineage_explorer": capability_lineage_explorer,
         "replay_workspace": replay_workspace,
         "v40_usability_acceptance": v40_usability_acceptance,
+        "evidence_retention": evidence_retention,
+        "tenant_boundary": tenant_boundary,
+        "entitlement_usage": entitlement_usage,
+        "integration_certification_ux": integration_certification_ux,
+        "platform_operator_readiness": platform_operator_readiness,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

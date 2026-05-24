@@ -1,0 +1,36 @@
+{
+  "audit_rules": [
+    "record_retention_class",
+    "record_hold_state",
+    "record_export_request",
+    "record_masking_policy",
+    "record_delete_denial"
+  ],
+  "contract_id": "dip-evidence-retention-legal-hold",
+  "contract_version": "41.0.0",
+  "delete_denied_by_default": true,
+  "export_required": true,
+  "legal_hold_supported": true,
+  "masking_required": true,
+  "production_backend_selected": false,
+  "production_decision_execution_authorized": false,
+  "retention_classes": [
+    {
+      "class_id": "case_evidence_standard",
+      "legal_hold_overrides_ttl": true,
+      "ttl_days": 2555
+    },
+    {
+      "class_id": "approval_record",
+      "legal_hold_overrides_ttl": true,
+      "ttl_days": 3650
+    },
+    {
+      "class_id": "simulation_trace",
+      "legal_hold_overrides_ttl": true,
+      "ttl_days": 1095
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "schema_version": "evidence-retention-legal-hold-contract/v1"
+}

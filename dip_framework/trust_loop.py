@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v40.0.0-pre")
+    write_v0_2_evidence(root, version="v45.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -109,6 +109,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     capability_lineage_explorer = load_json(root / "reports/trust-loop/capability-lineage-explorer-contract.json")
     replay_workspace = load_json(root / "reports/trust-loop/replay-workspace-contract.json")
     v40_usability_acceptance = load_json(root / "reports/trust-loop/v40-usability-acceptance-pack.json")
+    evidence_retention = load_json(root / "reports/trust-loop/evidence-retention-legal-hold-contract.json")
+    tenant_boundary = load_json(root / "reports/trust-loop/tenant-workspace-boundary-contract.json")
+    entitlement_usage = load_json(root / "reports/trust-loop/entitlement-usage-gate-contract.json")
+    integration_certification_ux = load_json(root / "reports/trust-loop/integration-certification-ux-contract.json")
+    platform_operator_readiness = load_json(root / "reports/trust-loop/platform-operator-readiness-pack.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -208,6 +213,11 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_capability_lineage_explorer_contract",
             "evaluate_replay_workspace_contract",
             "evaluate_v40_usability_acceptance_pack",
+            "evaluate_evidence_retention_legal_hold_contract",
+            "evaluate_tenant_workspace_boundary_contract",
+            "evaluate_entitlement_usage_gate_contract",
+            "evaluate_integration_certification_ux_contract",
+            "evaluate_platform_operator_readiness_pack",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -714,6 +724,34 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "v40_0_runtime_remains_blocked": v40_usability_acceptance.get("runtime_remains_blocked") is True,
         "v40_0_closure_gate_complete_count": v40_usability_acceptance.get("closure_gate_complete_count", 0),
         "v40_0_closure_gate_count": v40_usability_acceptance.get("closure_gate_count", 0),
+        "v41_0_evidence_retention_legal_hold_valid": evidence_retention.get(
+            "evidence_retention_legal_hold_valid"
+        )
+        is True,
+        "v41_0_production_backend_selected": evidence_retention.get("production_backend_selected") is True,
+        "v42_0_tenant_workspace_boundary_valid": tenant_boundary.get("tenant_workspace_boundary_valid") is True,
+        "v42_0_live_multi_tenant_enforcement_observed": tenant_boundary.get(
+            "live_multi_tenant_enforcement_observed"
+        )
+        is True,
+        "v43_0_entitlement_usage_gate_valid": entitlement_usage.get("entitlement_usage_gate_valid") is True,
+        "v43_0_billing_integration_enabled": entitlement_usage.get("billing_integration_enabled") is True,
+        "v43_0_runtime_enforcement_claimed": entitlement_usage.get("runtime_enforcement_claimed") is True,
+        "v44_0_integration_certification_ux_valid": integration_certification_ux.get(
+            "integration_certification_ux_valid"
+        )
+        is True,
+        "v44_0_certified_count": integration_certification_ux.get("certified_count", 0),
+        "v44_0_runtime_invocation_allowed_count": integration_certification_ux.get(
+            "runtime_invocation_allowed_count", 0
+        ),
+        "v45_0_platform_operator_readiness_pack_valid": platform_operator_readiness.get(
+            "platform_operator_readiness_pack_valid"
+        )
+        is True,
+        "v45_0_runtime_remains_blocked": platform_operator_readiness.get("runtime_remains_blocked") is True,
+        "v45_0_closure_gate_complete_count": platform_operator_readiness.get("closure_gate_complete_count", 0),
+        "v45_0_closure_gate_count": platform_operator_readiness.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,

@@ -1,0 +1,15 @@
+{
+  "certification_action_count": 5,
+  "certification_state_count": 5,
+  "certified_count": 0,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v44.0-integration-certification-ux-contract-1",
+  "integration_certification_ux_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_evidence_panel_count": 10,
+  "runtime_integration_authorized": false,
+  "runtime_invocation_allowed_count": 0,
+  "schema_version": "integration-certification-ux-contract-evaluation/v1",
+  "ui_is_source_of_truth": false
+}

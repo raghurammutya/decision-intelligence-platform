@@ -1,0 +1,29 @@
+{
+  "contract_id": "dip-tenant-workspace-boundary",
+  "contract_version": "42.0.0",
+  "cross_tenant_access_allowed": false,
+  "direct_database_access_allowed": false,
+  "isolation_rules": [
+    "tenant_id_required",
+    "workspace_id_required",
+    "product_pack_namespace_required",
+    "shared_context_contract_required",
+    "evidence_namespace_required",
+    "case_namespace_required",
+    "event_namespace_required",
+    "usage_namespace_required"
+  ],
+  "live_multi_tenant_enforcement_observed": false,
+  "namespace_keys": [
+    "tenant_id",
+    "workspace_id",
+    "product_id",
+    "product_pack_id",
+    "case_id",
+    "correlation_id"
+  ],
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "tenant-workspace-boundary-contract/v1",
+  "shared_context_requires_contract": true
+}

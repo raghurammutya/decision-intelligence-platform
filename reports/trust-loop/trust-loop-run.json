@@ -92,6 +92,11 @@
     "evaluate_capability_lineage_explorer_contract",
     "evaluate_replay_workspace_contract",
     "evaluate_v40_usability_acceptance_pack",
+    "evaluate_evidence_retention_legal_hold_contract",
+    "evaluate_tenant_workspace_boundary_contract",
+    "evaluate_entitlement_usage_gate_contract",
+    "evaluate_integration_certification_ux_contract",
+    "evaluate_platform_operator_readiness_pack",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

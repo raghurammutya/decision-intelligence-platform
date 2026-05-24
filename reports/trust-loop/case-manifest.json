@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 80,
+  "artifact_count": 85,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -341,6 +341,31 @@
       "artifact_type": "v40_usability_acceptance_pack_contract",
       "path": "examples/v40-usability-acceptance-pack-contract.json",
       "sha256": "29ab4b51531605d1825215d94051e815e2360712a8ad6ac4a210d950ed159354"
+    },
+    {
+      "artifact_type": "evidence_retention_legal_hold_contract",
+      "path": "examples/evidence-retention-legal-hold-contract.json",
+      "sha256": "71d580c2c742c34d24cf1c906f73fd1d8aacf0e2741c4b310c5c7da2f2527411"
+    },
+    {
+      "artifact_type": "tenant_workspace_boundary_contract",
+      "path": "examples/tenant-workspace-boundary-contract.json",
+      "sha256": "3874f97a26cc2c0b0a02792810673d71ddf1b3c092ac782910b386f1034043d0"
+    },
+    {
+      "artifact_type": "entitlement_usage_gate_contract",
+      "path": "examples/entitlement-usage-gate-contract.json",
+      "sha256": "e7a33dc9c1995337ebc5b595454c633c24ef08ab66a9a743c2c9a05c57d7fb22"
+    },
+    {
+      "artifact_type": "integration_certification_ux_contract",
+      "path": "examples/integration-certification-ux-contract.json",
+      "sha256": "7a9a7eb28a9d09b6484e6e53ebe10c10b83371aee624fb43103ff91e870f6740"
+    },
+    {
+      "artifact_type": "platform_operator_readiness_pack_contract",
+      "path": "examples/platform-operator-readiness-pack-contract.json",
+      "sha256": "2b0a83628235bbb7aadbd5649c4a28fe3fccc44018d63b15108b949219a73fe5"
     },
     {
       "artifact_type": "policy_preflight",

@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `80`
+Case manifest artifacts: `85`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -377,6 +377,37 @@ v40.0 WebSocket authoritative: `False`
 v40.0 evidence backed: `True`
 v40.0 runtime remains blocked: `True`
 v40.0 closure gates complete: `4/4`
+v41.0 evidence retention/legal hold valid: `True`
+v41.0 retention classes: `3`
+v41.0 legal hold supported: `True`
+v41.0 delete denied by default: `True`
+v41.0 export required: `True`
+v41.0 masking required: `True`
+v41.0 production backend selected: `False`
+v42.0 tenant/workspace boundary valid: `True`
+v42.0 namespace keys: `6`
+v42.0 isolation rules: `8`
+v42.0 shared context requires contract: `True`
+v42.0 cross-tenant access allowed: `False`
+v42.0 direct database access allowed: `False`
+v42.0 live multi-tenant enforcement observed: `False`
+v43.0 entitlement usage gate valid: `True`
+v43.0 entitlement checks: `6`
+v43.0 denied actions: `5`
+v43.0 usage projections: `6`
+v43.0 quota evidence required: `True`
+v43.0 billing integration enabled: `False`
+v43.0 runtime enforcement claimed: `False`
+v44.0 integration certification UX valid: `True`
+v44.0 required evidence panels: `10`
+v44.0 certified count: `0`
+v44.0 runtime invocation allowed count: `0`
+v44.0 UI source of truth: `False`
+v45.0 platform operator readiness pack valid: `True`
+v45.0 readiness sections: `6`
+v45.0 unsafe claims visible: `True`
+v45.0 runtime remains blocked: `True`
+v45.0 closure gates complete: `4/4`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -447,3 +478,8 @@ Release acceptance passed: `True`
 - `capability lineage explorer invokes runtime capabilities`
 - `replay workspace executes runtime side effects`
 - `v40 usability acceptance grants runtime authority`
+- `evidence retention selects production backend`
+- `tenant workspace boundary has live enforcement`
+- `entitlement usage gate enables billing integration`
+- `integration certification UX certifies shared services`
+- `platform operator readiness grants runtime authority`

@@ -703,6 +703,71 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "evidence_retention_legal_hold_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "retention_classes",
+        "legal_hold_supported",
+        "delete_denied_by_default",
+        "export_required",
+        "masking_required",
+        "audit_rules",
+        "production_backend_selected",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "tenant_workspace_boundary_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "namespace_keys",
+        "isolation_rules",
+        "shared_context_requires_contract",
+        "cross_tenant_access_allowed",
+        "direct_database_access_allowed",
+        "live_multi_tenant_enforcement_observed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "entitlement_usage_gate_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "entitlement_checks",
+        "denied_actions",
+        "usage_projection_records",
+        "quota_evidence_required",
+        "billing_integration_enabled",
+        "runtime_enforcement_claimed",
+        "pre_runtime_only",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "integration_certification_ux_contract": [
+        "schema_version",
+        "contract_id",
+        "contract_version",
+        "certification_states",
+        "certification_actions",
+        "required_evidence_panels",
+        "certified_count",
+        "runtime_invocation_allowed_count",
+        "ui_is_source_of_truth",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "platform_operator_readiness_pack_contract": [
+        "schema_version",
+        "operator_readiness_id",
+        "contract_version",
+        "readiness_sections",
+        "required_closure_gates",
+        "unsafe_claims_visible",
+        "runtime_remains_blocked",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1747,6 +1812,104 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("v40 usability acceptance cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("v40 usability acceptance cannot authorize production decisions")
+    if kind == "evidence_retention_legal_hold_contract":
+        classes = payload.get("retention_classes", [])
+        if len(classes) < 3:
+            errors.append("retention contract must declare retention classes")
+        for item in classes:
+            if int(item.get("ttl_days", 0) or 0) <= 0:
+                errors.append(f"retention class {item.get('class_id')} must declare TTL")
+            if item.get("legal_hold_overrides_ttl") is not True:
+                errors.append(f"retention class {item.get('class_id')} must support legal hold override")
+        if payload.get("legal_hold_supported") is not True:
+            errors.append("retention contract must support legal hold")
+        if payload.get("delete_denied_by_default") is not True:
+            errors.append("retention contract must deny delete by default")
+        if payload.get("export_required") is not True:
+            errors.append("retention contract must require export")
+        if payload.get("masking_required") is not True:
+            errors.append("retention contract must require masking")
+        if len(payload.get("audit_rules", [])) < 5:
+            errors.append("retention contract must include audit rules")
+        if payload.get("production_backend_selected") is not False:
+            errors.append("retention contract cannot select production backend")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("retention contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("retention contract cannot authorize production decisions")
+    if kind == "tenant_workspace_boundary_contract":
+        if len(payload.get("namespace_keys", [])) < 6:
+            errors.append("tenant boundary contract must declare namespace keys")
+        if len(payload.get("isolation_rules", [])) < 8:
+            errors.append("tenant boundary contract must declare isolation rules")
+        if payload.get("shared_context_requires_contract") is not True:
+            errors.append("tenant boundary contract must require shared context contracts")
+        if payload.get("cross_tenant_access_allowed") is not False:
+            errors.append("tenant boundary contract cannot allow cross-tenant access")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("tenant boundary contract cannot allow direct database access")
+        if payload.get("live_multi_tenant_enforcement_observed") is not False:
+            errors.append("tenant boundary contract cannot claim live enforcement")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("tenant boundary contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("tenant boundary contract cannot authorize production decisions")
+    if kind == "entitlement_usage_gate_contract":
+        if len(payload.get("entitlement_checks", [])) < 6:
+            errors.append("entitlement gate must include entitlement checks")
+        if len(payload.get("denied_actions", [])) < 5:
+            errors.append("entitlement gate must include denied actions")
+        if len(payload.get("usage_projection_records", [])) < 6:
+            errors.append("entitlement gate must include usage projections")
+        if payload.get("quota_evidence_required") is not True:
+            errors.append("entitlement gate must require quota evidence")
+        if payload.get("billing_integration_enabled") is not False:
+            errors.append("entitlement gate cannot enable billing integration")
+        if payload.get("runtime_enforcement_claimed") is not False:
+            errors.append("entitlement gate cannot claim runtime enforcement")
+        if payload.get("pre_runtime_only") is not True:
+            errors.append("entitlement gate must stay pre-runtime")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("entitlement gate cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("entitlement gate cannot authorize production decisions")
+    if kind == "integration_certification_ux_contract":
+        required_states = {"candidate", "evidence_missing", "observed", "certified", "revoked"}
+        if set(payload.get("certification_states", [])) != required_states:
+            errors.append("certification UX must declare canonical states")
+        if len(payload.get("certification_actions", [])) < 5:
+            errors.append("certification UX must include actions")
+        if len(payload.get("required_evidence_panels", [])) < 10:
+            errors.append("certification UX must include evidence panels")
+        if int(payload.get("certified_count", -1)) != 0:
+            errors.append("certification UX cannot certify integrations yet")
+        if int(payload.get("runtime_invocation_allowed_count", -1)) != 0:
+            errors.append("certification UX cannot allow runtime invocation")
+        if payload.get("ui_is_source_of_truth") is not False:
+            errors.append("certification UX cannot be source of truth")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("certification UX cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("certification UX cannot authorize production decisions")
+    if kind == "platform_operator_readiness_pack_contract":
+        if len(payload.get("readiness_sections", [])) < 6:
+            errors.append("operator readiness pack must include readiness sections")
+        required_gates = {
+            "evidence_retention_legal_hold_valid",
+            "tenant_workspace_boundary_valid",
+            "entitlement_usage_gate_valid",
+            "integration_certification_ux_valid",
+        }
+        if set(payload.get("required_closure_gates", [])) != required_gates:
+            errors.append("operator readiness pack must declare required closure gates")
+        if payload.get("unsafe_claims_visible") is not True:
+            errors.append("operator readiness pack must expose unsafe claims")
+        if payload.get("runtime_remains_blocked") is not True:
+            errors.append("operator readiness pack must keep runtime blocked")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("operator readiness pack cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("operator readiness pack cannot authorize production decisions")
     return errors
 
 
@@ -1815,6 +1978,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "capability_lineage_explorer_contract": examples / "capability-lineage-explorer-contract.json",
         "replay_workspace_contract": examples / "replay-workspace-contract.json",
         "v40_usability_acceptance_pack_contract": examples / "v40-usability-acceptance-pack-contract.json",
+        "evidence_retention_legal_hold_contract": examples / "evidence-retention-legal-hold-contract.json",
+        "tenant_workspace_boundary_contract": examples / "tenant-workspace-boundary-contract.json",
+        "entitlement_usage_gate_contract": examples / "entitlement-usage-gate-contract.json",
+        "integration_certification_ux_contract": examples / "integration-certification-ux-contract.json",
+        "platform_operator_readiness_pack_contract": examples / "platform-operator-readiness-pack-contract.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {

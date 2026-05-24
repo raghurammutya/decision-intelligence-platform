@@ -1,0 +1,23 @@
+{
+  "contract_version": "45.0.0",
+  "operator_readiness_id": "dip-platform-operator-readiness-pack",
+  "production_decision_execution_authorized": false,
+  "readiness_sections": [
+    "evidence_retention",
+    "tenant_workspace_boundary",
+    "entitlement_usage_gate",
+    "integration_certification",
+    "blocked_claims",
+    "operator_actions"
+  ],
+  "required_closure_gates": [
+    "evidence_retention_legal_hold_valid",
+    "tenant_workspace_boundary_valid",
+    "entitlement_usage_gate_valid",
+    "integration_certification_ux_valid"
+  ],
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "platform-operator-readiness-pack-contract/v1",
+  "unsafe_claims_visible": true
+}

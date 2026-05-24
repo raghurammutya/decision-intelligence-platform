@@ -1040,6 +1040,33 @@ Required evidence:
   authoritative, keeps WebSocket non-authoritative, and requires runtime to
   remain blocked.
 
+### v41.0-v45.0 Platform Operator Readiness Contracts
+
+Status: complete on `v45.0.0-pre` as pre-runtime contract evidence, not as live
+platform operation or production readiness.
+
+Purpose: strengthen the operator governance perimeter around evidence
+retention, tenant boundaries, entitlements, usage, and integration
+certification without selecting production infrastructure or claiming runtime
+enforcement.
+
+Required evidence:
+
+- v41.0 evidence retention and legal hold contract defines retention classes,
+  TTLs, legal hold override, delete-denial, export, masking, and audit rules.
+  It does not select a production backend.
+- v42.0 tenant/workspace boundary contract defines namespace keys, isolation
+  rules, shared-context contract requirements, and evidence namespace rules. It
+  does not claim live multi-tenant enforcement.
+- v43.0 entitlement and usage gate contract defines pre-runtime entitlement
+  checks, denied actions, quota evidence, and usage projections. It does not
+  enable billing integration or runtime enforcement.
+- v44.0 integration certification UX contract defines candidate, evidence
+  missing, observed, certified, and revoked states, but certified count and
+  runtime invocation count remain `0`.
+- v45.0 platform operator readiness pack requires v41-v44 to pass, keeps unsafe
+  claims visible, and keeps runtime blocked.
+
 ## Completion Gate
 
 The current phase is complete only if:

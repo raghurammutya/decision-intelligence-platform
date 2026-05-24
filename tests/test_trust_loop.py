@@ -90,6 +90,11 @@ from dip_framework.v02 import (
     evaluate_capability_lineage_explorer_contract,
     evaluate_replay_workspace_contract,
     evaluate_v40_usability_acceptance_pack,
+    evaluate_evidence_retention_legal_hold_contract,
+    evaluate_tenant_workspace_boundary_contract,
+    evaluate_entitlement_usage_gate_contract,
+    evaluate_integration_certification_ux_contract,
+    evaluate_platform_operator_readiness_pack,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1281,6 +1286,49 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(result["release"]["v40_0_usability_acceptance_pack_valid"])
         self.assertTrue(result["release"]["v40_0_runtime_remains_blocked"])
         self.assertFalse(result["release"]["v40_0_websocket_authoritative"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v45_platform_operator_readiness_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v45.0.0-pre")
+
+        retention = evaluate_evidence_retention_legal_hold_contract(ROOT)
+        boundary = evaluate_tenant_workspace_boundary_contract(ROOT)
+        entitlement = evaluate_entitlement_usage_gate_contract(ROOT)
+        certification = evaluate_integration_certification_ux_contract(ROOT)
+        readiness = evaluate_platform_operator_readiness_pack(ROOT)
+
+        self.assertTrue(retention["evidence_retention_legal_hold_valid"])
+        self.assertFalse(retention["production_backend_selected"])
+        self.assertTrue(boundary["tenant_workspace_boundary_valid"])
+        self.assertFalse(boundary["cross_tenant_access_allowed"])
+        self.assertFalse(boundary["direct_database_access_allowed"])
+        self.assertFalse(boundary["live_multi_tenant_enforcement_observed"])
+        self.assertTrue(entitlement["entitlement_usage_gate_valid"])
+        self.assertFalse(entitlement["billing_integration_enabled"])
+        self.assertFalse(entitlement["runtime_enforcement_claimed"])
+        self.assertTrue(certification["integration_certification_ux_valid"])
+        self.assertEqual(certification["certified_count"], 0)
+        self.assertEqual(certification["runtime_invocation_allowed_count"], 0)
+        self.assertFalse(certification["ui_is_source_of_truth"])
+        self.assertTrue(readiness["platform_operator_readiness_pack_valid"])
+        self.assertTrue(readiness["unsafe_claims_visible"])
+        self.assertTrue(readiness["runtime_remains_blocked"])
+        self.assertFalse(readiness["runtime_integration_authorized"])
+        self.assertFalse(readiness["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["v41_0_evidence_retention_legal_hold_valid"])
+        self.assertFalse(result["release"]["v41_0_production_backend_selected"])
+        self.assertTrue(result["release"]["v42_0_tenant_workspace_boundary_valid"])
+        self.assertFalse(result["release"]["v42_0_live_multi_tenant_enforcement_observed"])
+        self.assertTrue(result["release"]["v43_0_entitlement_usage_gate_valid"])
+        self.assertFalse(result["release"]["v43_0_billing_integration_enabled"])
+        self.assertFalse(result["release"]["v43_0_runtime_enforcement_claimed"])
+        self.assertTrue(result["release"]["v44_0_integration_certification_ux_valid"])
+        self.assertEqual(result["release"]["v44_0_certified_count"], 0)
+        self.assertEqual(result["release"]["v44_0_runtime_invocation_allowed_count"], 0)
+        self.assertTrue(result["release"]["v45_0_platform_operator_readiness_pack_valid"])
+        self.assertTrue(result["release"]["v45_0_runtime_remains_blocked"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

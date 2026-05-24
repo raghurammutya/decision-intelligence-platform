@@ -1,0 +1,36 @@
+{
+  "certification_actions": [
+    "request_evidence",
+    "mark_observed",
+    "mark_evidence_incomplete",
+    "revoke_candidate",
+    "block_runtime_invocation"
+  ],
+  "certification_states": [
+    "candidate",
+    "evidence_missing",
+    "observed",
+    "certified",
+    "revoked"
+  ],
+  "certified_count": 0,
+  "contract_id": "dip-integration-certification-ux",
+  "contract_version": "44.0.0",
+  "production_decision_execution_authorized": false,
+  "required_evidence_panels": [
+    "contract",
+    "owner",
+    "version",
+    "maturity",
+    "policy",
+    "security",
+    "observability",
+    "rollback",
+    "lineage",
+    "usage"
+  ],
+  "runtime_invocation_allowed_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "integration-certification-ux-contract/v1",
+  "ui_is_source_of_truth": false
+}

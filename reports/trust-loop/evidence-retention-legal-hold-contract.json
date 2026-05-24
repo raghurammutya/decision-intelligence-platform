@@ -1,0 +1,17 @@
+{
+  "all_classes_have_ttl": true,
+  "audit_rule_count": 5,
+  "computed": true,
+  "contract_valid": true,
+  "delete_denied_by_default": true,
+  "evaluation_id": "v41.0-evidence-retention-legal-hold-contract-1",
+  "evidence_retention_legal_hold_valid": true,
+  "export_required": true,
+  "legal_hold_supported": true,
+  "masking_required": true,
+  "production_backend_selected": false,
+  "production_decision_execution_authorized": false,
+  "retention_class_count": 3,
+  "runtime_integration_authorized": false,
+  "schema_version": "evidence-retention-legal-hold-contract-evaluation/v1"
+}

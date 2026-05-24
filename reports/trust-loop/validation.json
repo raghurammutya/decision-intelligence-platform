@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 56,
-  "record_count": 56,
+  "passed_count": 61,
+  "record_count": 61,
   "records": [
     {
       "errors": [],
@@ -338,6 +338,36 @@
       "kind": "v40_usability_acceptance_pack_contract",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/v40-usability-acceptance-pack-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "evidence_retention_legal_hold_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/evidence-retention-legal-hold-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "tenant_workspace_boundary_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/tenant-workspace-boundary-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "entitlement_usage_gate_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/entitlement-usage-gate-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "integration_certification_ux_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/integration-certification-ux-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "platform_operator_readiness_pack_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/platform-operator-readiness-pack-contract.json"
     }
   ]
 }

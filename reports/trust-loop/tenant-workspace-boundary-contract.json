@@ -1,0 +1,15 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "cross_tenant_access_allowed": false,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v42.0-tenant-workspace-boundary-contract-1",
+  "isolation_rule_count": 8,
+  "live_multi_tenant_enforcement_observed": false,
+  "namespace_key_count": 6,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "tenant-workspace-boundary-contract-evaluation/v1",
+  "shared_context_requires_contract": true,
+  "tenant_workspace_boundary_valid": true
+}

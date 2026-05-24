@@ -1,0 +1,16 @@
+{
+  "billing_integration_enabled": false,
+  "computed": true,
+  "contract_valid": true,
+  "denied_action_count": 5,
+  "entitlement_check_count": 6,
+  "entitlement_usage_gate_valid": true,
+  "evaluation_id": "v43.0-entitlement-usage-gate-contract-1",
+  "pre_runtime_only": true,
+  "production_decision_execution_authorized": false,
+  "quota_evidence_required": true,
+  "runtime_enforcement_claimed": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "entitlement-usage-gate-contract-evaluation/v1",
+  "usage_projection_record_count": 6
+}

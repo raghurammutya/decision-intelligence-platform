@@ -1,0 +1,20 @@
+{
+  "closure_gate_complete_count": 4,
+  "closure_gate_count": 4,
+  "closure_gates": {
+    "entitlement_usage_gate_valid": true,
+    "evidence_retention_legal_hold_valid": true,
+    "integration_certification_ux_valid": true,
+    "tenant_workspace_boundary_valid": true
+  },
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v45.0-platform-operator-readiness-pack-1",
+  "platform_operator_readiness_pack_valid": true,
+  "production_decision_execution_authorized": false,
+  "readiness_section_count": 6,
+  "runtime_integration_authorized": false,
+  "runtime_remains_blocked": true,
+  "schema_version": "platform-operator-readiness-pack-evaluation/v1",
+  "unsafe_claims_visible": true
+}

@@ -1,0 +1,34 @@
+{
+  "billing_integration_enabled": false,
+  "contract_id": "dip-entitlement-usage-gate",
+  "contract_version": "43.0.0",
+  "denied_actions": [
+    "execute_runtime_decision",
+    "invoke_uncertified_capability",
+    "read_uncontracted_shared_context",
+    "approve_own_generated_logic",
+    "bypass_policy_preflight"
+  ],
+  "entitlement_checks": [
+    "product_pack_authoring_allowed",
+    "simulation_allowed",
+    "diff_allowed",
+    "approval_request_allowed",
+    "replay_allowed",
+    "shared_context_projection_allowed"
+  ],
+  "pre_runtime_only": true,
+  "production_decision_execution_authorized": false,
+  "quota_evidence_required": true,
+  "runtime_enforcement_claimed": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "entitlement-usage-gate-contract/v1",
+  "usage_projection_records": [
+    "simulation_case_count",
+    "capability_evaluation_count",
+    "case_evidence_bytes",
+    "replay_run_count",
+    "policy_evaluation_count",
+    "dashboard_projection_count"
+  ]
+}

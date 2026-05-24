@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 80,
+  "artifact_count": 85,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -343,6 +343,31 @@
       "sha256": "29ab4b51531605d1825215d94051e815e2360712a8ad6ac4a210d950ed159354"
     },
     {
+      "artifact_type": "evidence_retention_legal_hold_contract",
+      "path": "examples/evidence-retention-legal-hold-contract.json",
+      "sha256": "71d580c2c742c34d24cf1c906f73fd1d8aacf0e2741c4b310c5c7da2f2527411"
+    },
+    {
+      "artifact_type": "tenant_workspace_boundary_contract",
+      "path": "examples/tenant-workspace-boundary-contract.json",
+      "sha256": "3874f97a26cc2c0b0a02792810673d71ddf1b3c092ac782910b386f1034043d0"
+    },
+    {
+      "artifact_type": "entitlement_usage_gate_contract",
+      "path": "examples/entitlement-usage-gate-contract.json",
+      "sha256": "e7a33dc9c1995337ebc5b595454c633c24ef08ab66a9a743c2c9a05c57d7fb22"
+    },
+    {
+      "artifact_type": "integration_certification_ux_contract",
+      "path": "examples/integration-certification-ux-contract.json",
+      "sha256": "7a9a7eb28a9d09b6484e6e53ebe10c10b83371aee624fb43103ff91e870f6740"
+    },
+    {
+      "artifact_type": "platform_operator_readiness_pack_contract",
+      "path": "examples/platform-operator-readiness-pack-contract.json",
+      "sha256": "2b0a83628235bbb7aadbd5649c4a28fe3fccc44018d63b15108b949219a73fe5"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "16068013badb74ff1e0c2052a27cb6038f515282cee6092c741f14ade3898298"
@@ -405,11 +430,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "dd036113f075ed0b0489a2cfc40d0fb29a07143ed915c05b3dbd9627f6449e99",
+  "manifest_hash": "e248a53741c4b8e00b1d002b42896273bec8193edf1c4bb11e9d6f24fe9e31c2",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "e67dd012d677b3359770152f016013a1fe61035e1020b8f29388e7ff1a1f8cf3",
+  "parent_manifest_hash": "39f2dcfc5afdbd38667d8d464ebb020695b105f38b3e3979178787b1cd4fe7e4",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }
