@@ -1,0 +1,31 @@
+{
+  "schema_version": "durable-case-store-adapter/v1",
+  "adapter_id": "negative-mutable-case-store-adapter",
+  "adapter_version": "0.0.0-negative",
+  "source_boundary": "negative_fixture",
+  "storage_backend_type": "contract_only",
+  "production_storage_backend_observed": false,
+  "append_only_writes_required": false,
+  "content_addressed_records_required": false,
+  "manifest_hash_chain_required": false,
+  "delete_denied_required": false,
+  "mutation_detection_required": false,
+  "retention_policy_required": false,
+  "replay_export_required": false,
+  "audit_export_required": false,
+  "multi_writer_concurrency_control_required": false,
+  "encryption_boundary_required": false,
+  "tenant_namespace_required": false,
+  "required_operations": [
+    "update_case_record",
+    "delete_case_record"
+  ],
+  "denied_operations": [],
+  "retention": {
+    "minimum_days": 0,
+    "delete_mode": "allow_delete",
+    "legal_hold_supported": false
+  },
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

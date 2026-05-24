@@ -25,12 +25,14 @@ ARTIFACTS = [
     ("solo_maintainer_governance_exception", "examples/solo-maintainer-governance-exception.json"),
     ("schema_stability_policy", "examples/schema-stability-policy.json"),
     ("external_approval_boundary", "examples/external-approval-boundary.json"),
+    ("durable_case_store_adapter", "examples/durable-case-store-adapter.json"),
     ("negative_decision_spec_fixture", "examples/negative/decision-spec-production-allowed.json"),
     ("negative_approval_fixture", "examples/negative/approval-ai-approved.json"),
     (
         "negative_external_approval_fixture",
         "examples/negative/external-approval-github-review-as-decision-approval.json",
     ),
+    ("negative_durable_case_store_adapter", "examples/negative/durable-case-store-mutable-adapter.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -532,6 +534,7 @@ def evaluate_schema_stability(root: Path = ROOT) -> dict[str, Any]:
         "replay": examples / "support-ticket-replay-result.json",
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
         "external_approval_boundary": examples / "external-approval-boundary.json",
+        "durable_case_store_adapter": examples / "durable-case-store-adapter.json",
     }
     frozen_results = []
     for contract in policy.get("frozen_contracts", []):
@@ -665,6 +668,80 @@ def evaluate_external_approval_boundary(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_durable_case_store_adapter(
+    root: Path = ROOT,
+    durable_manifest: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    adapter = load_json(root / "examples/durable-case-store-adapter.json")
+    manifest = durable_manifest or {}
+    required_operations = set(adapter.get("required_operations", []))
+    denied_operations = set(adapter.get("denied_operations", []))
+    expected_required = {
+        "append_case_record",
+        "read_case_record",
+        "verify_manifest_chain",
+        "export_replay_pack",
+        "export_audit_pack",
+    }
+    expected_denied = {
+        "update_case_record",
+        "delete_case_record",
+        "overwrite_manifest_hash",
+    }
+    retention = adapter.get("retention", {})
+    return {
+        "schema_version": "durable-case-store-adapter-evaluation/v1",
+        "evaluation_id": "durable-case-store-adapter-v2.3-pre-runtime-1",
+        "computed": True,
+        "adapter_id": adapter.get("adapter_id"),
+        "adapter_version": adapter.get("adapter_version"),
+        "adapter_hash": _sha256(root / "examples/durable-case-store-adapter.json"),
+        "source_boundary": adapter.get("source_boundary"),
+        "storage_backend_type": adapter.get("storage_backend_type"),
+        "production_storage_backend_observed": adapter.get("production_storage_backend_observed") is True,
+        "append_only_writes_required": adapter.get("append_only_writes_required") is True,
+        "content_addressed_records_required": adapter.get("content_addressed_records_required") is True,
+        "manifest_hash_chain_required": adapter.get("manifest_hash_chain_required") is True,
+        "delete_denied_required": adapter.get("delete_denied_required") is True,
+        "mutation_detection_required": adapter.get("mutation_detection_required") is True,
+        "retention_policy_required": adapter.get("retention_policy_required") is True,
+        "replay_export_required": adapter.get("replay_export_required") is True,
+        "audit_export_required": adapter.get("audit_export_required") is True,
+        "multi_writer_concurrency_control_required": adapter.get("multi_writer_concurrency_control_required") is True,
+        "encryption_boundary_required": adapter.get("encryption_boundary_required") is True,
+        "tenant_namespace_required": adapter.get("tenant_namespace_required") is True,
+        "required_operations_complete": expected_required.issubset(required_operations),
+        "denied_operations_complete": expected_denied.issubset(denied_operations),
+        "retention_minimum_days": retention.get("minimum_days", 0),
+        "retention_policy_valid": int(retention.get("minimum_days", 0) or 0) >= 365
+        and retention.get("delete_mode") == "deny_delete_before_retention_expiry"
+        and retention.get("legal_hold_supported") is True,
+        "manifest_hash_bound": bool(manifest.get("manifest_hash")),
+        "adapter_boundary_valid": adapter.get("production_storage_backend_observed") is False
+        and adapter.get("append_only_writes_required") is True
+        and adapter.get("content_addressed_records_required") is True
+        and adapter.get("manifest_hash_chain_required") is True
+        and adapter.get("delete_denied_required") is True
+        and adapter.get("mutation_detection_required") is True
+        and adapter.get("retention_policy_required") is True
+        and adapter.get("replay_export_required") is True
+        and adapter.get("audit_export_required") is True
+        and adapter.get("multi_writer_concurrency_control_required") is True
+        and adapter.get("encryption_boundary_required") is True
+        and adapter.get("tenant_namespace_required") is True
+        and expected_required.issubset(required_operations)
+        and expected_denied.issubset(denied_operations)
+        and int(retention.get("minimum_days", 0) or 0) >= 365
+        and retention.get("delete_mode") == "deny_delete_before_retention_expiry"
+        and retention.get("legal_hold_supported") is True
+        and bool(manifest.get("manifest_hash"))
+        and adapter.get("runtime_integration_authorized") is False
+        and adapter.get("production_decision_execution_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
@@ -710,6 +787,7 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -734,6 +812,11 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "external_approval_boundary",
             "state": "ready",
             "summary": str(external_approval.get("external_approval_boundary_valid")),
+        },
+        {
+            "id": "durable_case_store_adapter",
+            "state": "ready",
+            "summary": str(durable_adapter.get("adapter_boundary_valid")),
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -1147,6 +1230,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
     schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     external_approval = load_json(root / "reports/trust-loop/external-approval-boundary.json")
+    durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -1248,6 +1332,19 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "external_approval_required_evidence_count": external_approval.get("required_evidence_count", 0),
         "external_approval_required_evidence_complete": external_approval.get("required_evidence_complete") is True,
         "external_approval_admission_controls_complete": external_approval.get("admission_controls_complete") is True,
+        "durable_case_store_adapter_observed": durable_adapter.get("computed") is True,
+        "durable_case_store_adapter_valid": durable_adapter.get("adapter_boundary_valid") is True,
+        "adapter_production_storage_backend_observed": durable_adapter.get("production_storage_backend_observed")
+        is True,
+        "adapter_append_only_writes_required": durable_adapter.get("append_only_writes_required") is True,
+        "adapter_content_addressed_records_required": durable_adapter.get("content_addressed_records_required") is True,
+        "adapter_delete_denied_required": durable_adapter.get("delete_denied_required") is True,
+        "adapter_mutation_detection_required": durable_adapter.get("mutation_detection_required") is True,
+        "adapter_replay_export_required": durable_adapter.get("replay_export_required") is True,
+        "adapter_audit_export_required": durable_adapter.get("audit_export_required") is True,
+        "adapter_retention_policy_valid": durable_adapter.get("retention_policy_valid") is True,
+        "adapter_required_operations_complete": durable_adapter.get("required_operations_complete") is True,
+        "adapter_denied_operations_complete": durable_adapter.get("denied_operations_complete") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -1286,6 +1383,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and external_approval.get("external_approval_boundary_valid") is True
         and external_approval.get("live_approval_system_observed") is False
         and external_approval.get("decision_approval_separate_from_code_merge") is True
+        and durable_adapter.get("adapter_boundary_valid") is True
+        and durable_adapter.get("production_storage_backend_observed") is False
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -1295,6 +1394,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
             "production decision execution is authorized",
             "independent human review was observed for solo-maintainer merges",
             "live external decision approval system is observed",
+            "production durable case store backend is observed",
         ],
     }
 
@@ -1371,6 +1471,18 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"External approval required evidence count: `{payload['external_approval_required_evidence_count']}`",
         f"External approval required evidence complete: `{payload['external_approval_required_evidence_complete']}`",
         f"External approval admission controls complete: `{payload['external_approval_admission_controls_complete']}`",
+        f"Durable case store adapter observed: `{payload['durable_case_store_adapter_observed']}`",
+        f"Durable case store adapter valid: `{payload['durable_case_store_adapter_valid']}`",
+        f"Adapter production storage backend observed: `{payload['adapter_production_storage_backend_observed']}`",
+        f"Adapter append-only writes required: `{payload['adapter_append_only_writes_required']}`",
+        f"Adapter content-addressed records required: `{payload['adapter_content_addressed_records_required']}`",
+        f"Adapter delete denied required: `{payload['adapter_delete_denied_required']}`",
+        f"Adapter mutation detection required: `{payload['adapter_mutation_detection_required']}`",
+        f"Adapter replay export required: `{payload['adapter_replay_export_required']}`",
+        f"Adapter audit export required: `{payload['adapter_audit_export_required']}`",
+        f"Adapter retention policy valid: `{payload['adapter_retention_policy_valid']}`",
+        f"Adapter required operations complete: `{payload['adapter_required_operations_complete']}`",
+        f"Adapter denied operations complete: `{payload['adapter_denied_operations_complete']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -1391,7 +1503,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v0.2.0-pre",
+    version: str = "v2.3.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -1417,6 +1529,8 @@ def write_v0_2_evidence(
     write_json(target / "case-manifest.json", manifest)
     durable_manifest = build_durable_case_manifest(manifest)
     write_json(target / "durable-case-manifest.json", durable_manifest)
+    durable_adapter = evaluate_durable_case_store_adapter(root, durable_manifest)
+    write_json(target / "durable-case-store-adapter.json", durable_adapter)
     approval_authority = evaluate_approval_authority(root, durable_manifest)
     write_json(target / "approval-authority.json", approval_authority)
     repository_governance = evaluate_repository_governance(root)
@@ -1454,6 +1568,7 @@ def write_v0_2_evidence(
         "case_evidence": case_evidence,
         "manifest": manifest,
         "durable_manifest": durable_manifest,
+        "durable_adapter": durable_adapter,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 18,
-  "record_count": 18,
+  "passed_count": 19,
+  "record_count": 19,
   "records": [
     {
       "errors": [],
@@ -92,6 +92,12 @@
       "kind": "external_approval_boundary",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/external-approval-boundary.json"
+    },
+    {
+      "errors": [],
+      "kind": "durable_case_store_adapter",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/durable-case-store-adapter.json"
     },
     {
       "errors": [],

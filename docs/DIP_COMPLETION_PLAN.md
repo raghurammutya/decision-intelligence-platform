@@ -170,6 +170,29 @@ Required evidence:
 - AI approval blocked
 - runtime and production authority remain blocked
 
+### v2.3 Durable Case Store Adapter
+
+Purpose: define the durable case store adapter boundary without claiming a
+production storage backend.
+
+This is not a live storage integration. It defines the contract required before
+a production durable case store can be considered for runtime admission.
+
+Required evidence:
+
+- append-only writes required
+- content-addressed records required
+- manifest hash chain required
+- deletes and record overwrites denied
+- mutation detection required
+- replay export required
+- audit export required
+- retention policy declared
+- required adapter operations complete
+- denied adapter operations complete
+- production storage backend remains unobserved
+- runtime and production authority remain blocked
+
 ## Completion Gate
 
 The current phase is complete only if:

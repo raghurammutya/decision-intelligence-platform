@@ -113,3 +113,15 @@ solo-maintainer merge exception. It defines the external decision-approval
 evidence required before runtime can be considered, but does not claim a live
 external approval system. Runtime execution and production decision authority
 remain blocked.
+
+## v2.3 Durable Case Store Adapter
+
+```bash
+python3 -m dip_framework release-pack --version v2.3.0-pre
+```
+
+v2.3 defines the durable case store adapter boundary for append-only,
+content-addressed case records, manifest-chain verification, replay export,
+audit export, retention controls, and denied mutation operations. It remains a
+contract-backed adapter boundary, not an observed production storage backend.
+Runtime execution and production decision authority remain blocked.

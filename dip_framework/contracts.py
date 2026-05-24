@@ -199,6 +199,30 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "durable_case_store_adapter": [
+        "schema_version",
+        "adapter_id",
+        "adapter_version",
+        "source_boundary",
+        "storage_backend_type",
+        "production_storage_backend_observed",
+        "append_only_writes_required",
+        "content_addressed_records_required",
+        "manifest_hash_chain_required",
+        "delete_denied_required",
+        "mutation_detection_required",
+        "retention_policy_required",
+        "replay_export_required",
+        "audit_export_required",
+        "multi_writer_concurrency_control_required",
+        "encryption_boundary_required",
+        "tenant_namespace_required",
+        "required_operations",
+        "denied_operations",
+        "retention",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "shared_context_contract": [
         "schema_version",
         "contract_id",
@@ -363,6 +387,29 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("external approval boundary cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("external approval boundary cannot authorize production decisions")
+    if kind == "durable_case_store_adapter":
+        if payload.get("production_storage_backend_observed") is not False:
+            errors.append("durable case store adapter must not claim production storage")
+        if payload.get("append_only_writes_required") is not True:
+            errors.append("durable case store adapter must require append-only writes")
+        if payload.get("content_addressed_records_required") is not True:
+            errors.append("durable case store adapter must require content-addressed records")
+        if payload.get("manifest_hash_chain_required") is not True:
+            errors.append("durable case store adapter must require manifest hash chain")
+        if payload.get("delete_denied_required") is not True:
+            errors.append("durable case store adapter must deny deletes")
+        if payload.get("mutation_detection_required") is not True:
+            errors.append("durable case store adapter must require mutation detection")
+        if payload.get("replay_export_required") is not True:
+            errors.append("durable case store adapter must require replay export")
+        if payload.get("audit_export_required") is not True:
+            errors.append("durable case store adapter must require audit export")
+        if int(payload.get("retention", {}).get("minimum_days", 0) or 0) <= 0:
+            errors.append("durable case store adapter must declare positive retention")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("durable case store adapter cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("durable case store adapter cannot authorize production decisions")
     if kind == "shared_context_contract":
         if payload.get("runtime_context_exchange_authorized") is not False:
             errors.append("shared context contract cannot authorize runtime exchange")
@@ -406,6 +453,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
         "schema_stability_policy": examples / "schema-stability-policy.json",
         "external_approval_boundary": examples / "external-approval-boundary.json",
+        "durable_case_store_adapter": examples / "durable-case-store-adapter.json",
         "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",

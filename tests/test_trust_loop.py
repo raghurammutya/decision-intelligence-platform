@@ -12,6 +12,7 @@ from dip_framework.v02 import (
     compute_simulation,
     evaluate_approval_authority,
     evaluate_capability_governance,
+    evaluate_durable_case_store_adapter,
     evaluate_durable_evidence_store,
     evaluate_external_approval_boundary,
     evaluate_external_identity,
@@ -82,6 +83,9 @@ class TrustLoopTests(unittest.TestCase):
         self.assertTrue(payload["acceptance"]["external_approval_boundary_valid"])
         self.assertFalse(payload["acceptance"]["live_external_approval_system_observed"])
         self.assertTrue(payload["acceptance"]["decision_approval_separate_from_code_merge"])
+        self.assertTrue(payload["acceptance"]["durable_case_store_adapter_observed"])
+        self.assertTrue(payload["acceptance"]["durable_case_store_adapter_valid"])
+        self.assertFalse(payload["acceptance"]["adapter_production_storage_backend_observed"])
         self.assertTrue(payload["acceptance"]["runtime_readiness_assessment_observed"])
         self.assertEqual(payload["acceptance"]["runtime_readiness_percent"], 0.0)
         self.assertTrue(payload["acceptance"]["product_review_surface_observed"])
@@ -129,7 +133,7 @@ class TrustLoopTests(unittest.TestCase):
         )
 
     def test_v0_5_computes_decision_diff_from_simulation(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
         payload = result["decision_diff"]
 
         self.assertTrue(payload["computed"])
@@ -144,7 +148,7 @@ class TrustLoopTests(unittest.TestCase):
     def test_v0_5_manifest_approval_and_release_pack_are_pre_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             write_trust_loop(Path(tmp), ROOT)
-            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+            result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
             self.assertTrue(verify_case_manifest(ROOT, result["manifest"]))
             self.assertTrue(verify_case_manifest(ROOT, result["durable_manifest"]))
@@ -180,6 +184,18 @@ class TrustLoopTests(unittest.TestCase):
             self.assertTrue(result["release"]["external_approval_boundary_valid"])
             self.assertFalse(result["release"]["live_external_approval_system_observed"])
             self.assertTrue(result["release"]["decision_approval_separate_from_code_merge"])
+            self.assertTrue(result["release"]["durable_case_store_adapter_observed"])
+            self.assertTrue(result["release"]["durable_case_store_adapter_valid"])
+            self.assertFalse(result["release"]["adapter_production_storage_backend_observed"])
+            self.assertTrue(result["release"]["adapter_append_only_writes_required"])
+            self.assertTrue(result["release"]["adapter_content_addressed_records_required"])
+            self.assertTrue(result["release"]["adapter_delete_denied_required"])
+            self.assertTrue(result["release"]["adapter_mutation_detection_required"])
+            self.assertTrue(result["release"]["adapter_replay_export_required"])
+            self.assertTrue(result["release"]["adapter_audit_export_required"])
+            self.assertTrue(result["release"]["adapter_retention_policy_valid"])
+            self.assertTrue(result["release"]["adapter_required_operations_complete"])
+            self.assertTrue(result["release"]["adapter_denied_operations_complete"])
             self.assertEqual(result["release"]["runtime_readiness_percent"], 0.0)
             self.assertEqual(result["release"]["production_decision_authority_percent"], 0.0)
             self.assertTrue(result["release"]["product_review_surface_observed"])
@@ -188,7 +204,7 @@ class TrustLoopTests(unittest.TestCase):
             self.assertFalse(result["release"]["production_decision_execution_authorized"])
 
     def test_v0_6_evaluates_identity_rbac_approval_authority_without_external_idp(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
         authority = evaluate_approval_authority(ROOT, result["durable_manifest"])
 
         self.assertTrue(authority["computed"])
@@ -208,7 +224,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v0_7_defines_repository_governance_policy_without_runtime_authority(self) -> None:
         governance = evaluate_repository_governance(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(governance["computed"])
         self.assertEqual(governance["source_boundary"], "declared_repository_governance_policy_not_runtime_execution")
@@ -235,7 +251,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v0_8_defines_release_lifecycle_without_runtime_authority(self) -> None:
         lifecycle = evaluate_release_lifecycle(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(lifecycle["computed"])
         self.assertEqual(lifecycle["stage_count"], 6)
@@ -250,7 +266,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v0_9_defines_external_identity_contract_without_live_auth(self) -> None:
         external = evaluate_external_identity(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(external["computed"])
         self.assertEqual(external["source_boundary"], "external_idp_contract_evidence_not_live_authentication")
@@ -263,7 +279,7 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["live_external_identity_provider_authenticated"])
 
     def test_v1_0_defines_durable_store_contract_without_production_storage(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
         durable_store = evaluate_durable_evidence_store(ROOT, result["durable_manifest"])
 
         self.assertTrue(durable_store["computed"])
@@ -280,7 +296,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v1_4_evaluates_capability_governance_without_runtime_invocation(self) -> None:
         capability = evaluate_capability_governance(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(capability["computed"])
         self.assertEqual(capability["decision_count"], 3)
@@ -298,7 +314,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v1_5_evaluates_shared_context_contract_without_runtime_exchange(self) -> None:
         shared_context = evaluate_shared_context_governance(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(shared_context["computed"])
         self.assertTrue(shared_context["purpose_declared"])
@@ -316,7 +332,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v2_1_records_solo_maintainer_exception_without_review_overclaim(self) -> None:
         exception = evaluate_solo_maintainer_exception(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(exception["computed"])
         self.assertTrue(exception["solo_maintainer_constraint"])
@@ -336,13 +352,13 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v2_1_validates_schema_stability_and_negative_fixtures(self) -> None:
         stability = evaluate_schema_stability(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(stability["computed"])
-        self.assertGreaterEqual(stability["frozen_contract_count"], 17)
+        self.assertGreaterEqual(stability["frozen_contract_count"], 18)
         self.assertTrue(stability["frozen_contracts_valid"])
         self.assertGreaterEqual(stability["compatibility_rule_count"], 5)
-        self.assertEqual(stability["negative_fixture_count"], 3)
+        self.assertEqual(stability["negative_fixture_count"], 4)
         self.assertTrue(stability["negative_fixtures_valid"])
         self.assertTrue(stability["schema_stability_valid"])
         self.assertFalse(stability["runtime_integration_authorized"])
@@ -352,7 +368,7 @@ class TrustLoopTests(unittest.TestCase):
 
     def test_v2_2_separates_external_approval_from_github_review_exception(self) -> None:
         boundary = evaluate_external_approval_boundary(ROOT)
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
 
         self.assertTrue(boundary["computed"])
         self.assertTrue(boundary["decision_approval_required"])
@@ -375,8 +391,41 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["live_external_approval_system_observed"])
         self.assertTrue(result["release"]["decision_approval_separate_from_code_merge"])
 
+    def test_v2_3_defines_durable_case_store_adapter_without_production_backend(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
+        adapter = evaluate_durable_case_store_adapter(ROOT, result["durable_manifest"])
+
+        self.assertTrue(adapter["computed"])
+        self.assertEqual(adapter["source_boundary"], "adapter_contract_not_production_storage_backend")
+        self.assertEqual(adapter["storage_backend_type"], "contract_only")
+        self.assertFalse(adapter["production_storage_backend_observed"])
+        self.assertTrue(adapter["append_only_writes_required"])
+        self.assertTrue(adapter["content_addressed_records_required"])
+        self.assertTrue(adapter["manifest_hash_chain_required"])
+        self.assertTrue(adapter["delete_denied_required"])
+        self.assertTrue(adapter["mutation_detection_required"])
+        self.assertTrue(adapter["retention_policy_required"])
+        self.assertTrue(adapter["replay_export_required"])
+        self.assertTrue(adapter["audit_export_required"])
+        self.assertTrue(adapter["multi_writer_concurrency_control_required"])
+        self.assertTrue(adapter["encryption_boundary_required"])
+        self.assertTrue(adapter["tenant_namespace_required"])
+        self.assertTrue(adapter["required_operations_complete"])
+        self.assertTrue(adapter["denied_operations_complete"])
+        self.assertTrue(adapter["retention_policy_valid"])
+        self.assertTrue(adapter["manifest_hash_bound"])
+        self.assertTrue(adapter["adapter_boundary_valid"])
+        self.assertFalse(adapter["runtime_integration_authorized"])
+        self.assertFalse(adapter["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["durable_case_store_adapter_observed"])
+        self.assertTrue(result["release"]["durable_case_store_adapter_valid"])
+        self.assertFalse(result["release"]["adapter_production_storage_backend_observed"])
+        self.assertTrue(result["release"]["adapter_required_operations_complete"])
+        self.assertTrue(result["release"]["adapter_denied_operations_complete"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
     def test_v2_0_assesses_runtime_readiness_without_authority(self) -> None:
-        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.2.0-pre")
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v2.3.0-pre")
         runtime = build_runtime_readiness_assessment(ROOT)
         surface = build_product_review_surface(ROOT)
 
