@@ -13,7 +13,7 @@
     "live external identity provider authentication missing",
     "live external identity MFA claim missing",
     "production durable case store backend missing",
-    "promotion chain approval and rollback trail missing",
+    "production promotion execution not authorized",
     "runtime control plane not designed or approved",
     "kill switch not evidenced",
     "live observability not evidenced",

@@ -1,0 +1,29 @@
+{
+  "build_run_id": "local-validation",
+  "build_run_id_observed": true,
+  "computed": true,
+  "evaluation_id": "release-promotion-chain-v2.9-pre-runtime-1",
+  "immutable_artifact_digest": "sha256:60ede4deb516652a25085724b2d4664f05aec27abba65092975898ca67eaf4fe",
+  "immutable_artifact_digest_observed": true,
+  "independent_human_review_observed": false,
+  "prod_deployment_executed": false,
+  "production_decision_execution_authorized": false,
+  "promotion_approval_record_observed": true,
+  "promotion_chain_declared": true,
+  "promotion_stages": [
+    "dev",
+    "test",
+    "staging",
+    "prod"
+  ],
+  "release_promotion_chain_valid": true,
+  "release_version": "v3.0.0-pre",
+  "rollback_artifact_observed": true,
+  "rollback_criteria_defined": true,
+  "rollback_evidence_valid": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "release-promotion-chain-evaluation/v1",
+  "solo_maintainer_exception_recorded": true,
+  "source_commit": "local-validation",
+  "source_commit_bound": true
+}

@@ -23,7 +23,10 @@
     "evaluate_external_approval_adapter",
     "evaluate_durable_case_store_adapter",
     "evaluate_evidence_store_adapter_parity",
+    "observe_durable_evidence_backend",
+    "evaluate_release_promotion_chain",
     "assess_runtime_readiness",
+    "evaluate_pre_runtime_ga",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

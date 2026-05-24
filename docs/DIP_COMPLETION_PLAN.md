@@ -280,6 +280,63 @@ Required evidence:
 - MFA claim remains unobserved and blocked
 - runtime and production authority remain blocked
 
+### v2.8 Durable Evidence Backend Observation
+
+Purpose: observe the durable evidence backend path without claiming production
+storage or runtime backend invocation.
+
+Required evidence:
+
+- append-only case write observed
+- content-addressed case record observed
+- manifest-chain verification observed from backend evidence
+- case record read observed
+- replay export observed
+- audit export observed
+- delete and mutation operations denied
+- retention policy observed
+- backend health observed
+- production storage backend remains unobserved
+- runtime backend invocation remains blocked
+
+### v2.9 Promotion Chain And Rollback Evidence
+
+Purpose: bind release evidence to a source commit, immutable artifact digest,
+build run, promotion chain, approval requirement, and rollback trail without
+executing production deployment.
+
+Required evidence:
+
+- immutable artifact digest observed
+- source commit bound
+- build run id observed
+- dev-test-staging-prod promotion chain declared
+- promotion approval requirement recorded
+- rollback criteria defined
+- rollback artifact observed
+- rollback evidence valid
+- solo-maintainer exception recorded where independent review is unavailable
+- production deployment remains unexecuted
+
+### v3.0 Pre-Runtime GA Acceptance
+
+Purpose: complete the first wedge as pre-runtime GA evidence while preserving the
+runtime boundary.
+
+Required evidence:
+
+- governed decision review and simulation complete
+- trust surface complete
+- policy engine complete
+- simulation and diff complete
+- approval boundary complete
+- live identity/RBAC observed with MFA claim still blocked
+- durable evidence backend observed
+- promotion chain and rollback evidence observed
+- EDI observer evidence remains required
+- runtime execution readiness remains `0%`
+- production decision authority remains `0%`
+
 ## Completion Gate
 
 The current phase is complete only if:

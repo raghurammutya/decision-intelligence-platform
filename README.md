@@ -166,7 +166,7 @@ runtime integration, or production decision authority is observed.
 ## v2.7 Live Identity/RBAC Evidence
 
 ```bash
-python3 -m dip_framework release-pack --version v2.7.0-pre
+python3 -m dip_framework release-pack --version v3.0.0-pre
 ```
 
 v2.7 observes live GitHub identity and repository RBAC evidence for the
@@ -175,3 +175,27 @@ repository permission, and decision-scope authorization, while explicitly
 leaving the external MFA claim unobserved because the available GitHub API path
 does not expose that claim. Runtime integration and production decision
 authority remain blocked.
+
+## v2.8 Durable Evidence Backend Observation
+
+v2.8 observes a pre-runtime, file-backed durable evidence backend path from the
+case manifest, replay pack, and adapter parity evidence. It validates append-only
+writes, content-addressed records, manifest-chain verification, read/replay/audit
+exports, delete denial, mutation denial, retention policy, and backend health.
+It does not observe a production storage backend or invoke a runtime backend.
+
+## v2.9 Promotion Chain And Rollback Evidence
+
+v2.9 records a commit-bound release artifact digest, build run id, declared
+dev-test-staging-prod promotion chain, approval requirement record, rollback
+criteria, rollback artifact, and solo-maintainer exception evidence. It records
+that production deployment was not executed.
+
+## v3.0 Pre-Runtime GA Acceptance
+
+v3.0 completes the Governed Decision Review and Simulation wedge as pre-runtime
+GA evidence. The acceptance pack binds decision spec, capability registry,
+capability graph, policy preflight, simulation, decision diff, approval record,
+case store, lineage, replay evidence, identity/RBAC, durable backend observation,
+promotion chain, and EDI observer evidence while keeping runtime execution
+readiness and production decision authority at `0%`.

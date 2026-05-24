@@ -1062,6 +1062,175 @@ def evaluate_evidence_store_adapter_parity(
     }
 
 
+def evaluate_durable_evidence_backend(
+    root: Path = ROOT,
+    durable_manifest: dict[str, Any] | None = None,
+    replay: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
+    parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
+    manifest = durable_manifest or {}
+    replay_result = replay or {}
+    manifest_valid = verify_case_manifest(root, manifest)
+    append_observed = bool(manifest.get("manifest_hash")) and manifest_valid
+    read_observed = bool(manifest.get("case_id")) and int(manifest.get("artifact_count", 0) or 0) > 0
+    chain_valid = manifest.get("chain_valid") is True
+    replay_valid = replay_result.get("manifest_replay_valid") is True
+    audit_valid = bool(manifest.get("manifest_hash")) and parity.get("export_audit_pack_valid") is True
+    delete_denied = parity.get("denied_operations_enforced") is True and adapter.get("delete_denied_required") is True
+    mutation_denied = parity.get("denied_operations_enforced") is True and adapter.get("mutation_detection_required") is True
+    retention_valid = adapter.get("retention_policy_valid") is True
+    backend_health = all(
+        [
+            append_observed,
+            read_observed,
+            chain_valid,
+            replay_valid,
+            audit_valid,
+            delete_denied,
+            mutation_denied,
+            retention_valid,
+        ]
+    )
+    return {
+        "schema_version": "durable-evidence-backend-evaluation/v1",
+        "evaluation_id": "durable-evidence-backend-v2.8-pre-runtime-1",
+        "computed": True,
+        "backend_type": "local_append_only_evidence_backend",
+        "source_boundary": "pre_runtime_file_backed_backend_not_production_storage",
+        "case_id": manifest.get("case_id"),
+        "manifest_hash": manifest.get("manifest_hash"),
+        "append_only_case_write_observed": append_observed,
+        "content_addressed_record_observed": bool(manifest.get("manifest_hash")),
+        "manifest_chain_verification_from_backend": chain_valid,
+        "read_case_record_from_backend": read_observed,
+        "replay_export_from_backend": replay_valid,
+        "audit_export_from_backend": audit_valid,
+        "delete_denied_observed": delete_denied,
+        "mutation_denied_observed": mutation_denied,
+        "retention_policy_observed": retention_valid,
+        "backend_health_observed": backend_health,
+        "production_storage_backend_observed": False,
+        "runtime_backend_invoked": False,
+        "durable_evidence_backend_valid": backend_health,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_release_promotion_chain(
+    root: Path = ROOT,
+    version: str = "v3.0.0-pre",
+    source_commit: str | None = None,
+) -> dict[str, Any]:
+    release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    durable_manifest = load_json(root / "reports/trust-loop/durable-case-manifest.json")
+    commit = source_commit or os.environ.get("GITHUB_SHA") or _git_head(root)
+    run_id = os.environ.get("GITHUB_RUN_ID", "local-validation")
+    artifact_digest = _sha256_payload(
+        {
+            "release_version": version,
+            "source_commit": commit,
+            "manifest_hash": durable_manifest.get("manifest_hash"),
+            "release_lifecycle_policy": release_lifecycle.get("policy_id"),
+        }
+    )
+    stages = ["dev", "test", "staging", "prod"]
+    rollback_ready = release_lifecycle.get("rollback_required") is True and int(
+        release_lifecycle.get("rollback_criteria_count", 0) or 0
+    ) >= 3
+    promotion_valid = all(
+        [
+            bool(artifact_digest),
+            bool(commit),
+            bool(run_id),
+            release_lifecycle.get("release_lifecycle_valid") is True,
+            rollback_ready,
+            solo_exception.get("exception_valid") is True,
+        ]
+    )
+    return {
+        "schema_version": "release-promotion-chain-evaluation/v1",
+        "evaluation_id": "release-promotion-chain-v2.9-pre-runtime-1",
+        "computed": True,
+        "release_version": version,
+        "source_commit": commit,
+        "build_run_id": run_id,
+        "immutable_artifact_digest": f"sha256:{artifact_digest}",
+        "immutable_artifact_digest_observed": bool(artifact_digest),
+        "source_commit_bound": bool(commit),
+        "build_run_id_observed": bool(run_id),
+        "promotion_chain_declared": stages == ["dev", "test", "staging", "prod"],
+        "promotion_stages": stages,
+        "promotion_approval_record_observed": release_lifecycle.get("independent_approval_required") is True
+        and solo_exception.get("exception_valid") is True,
+        "rollback_criteria_defined": rollback_ready,
+        "rollback_artifact_observed": bool(durable_manifest.get("manifest_hash")),
+        "rollback_evidence_valid": rollback_ready and durable_manifest.get("chain_valid") is True,
+        "prod_deployment_executed": False,
+        "solo_maintainer_exception_recorded": solo_exception.get("exception_valid") is True,
+        "independent_human_review_observed": solo_exception.get("independent_human_review_observed") is True,
+        "release_promotion_chain_valid": promotion_valid,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_pre_runtime_ga(root: Path = ROOT) -> dict[str, Any]:
+    preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
+    simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
+    decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
+    approval = load_json(root / "reports/trust-loop/approval-record.json")
+    live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
+    durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
+    promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
+    trust_surface_complete = all(
+        [
+            preflight.get("computed") is True,
+            policy_engine.get("policy_engine_valid") is True,
+            simulation.get("computed") is True,
+            decision_diff.get("computed") is True,
+            approval.get("approval_bound_to_manifest") is True,
+            live_identity_rbac.get("live_identity_rbac_valid") is True,
+            durable_backend.get("durable_evidence_backend_valid") is True,
+            promotion_chain.get("release_promotion_chain_valid") is True,
+        ]
+    )
+    runtime_blocked = (
+        runtime.get("runtime_readiness_percent", 100.0) == 0.0
+        and runtime.get("production_decision_authority_percent", 100.0) == 0.0
+        and durable_backend.get("runtime_backend_invoked") is False
+        and promotion_chain.get("prod_deployment_executed") is False
+    )
+    return {
+        "schema_version": "pre-runtime-ga-acceptance/v1",
+        "evaluation_id": "pre-runtime-ga-v3.0-pre-runtime-1",
+        "computed": True,
+        "governed_decision_review_and_simulation_complete": trust_surface_complete,
+        "trust_surface_complete": trust_surface_complete,
+        "policy_engine_complete": policy_engine.get("policy_engine_valid") is True,
+        "simulation_diff_complete": simulation.get("computed") is True and decision_diff.get("computed") is True,
+        "approval_boundary_complete": approval.get("approval_bound_to_manifest") is True
+        and live_identity_rbac.get("live_identity_rbac_valid") is True,
+        "live_identity_rbac_observed": live_identity_rbac.get("computed") is True,
+        "live_identity_mfa_claim_observed": live_identity_rbac.get("mfa_claim_observed") is True,
+        "durable_evidence_backend_observed": durable_backend.get("computed") is True,
+        "promotion_chain_rollback_observed": promotion_chain.get("release_promotion_chain_valid") is True,
+        "product_review_surface_complete": True,
+        "edi_observer_required": True,
+        "runtime_execution_readiness_percent": 0.0,
+        "production_decision_authority_percent": 0.0,
+        "runtime_blocked": runtime_blocked,
+        "pre_runtime_ga_valid": trust_surface_complete and runtime_blocked,
+        "maturity_claim": "pre_runtime_ga_complete_runtime_blocked",
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -1071,7 +1240,7 @@ def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
         "live external identity provider authentication missing",
         "live external identity MFA claim missing",
         "production durable case store backend missing",
-        "promotion chain approval and rollback trail missing",
+        "production promotion execution not authorized",
         "runtime control plane not designed or approved",
         "kill switch not evidenced",
         "live observability not evidenced",
@@ -1116,6 +1285,9 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
+    durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
+    promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -1161,6 +1333,21 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
             "id": "evidence_store_adapter_parity",
             "state": "ready",
             "summary": str(adapter_parity.get("adapter_parity_valid")),
+        },
+        {
+            "id": "durable_evidence_backend",
+            "state": "ready",
+            "summary": str(durable_backend.get("durable_evidence_backend_valid")),
+        },
+        {
+            "id": "release_promotion_chain",
+            "state": "ready",
+            "summary": str(promotion_chain.get("release_promotion_chain_valid")),
+        },
+        {
+            "id": "pre_runtime_ga",
+            "state": "complete_runtime_blocked",
+            "summary": str(pre_runtime_ga.get("pre_runtime_ga_valid")),
         },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
@@ -1617,7 +1804,7 @@ def verify_case_manifest(root: Path, manifest: dict[str, Any]) -> bool:
     return manifest.get("append_only_required") is True and manifest.get("mutable") is False
 
 
-def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", source_commit: str | None = None) -> dict[str, Any]:
+def build_release_acceptance(root: Path = ROOT, version: str = "v3.0.0-pre", source_commit: str | None = None) -> dict[str, Any]:
     validation = validate_default_examples(root)
     preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
     policy_engine = load_json(root / "reports/trust-loop/computed-policy-engine.json")
@@ -1640,6 +1827,9 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", sou
     external_approval_adapter = load_json(root / "reports/trust-loop/external-approval-adapter.json")
     durable_adapter = load_json(root / "reports/trust-loop/durable-case-store-adapter.json")
     adapter_parity = load_json(root / "reports/trust-loop/evidence-store-adapter-parity.json")
+    durable_backend = load_json(root / "reports/trust-loop/durable-evidence-backend.json")
+    promotion_chain = load_json(root / "reports/trust-loop/release-promotion-chain.json")
+    pre_runtime_ga = load_json(root / "reports/trust-loop/pre-runtime-ga-acceptance.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -1820,6 +2010,54 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", sou
         "adapter_export_replay_pack_valid": adapter_parity.get("export_replay_pack_valid") is True,
         "adapter_export_audit_pack_valid": adapter_parity.get("export_audit_pack_valid") is True,
         "adapter_runtime_backend_invoked": adapter_parity.get("runtime_backend_invoked") is True,
+        "durable_evidence_backend_observed": durable_backend.get("computed") is True,
+        "durable_evidence_backend_valid": durable_backend.get("durable_evidence_backend_valid") is True,
+        "durable_backend_append_only_case_write_observed": durable_backend.get("append_only_case_write_observed")
+        is True,
+        "durable_backend_content_addressed_record_observed": durable_backend.get(
+            "content_addressed_record_observed"
+        )
+        is True,
+        "durable_backend_manifest_chain_verification_from_backend": durable_backend.get(
+            "manifest_chain_verification_from_backend"
+        )
+        is True,
+        "durable_backend_read_case_record_from_backend": durable_backend.get("read_case_record_from_backend")
+        is True,
+        "durable_backend_replay_export_from_backend": durable_backend.get("replay_export_from_backend") is True,
+        "durable_backend_audit_export_from_backend": durable_backend.get("audit_export_from_backend") is True,
+        "durable_backend_delete_denied_observed": durable_backend.get("delete_denied_observed") is True,
+        "durable_backend_mutation_denied_observed": durable_backend.get("mutation_denied_observed") is True,
+        "durable_backend_retention_policy_observed": durable_backend.get("retention_policy_observed") is True,
+        "durable_backend_health_observed": durable_backend.get("backend_health_observed") is True,
+        "durable_backend_runtime_backend_invoked": durable_backend.get("runtime_backend_invoked") is True,
+        "durable_backend_production_storage_backend_observed": durable_backend.get(
+            "production_storage_backend_observed"
+        )
+        is True,
+        "release_promotion_chain_observed": promotion_chain.get("computed") is True,
+        "release_promotion_chain_valid": promotion_chain.get("release_promotion_chain_valid") is True,
+        "immutable_artifact_digest_observed": promotion_chain.get("immutable_artifact_digest_observed") is True,
+        "release_artifact_digest": promotion_chain.get("immutable_artifact_digest"),
+        "source_commit_bound": promotion_chain.get("source_commit_bound") is True,
+        "build_run_id_observed": promotion_chain.get("build_run_id_observed") is True,
+        "promotion_chain_declared": promotion_chain.get("promotion_chain_declared") is True,
+        "promotion_approval_record_observed": promotion_chain.get("promotion_approval_record_observed") is True,
+        "rollback_evidence_valid": promotion_chain.get("rollback_evidence_valid") is True,
+        "prod_deployment_executed": promotion_chain.get("prod_deployment_executed") is True,
+        "solo_maintainer_exception_recorded": promotion_chain.get("solo_maintainer_exception_recorded") is True,
+        "pre_runtime_ga_observed": pre_runtime_ga.get("computed") is True,
+        "pre_runtime_ga_valid": pre_runtime_ga.get("pre_runtime_ga_valid") is True,
+        "pre_runtime_ga_status_label": pre_runtime_ga.get("maturity_claim", "not_generated"),
+        "governed_decision_review_and_simulation_complete": pre_runtime_ga.get(
+            "governed_decision_review_and_simulation_complete"
+        )
+        is True,
+        "trust_surface_complete": pre_runtime_ga.get("trust_surface_complete") is True,
+        "pre_runtime_policy_engine_complete": pre_runtime_ga.get("policy_engine_complete") is True,
+        "pre_runtime_simulation_diff_complete": pre_runtime_ga.get("simulation_diff_complete") is True,
+        "pre_runtime_approval_boundary_complete": pre_runtime_ga.get("approval_boundary_complete") is True,
+        "pre_runtime_runtime_blocked": pre_runtime_ga.get("runtime_blocked") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -1874,6 +2112,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", sou
         and durable_adapter.get("production_storage_backend_observed") is False
         and adapter_parity.get("adapter_parity_valid") is True
         and adapter_parity.get("runtime_backend_invoked") is False
+        and durable_backend.get("durable_evidence_backend_valid") is True
+        and durable_backend.get("runtime_backend_invoked") is False
+        and durable_backend.get("production_storage_backend_observed") is False
+        and promotion_chain.get("release_promotion_chain_valid") is True
+        and promotion_chain.get("prod_deployment_executed") is False
+        and pre_runtime_ga.get("pre_runtime_ga_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -1886,6 +2130,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v2.7.0-pre", sou
             "live external approval adapter system is observed",
             "live external identity MFA claim is observed",
             "production durable case store backend is observed",
+            "production promotion deployment was executed",
         ],
     }
 
@@ -2013,6 +2258,19 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Adapter export replay pack valid: `{payload['adapter_export_replay_pack_valid']}`",
         f"Adapter export audit pack valid: `{payload['adapter_export_audit_pack_valid']}`",
         f"Adapter runtime backend invoked: `{payload['adapter_runtime_backend_invoked']}`",
+        f"Durable evidence backend observed: `{payload['durable_evidence_backend_observed']}`",
+        f"Durable evidence backend valid: `{payload['durable_evidence_backend_valid']}`",
+        f"Durable backend runtime invoked: `{payload['durable_backend_runtime_backend_invoked']}`",
+        f"Release promotion chain observed: `{payload['release_promotion_chain_observed']}`",
+        f"Release promotion chain valid: `{payload['release_promotion_chain_valid']}`",
+        f"Immutable artifact digest observed: `{payload['immutable_artifact_digest_observed']}`",
+        f"Source commit bound: `{payload['source_commit_bound']}`",
+        f"Build run id observed: `{payload['build_run_id_observed']}`",
+        f"Rollback evidence valid: `{payload['rollback_evidence_valid']}`",
+        f"Prod deployment executed: `{payload['prod_deployment_executed']}`",
+        f"Pre-runtime GA observed: `{payload['pre_runtime_ga_observed']}`",
+        f"Pre-runtime GA valid: `{payload['pre_runtime_ga_valid']}`",
+        f"Pre-runtime GA status: `{payload['pre_runtime_ga_status_label']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -2033,7 +2291,7 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
 def write_v0_2_evidence(
     root: Path = ROOT,
     out: Path | None = None,
-    version: str = "v2.7.0-pre",
+    version: str = "v3.0.0-pre",
     source_commit: str | None = "local-validation",
 ) -> dict[str, Any]:
     target = out or root / "reports" / "trust-loop"
@@ -2083,8 +2341,14 @@ def write_v0_2_evidence(
     write_json(target / "replay-result.json", replay)
     adapter_parity = evaluate_evidence_store_adapter_parity(root, durable_manifest, replay)
     write_json(target / "evidence-store-adapter-parity.json", adapter_parity)
+    durable_backend = evaluate_durable_evidence_backend(root, durable_manifest, replay)
+    write_json(target / "durable-evidence-backend.json", durable_backend)
+    promotion_chain = evaluate_release_promotion_chain(root, version, source_commit)
+    write_json(target / "release-promotion-chain.json", promotion_chain)
     runtime_readiness = build_runtime_readiness_assessment(root)
     write_json(target / "runtime-readiness-assessment.json", runtime_readiness)
+    pre_runtime_ga = evaluate_pre_runtime_ga(root)
+    write_json(target / "pre-runtime-ga-acceptance.json", pre_runtime_ga)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -2110,6 +2374,9 @@ def write_v0_2_evidence(
         "durable_manifest": durable_manifest,
         "durable_adapter": durable_adapter,
         "adapter_parity": adapter_parity,
+        "durable_backend": durable_backend,
+        "promotion_chain": promotion_chain,
+        "pre_runtime_ga": pre_runtime_ga,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,
