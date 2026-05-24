@@ -1,0 +1,48 @@
+{
+  "approval": {
+    "approval_required": true,
+    "approver_role": "support-platform-owner"
+  },
+  "consumer": {
+    "product_id": "engineering-governance",
+    "team": "engineering-governance"
+  },
+  "contract_id": "support-ticket-risk-context",
+  "contract_version": "1.0.0",
+  "fields": [
+    {
+      "field_id": "priority",
+      "masking_rule": "none"
+    },
+    {
+      "field_id": "customer_tier",
+      "masking_rule": "bucketed"
+    },
+    {
+      "field_id": "free_text_summary",
+      "masking_rule": "redact_pii"
+    }
+  ],
+  "freshness": {
+    "max_age_seconds": 3600,
+    "validity_rule": "source_case_manifest_hash_matches"
+  },
+  "lineage": {
+    "case_manifest_ref": "reports/trust-loop/durable-case-manifest.json",
+    "source_decision_id": "support-ticket-routing",
+    "source_product_id": "support-platform"
+  },
+  "policy_decision_evidence": {
+    "preflight_ref": "reports/trust-loop/computed-policy-preflight.json",
+    "result": "approval_required"
+  },
+  "producer": {
+    "product_id": "support-platform",
+    "team": "support-platform"
+  },
+  "purpose": "review-readiness-risk-context",
+  "runtime_context_exchange_authorized": false,
+  "schema_version": "shared-context-contract/v1",
+  "source_boundary": "governed_semantic_projection_not_direct_database_access",
+  "ttl_seconds": 86400
+}

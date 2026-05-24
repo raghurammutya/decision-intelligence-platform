@@ -1,0 +1,26 @@
+{
+  "assessment_id": "runtime-readiness-v2.0-pre-runtime-1",
+  "computed": true,
+  "durable_store_contract_valid": true,
+  "external_identity_contract_valid": true,
+  "live_external_identity_provider_authenticated": false,
+  "production_decision_authority_percent": 0.0,
+  "production_decision_execution_authorized": false,
+  "production_storage_backend_observed": false,
+  "runtime_blockers": [
+    "live external identity provider authentication missing",
+    "production durable case store backend missing",
+    "promotion chain approval and rollback trail missing",
+    "runtime control plane not designed or approved",
+    "kill switch not evidenced",
+    "live observability not evidenced",
+    "runtime entitlement enforcement not evidenced",
+    "runtime cost accounting not evidenced",
+    "independent runtime approval flow not evidenced",
+    "production-like replay evidence missing"
+  ],
+  "runtime_integration_authorized": false,
+  "runtime_readiness_percent": 0.0,
+  "schema_version": "runtime-readiness-assessment/v1",
+  "shared_context_contract_valid": true
+}

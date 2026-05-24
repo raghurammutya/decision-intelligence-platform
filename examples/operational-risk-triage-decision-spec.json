@@ -1,0 +1,84 @@
+{
+  "approval": {
+    "approver_roles": [
+      "risk-operations-owner"
+    ],
+    "required": true
+  },
+  "capability_requirements": [
+    {
+      "capability_id": "risk-signal-threshold-evaluator",
+      "version": "1.0.0"
+    }
+  ],
+  "decision_id": "operational-risk-triage",
+  "decision_logic": {
+    "summary": "Escalate cases with high loss exposure, stale evidence, or missing approval.",
+    "type": "rules"
+  },
+  "decision_version": "1.0.0",
+  "environment_scope": {
+    "allowed_environments": [
+      "dev",
+      "test"
+    ],
+    "production_allowed": false
+  },
+  "evidence_requirements": [
+    "risk-signal-evidence",
+    "policy-preflight",
+    "approval-record"
+  ],
+  "inputs": [
+    {
+      "input_id": "loss_exposure_usd",
+      "schema_ref": "schemas/operational-risk-input/v1"
+    },
+    {
+      "input_id": "evidence_fresh",
+      "schema_ref": "schemas/operational-risk-input/v1"
+    },
+    {
+      "input_id": "approval_observed",
+      "schema_ref": "schemas/operational-risk-input/v1"
+    }
+  ],
+  "intent": {
+    "source": "user_declared",
+    "summary": "Classify operational risk triage outcome before runtime use."
+  },
+  "name": "Operational Risk Triage",
+  "outputs": [
+    {
+      "output_id": "triage_outcome",
+      "schema_ref": "schemas/operational-risk-output/v1"
+    }
+  ],
+  "owner": {
+    "display_name": "Risk Operations",
+    "id": "risk-operations",
+    "type": "team"
+  },
+  "product_id": "dip-fixture",
+  "risk": {
+    "autonomy_mode": "observe",
+    "explainability_tier": 1,
+    "risk_tier": 3
+  },
+  "schema_version": "decision-spec/v1",
+  "side_effects": [
+    {
+      "mode": "simulation_only",
+      "side_effect_id": "risk-triage-label"
+    }
+  ],
+  "simulation": {
+    "case_set_requirements": [
+      "operational-risk-triage-cases"
+    ],
+    "required": true
+  },
+  "source_labels": [
+    "user_declared"
+  ]
+}

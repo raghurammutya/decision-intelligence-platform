@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 16,
+  "artifact_count": 21,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -15,7 +15,7 @@
     {
       "artifact_type": "capability_registry",
       "path": "examples/support-ticket-capability-registry.json",
-      "sha256": "ff65a54a86a7bec041673c4f68f0dc2805f7d5e0b25b9bb886dc1f3b98d09edb"
+      "sha256": "8108f06d8beccfdf8d690939133610c279b19c940ee295d674124a1098847711"
     },
     {
       "artifact_type": "policy_definitions",
@@ -25,7 +25,7 @@
     {
       "artifact_type": "identity_rbac_registry",
       "path": "examples/identity-rbac-registry.json",
-      "sha256": "ec847532a860c6dc8ddacfa15e6e2bd3fa7bd28d50c834d24909ee9336efccc4"
+      "sha256": "888b46ebd9b8396ab58b09a416945245416cd1bc7bcbaed79934e0225e71d39c"
     },
     {
       "artifact_type": "repository_governance_policy",
@@ -63,6 +63,21 @@
       "sha256": "2d56dbe2ab634c97de460e82fece019305112da728e41f39fb2dbd39db6ba0c8"
     },
     {
+      "artifact_type": "operational_risk_decision_spec",
+      "path": "examples/operational-risk-triage-decision-spec.json",
+      "sha256": "b4b467ba450496085736a937bbe9095ee82716bd1a737ebdc567dc8180843639"
+    },
+    {
+      "artifact_type": "operational_risk_case_set",
+      "path": "examples/operational-risk-triage-cases.json",
+      "sha256": "1a6870b03de0dad06da9d2d36ea576891f2bfc444598d18c24be642f1bfb97d6"
+    },
+    {
+      "artifact_type": "shared_context_contract",
+      "path": "examples/shared-context-contract.json",
+      "sha256": "b39d7e62287287e4c8994272a88accb572a397b3b7239ca61061a20294393dae"
+    },
+    {
       "artifact_type": "policy_preflight",
       "path": "reports/trust-loop/computed-policy-preflight.json",
       "sha256": "121100862d63252f726174a9e3d31c37e8431cb290f1fc077400acb4626f25be"
@@ -70,12 +85,22 @@
     {
       "artifact_type": "simulation",
       "path": "reports/trust-loop/computed-simulation-evidence.json",
-      "sha256": "9a8e3c6cba94ba9f28d243d773e762e6c718601165e3ac7591813d0eda173eb9"
+      "sha256": "c3cc927a45359fa46b936d148cb876518e65a6a01af07c53ee943a72f1dad0fa"
     },
     {
       "artifact_type": "decision_diff",
       "path": "reports/trust-loop/computed-decision-diff.json",
-      "sha256": "0374a60451b943b2bdabcc23df403f5adc706af6a356479974edc02dee038fac"
+      "sha256": "d378e3badf5ca0f8bd9e75995b427529902ab231de57441dd19ad18f18835191"
+    },
+    {
+      "artifact_type": "capability_governance",
+      "path": "reports/trust-loop/capability-governance.json",
+      "sha256": "044859a09debbf897b1e76a3d53656bc4ccbde95f286706567c924b5435690ff"
+    },
+    {
+      "artifact_type": "shared_context_governance",
+      "path": "reports/trust-loop/shared-context-governance.json",
+      "sha256": "38fd376993481cd206135f6a6de7c55afea8ece4fa6f20c4a0fb8967ef513af1"
     },
     {
       "artifact_type": "case_evidence",
@@ -85,11 +110,11 @@
   ],
   "case_id": "case-support-ticket-routing-1",
   "chain_valid": true,
-  "manifest_hash": "3f0d1c2b34d7ac5dd7a565d5a42c0b2b897222c4d1be259e8002d335d627f9de",
+  "manifest_hash": "cbc044fb7acef890f520c2cd98b5e310158a5f48e36849e30feeff5406d0ae36",
   "manifest_id": "durable-manifest-case-support-ticket-routing-1",
   "mutable": false,
   "mutation_detected": false,
-  "parent_manifest_hash": "1439dc146d2844a69a446f96dce6d4d34646ffc446350f77eefffd54efc74a81",
+  "parent_manifest_hash": "b515a2e269dd7908a2d983315cf96d9c5f0ed572653f29bbef0721fa624d2340",
   "schema_version": "durable-case-manifest/v1",
   "storage_mode": "append_only_manifest_chain"
 }

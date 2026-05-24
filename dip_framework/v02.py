@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import subprocess
 from pathlib import Path
@@ -24,9 +25,14 @@ ARTIFACTS = [
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
+    ("operational_risk_decision_spec", "examples/operational-risk-triage-decision-spec.json"),
+    ("operational_risk_case_set", "examples/operational-risk-triage-cases.json"),
+    ("shared_context_contract", "examples/shared-context-contract.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
     ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
+    ("capability_governance", "reports/trust-loop/capability-governance.json"),
+    ("shared_context_governance", "reports/trust-loop/shared-context-governance.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
 ]
 
@@ -206,6 +212,17 @@ def _engineering_review_readiness(spec: dict[str, Any], case: dict[str, Any]) ->
     return "ready_for_independent_review"
 
 
+def _operational_risk_triage(spec: dict[str, Any], case: dict[str, Any]) -> str:
+    inputs = case.get("inputs", {})
+    if inputs.get("approval_observed") is not True:
+        return "hold_for_approval"
+    if inputs.get("evidence_fresh") is not True:
+        return "hold_for_fresh_evidence"
+    if int(inputs.get("loss_exposure_usd", 0) or 0) >= 100000:
+        return "escalate_to_risk_owner"
+    return "standard_monitoring"
+
+
 def compute_simulation(root: Path = ROOT) -> dict[str, Any]:
     examples = root / "examples"
     baseline = load_json(examples / "support-ticket-routing-decision-spec-v0.9.0.json")
@@ -213,6 +230,8 @@ def compute_simulation(root: Path = ROOT) -> dict[str, Any]:
     support_cases = load_json(examples / "support-ticket-simulation-cases.json")
     engineering_spec = load_json(examples / "engineering-review-readiness-decision-spec.json")
     engineering_cases = load_json(examples / "engineering-review-readiness-cases.json")
+    operational_risk_spec = load_json(examples / "operational-risk-triage-decision-spec.json")
+    operational_risk_cases = load_json(examples / "operational-risk-triage-cases.json")
 
     support_results = []
     changed_outcome_count = 0
@@ -241,6 +260,16 @@ def compute_simulation(root: Path = ROOT) -> dict[str, Any]:
             }
         )
 
+    operational_risk_results = []
+    for case in operational_risk_cases.get("cases", []):
+        operational_risk_results.append(
+            {
+                "case_id": case.get("case_id"),
+                "decision_output": _operational_risk_triage(operational_risk_spec, case),
+                "side_effects_executed": False,
+            }
+        )
+
     return {
         "schema_version": "simulation-evidence/v1",
         "simulation_run_id": "computed-sim-v0.4-pre-runtime-1",
@@ -249,12 +278,13 @@ def compute_simulation(root: Path = ROOT) -> dict[str, Any]:
         "baseline_decision_version": baseline.get("decision_version"),
         "case_set": "v0.4-pre-runtime-cases",
         "computed": True,
-        "case_count": len(support_results) + len(engineering_results),
-        "domain_count": 2,
-        "decision_shape_count": 2,
+        "case_count": len(support_results) + len(engineering_results) + len(operational_risk_results),
+        "domain_count": 3,
+        "decision_shape_count": 3,
         "changed_outcome_count": changed_outcome_count,
         "support_ticket_results": support_results,
         "engineering_review_results": engineering_results,
+        "operational_risk_results": operational_risk_results,
         "policy_decisions": [{"preflight_id": "computed-preflight-support-ticket-routing-1", "result": "approval_required"}],
         "side_effects_requested": [{"side_effect_id": "queue-route", "executed": False}],
         "cost_delta": {"currency": "USD", "amount": 0},
@@ -313,6 +343,210 @@ def compute_decision_diff(root: Path = ROOT) -> dict[str, Any]:
         "simulation_case_count": simulation.get("case_count", 0),
         "runtime_execution_requested": False,
     }
+
+
+def evaluate_capability_governance(root: Path = ROOT) -> dict[str, Any]:
+    examples = root / "examples"
+    registry = load_json(examples / "support-ticket-capability-registry.json")
+    specs = [
+        load_json(examples / "support-ticket-routing-decision-spec.json"),
+        load_json(examples / "engineering-review-readiness-decision-spec.json"),
+        load_json(examples / "operational-risk-triage-decision-spec.json"),
+    ]
+    capabilities = {
+        f"{record.get('capability_id')}@{record.get('version')}": record
+        for record in registry.get("capabilities", [])
+    }
+    graph = []
+    missing = []
+    blocked = []
+    for spec in specs:
+        for requirement in spec.get("capability_requirements", []):
+            key = f"{requirement.get('capability_id')}@{requirement.get('version')}"
+            capability = capabilities.get(key)
+            if not capability:
+                missing.append(key)
+                continue
+            if capability.get("revocation_status") != "active":
+                blocked.append(key)
+            if capability.get("entitlement_status") != "entitled":
+                blocked.append(key)
+            if capability.get("compatibility_status") != "compatible":
+                blocked.append(key)
+            graph.append(
+                {
+                    "decision_id": spec.get("decision_id"),
+                    "capability_id": capability.get("capability_id"),
+                    "version": capability.get("version"),
+                    "trust_class": capability.get("trust_class"),
+                    "entitlement_status": capability.get("entitlement_status"),
+                    "compatibility_status": capability.get("compatibility_status"),
+                    "revocation_status": capability.get("revocation_status"),
+                    "evaluation_evidence_ref": capability.get("evaluation_evidence_ref"),
+                    "provenance": capability.get("provenance", {}),
+                    "cost_profile": capability.get("cost_profile", {}),
+                }
+            )
+    return {
+        "schema_version": "capability-governance-evaluation/v1",
+        "evaluation_id": "capability-governance-v1.4-pre-runtime-1",
+        "computed": True,
+        "registry_ref": "examples/support-ticket-capability-registry.json",
+        "decision_count": len(specs),
+        "capability_count": len(registry.get("capabilities", [])),
+        "resolved_capability_count": len(graph),
+        "capability_graph": graph,
+        "missing_capabilities": sorted(set(missing)),
+        "blocked_capabilities": sorted(set(blocked)),
+        "exact_versions_resolved": not missing,
+        "provenance_recorded": all(record.get("provenance") for record in graph),
+        "entitlements_recorded": all(record.get("entitlement_status") for record in graph),
+        "compatibility_recorded": all(record.get("compatibility_status") for record in graph),
+        "evaluation_evidence_recorded": all(record.get("evaluation_evidence_ref") for record in graph),
+        "cost_profiles_recorded": all(record.get("cost_profile") for record in graph),
+        "revoked_capabilities_blocked": not blocked,
+        "capability_governance_valid": not missing and not blocked and len(graph) >= 3,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_shared_context_governance(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/shared-context-contract.json")
+    fields = contract.get("fields", [])
+    lineage = contract.get("lineage", {})
+    freshness = contract.get("freshness", {})
+    policy = contract.get("policy_decision_evidence", {})
+    return {
+        "schema_version": "shared-context-governance-evaluation/v1",
+        "evaluation_id": "shared-context-v1.5-pre-runtime-1",
+        "computed": True,
+        "contract_ref": "examples/shared-context-contract.json",
+        "contract_id": contract.get("contract_id"),
+        "purpose_declared": bool(contract.get("purpose")),
+        "ttl_seconds": contract.get("ttl_seconds", 0),
+        "ttl_declared": int(contract.get("ttl_seconds", 0) or 0) > 0,
+        "masking_rules_declared": bool(fields) and all(field.get("masking_rule") for field in fields),
+        "approval_required": contract.get("approval", {}).get("approval_required") is True,
+        "source_lineage_declared": bool(lineage.get("source_decision_id")) and bool(lineage.get("case_manifest_ref")),
+        "freshness_rules_declared": bool(freshness.get("max_age_seconds")) and bool(freshness.get("validity_rule")),
+        "policy_decision_evidence_declared": bool(policy.get("preflight_ref")) and bool(policy.get("result")),
+        "producer_declared": bool(contract.get("producer", {}).get("product_id")),
+        "consumer_declared": bool(contract.get("consumer", {}).get("product_id")),
+        "direct_database_access_allowed": False,
+        "runtime_context_exchange_authorized": contract.get("runtime_context_exchange_authorized") is True,
+        "shared_context_contract_valid": bool(contract.get("purpose"))
+        and int(contract.get("ttl_seconds", 0) or 0) > 0
+        and bool(fields)
+        and all(field.get("masking_rule") for field in fields)
+        and contract.get("approval", {}).get("approval_required") is True
+        and bool(lineage.get("source_decision_id"))
+        and bool(lineage.get("case_manifest_ref"))
+        and bool(freshness.get("max_age_seconds"))
+        and bool(freshness.get("validity_rule"))
+        and bool(policy.get("preflight_ref"))
+        and contract.get("runtime_context_exchange_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
+    external_identity = load_json(root / "reports/trust-loop/external-identity.json")
+    durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
+    shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    blockers = [
+        "live external identity provider authentication missing",
+        "production durable case store backend missing",
+        "promotion chain approval and rollback trail missing",
+        "runtime control plane not designed or approved",
+        "kill switch not evidenced",
+        "live observability not evidenced",
+        "runtime entitlement enforcement not evidenced",
+        "runtime cost accounting not evidenced",
+        "independent runtime approval flow not evidenced",
+        "production-like replay evidence missing",
+    ]
+    return {
+        "schema_version": "runtime-readiness-assessment/v1",
+        "assessment_id": "runtime-readiness-v2.0-pre-runtime-1",
+        "computed": True,
+        "external_identity_contract_valid": external_identity.get("external_identity_contract_valid") is True,
+        "live_external_identity_provider_authenticated": external_identity.get("live_provider_authenticated") is True,
+        "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
+        "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
+        "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
+        "runtime_blockers": blockers,
+        "runtime_readiness_percent": 0.0,
+        "production_decision_authority_percent": 0.0,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
+    preflight = load_json(root / "reports/trust-loop/computed-policy-preflight.json")
+    simulation = load_json(root / "reports/trust-loop/computed-simulation-evidence.json")
+    decision_diff = load_json(root / "reports/trust-loop/computed-decision-diff.json")
+    approval = load_json(root / "reports/trust-loop/approval-record.json")
+    case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
+    replay = load_json(root / "reports/trust-loop/replay-result.json")
+    capability = load_json(root / "reports/trust-loop/capability-governance.json")
+    shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
+    surfaces = [
+        {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
+        {"id": "simulation_evidence", "state": "ready", "summary": f"{simulation.get('case_count')} cases"},
+        {"id": "decision_diff", "state": "ready", "summary": f"{decision_diff.get('changed_outcome_count')} changed outcomes"},
+        {"id": "approval_record", "state": "ready", "summary": approval.get("decision")},
+        {"id": "case_evidence", "state": "ready", "summary": case_evidence.get("storage_mode")},
+        {"id": "replay_evidence", "state": "ready", "summary": str(replay.get("manifest_replay_valid"))},
+        {"id": "capability_lineage", "state": "ready", "summary": f"{capability.get('resolved_capability_count')} capabilities"},
+        {"id": "shared_context", "state": "ready", "summary": shared_context.get("contract_id")},
+        {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
+    ]
+    return {
+        "schema_version": "product-review-surface/v1",
+        "surface_id": "dip-pre-runtime-review-workspace",
+        "computed": True,
+        "surface_count": len(surfaces),
+        "surfaces": surfaces,
+        "policy_preflight_result": preflight.get("result"),
+        "runtime_readiness_percent": runtime.get("runtime_readiness_percent"),
+        "production_decision_authority_percent": runtime.get("production_decision_authority_percent"),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def write_product_review_surface_html(path: Path, payload: dict[str, Any]) -> None:
+    items = "\n".join(
+        f"<tr><td>{html.escape(str(item['id']))}</td><td>{html.escape(str(item['state']))}</td>"
+        f"<td>{html.escape(str(item['summary']))}</td></tr>"
+        for item in payload.get("surfaces", [])
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "\n".join(
+            [
+                "<!doctype html>",
+                "<html lang=\"en\">",
+                "<head><meta charset=\"utf-8\"><title>DIP Review Workspace</title>",
+                "<style>body{font-family:system-ui,sans-serif;margin:32px;max-width:960px}"
+                "table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px}"
+                ".blocked{color:#8a1f11;font-weight:700}</style></head>",
+                "<body>",
+                "<h1>DIP Pre-Runtime Review Workspace</h1>",
+                "<p class=\"blocked\">Runtime integration and production decision authority are blocked.</p>",
+                "<table><thead><tr><th>Surface</th><th>State</th><th>Summary</th></tr></thead><tbody>",
+                items,
+                "</tbody></table>",
+                "</body></html>",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def build_case_manifest(root: Path = ROOT) -> dict[str, Any]:
@@ -676,6 +910,10 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     release_lifecycle = load_json(root / "reports/trust-loop/release-lifecycle.json")
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
+    capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
+    shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
+    product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
     manifest_valid = verify_case_manifest(root, manifest)
     durable_manifest_valid = verify_case_manifest(root, durable_manifest)
@@ -739,14 +977,24 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "durable_evidence_store_policy_observed": durable_store.get("computed") is True,
         "durable_store_contract_valid": durable_store.get("durable_store_contract_valid") is True,
         "production_storage_backend_observed": durable_store.get("production_storage_backend_observed") is True,
+        "capability_governance_observed": capability_governance.get("computed") is True,
+        "capability_governance_valid": capability_governance.get("capability_governance_valid") is True,
+        "resolved_capability_count": capability_governance.get("resolved_capability_count", 0),
+        "shared_context_contract_observed": shared_context.get("computed") is True,
+        "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
+        "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
+        "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
+        "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
+        "product_review_surface_observed": product_surface.get("computed") is True,
+        "product_review_surface_count": product_surface.get("surface_count", 0),
         "runtime_integration_authorized": False,
         "production_decision_execution_authorized": False,
         "release_acceptance_passed": validation["passed"]
         and preflight.get("computed") is True
         and simulation.get("computed") is True
         and decision_diff.get("computed") is True
-        and int(simulation.get("domain_count", 0) or 0) >= 2
-        and int(simulation.get("decision_shape_count", 0) or 0) >= 2
+        and int(simulation.get("domain_count", 0) or 0) >= 3
+        and int(simulation.get("decision_shape_count", 0) or 0) >= 3
         and durable_manifest_valid
         and durable_manifest.get("chain_valid") is True
         and durable_manifest.get("mutation_detected") is False
@@ -764,6 +1012,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and release_lifecycle.get("release_lifecycle_valid") is True
         and external_identity.get("external_identity_contract_valid") is True
         and durable_store.get("durable_store_contract_valid") is True
+        and capability_governance.get("capability_governance_valid") is True
+        and shared_context.get("shared_context_contract_valid") is True
+        and runtime_readiness.get("runtime_readiness_percent") == 0.0
+        and runtime_readiness.get("production_decision_authority_percent") == 0.0
+        and product_surface.get("surface_count", 0) >= 8
         and manifest_valid,
         "blocked_claims": [
             "runtime integration is authorized",
@@ -815,6 +1068,16 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Durable evidence store policy observed: `{payload['durable_evidence_store_policy_observed']}`",
         f"Durable store contract valid: `{payload['durable_store_contract_valid']}`",
         f"Production storage backend observed: `{payload['production_storage_backend_observed']}`",
+        f"Capability governance observed: `{payload['capability_governance_observed']}`",
+        f"Capability governance valid: `{payload['capability_governance_valid']}`",
+        f"Resolved capability count: `{payload['resolved_capability_count']}`",
+        f"Shared context contract observed: `{payload['shared_context_contract_observed']}`",
+        f"Shared context contract valid: `{payload['shared_context_contract_valid']}`",
+        f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
+        f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
+        f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
+        f"Product review surface observed: `{payload['product_review_surface_observed']}`",
+        f"Product review surface count: `{payload['product_review_surface_count']}`",
         f"Runtime integration authorized: `{payload['runtime_integration_authorized']}`",
         f"Production decision execution authorized: `{payload['production_decision_execution_authorized']}`",
         f"Release acceptance passed: `{payload['release_acceptance_passed']}`",
@@ -840,6 +1103,10 @@ def write_v0_2_evidence(
     write_json(target / "computed-simulation-evidence.json", simulation)
     decision_diff = compute_decision_diff(root)
     write_json(target / "computed-decision-diff.json", decision_diff)
+    capability_governance = evaluate_capability_governance(root)
+    write_json(target / "capability-governance.json", capability_governance)
+    shared_context = evaluate_shared_context_governance(root)
+    write_json(target / "shared-context-governance.json", shared_context)
     case_evidence = build_case_evidence()
     write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
@@ -860,6 +1127,11 @@ def write_v0_2_evidence(
     write_json(target / "approval-record.json", approval)
     replay = build_replay_result_from_manifest(root, durable_manifest)
     write_json(target / "replay-result.json", replay)
+    runtime_readiness = build_runtime_readiness_assessment(root)
+    write_json(target / "runtime-readiness-assessment.json", runtime_readiness)
+    product_surface = build_product_review_surface(root)
+    write_json(target / "product-review-surface.json", product_surface)
+    write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
     release_dir = root / "reports" / "release" / version
     release = build_release_acceptance(root, version, source_commit)
     write_json(release_dir / "release-acceptance.json", release)
@@ -868,6 +1140,10 @@ def write_v0_2_evidence(
         "preflight": preflight,
         "simulation": simulation,
         "decision_diff": decision_diff,
+        "capability_governance": capability_governance,
+        "shared_context": shared_context,
+        "runtime_readiness": runtime_readiness,
+        "product_surface": product_surface,
         "case_evidence": case_evidence,
         "manifest": manifest,
         "durable_manifest": durable_manifest,

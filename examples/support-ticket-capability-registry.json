@@ -12,7 +12,66 @@
       "output_contract": "schemas/normalized-priority/v1",
       "policy_dependencies": ["no-production-side-effects"],
       "evaluation_evidence_ref": "examples/support-ticket-simulation-evidence.json",
-      "checksum": "sha256:fixture"
+      "checksum": "sha256:fixture",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "entitlement_status": "entitled",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/support-ticket-capability-registry.json"
+      },
+      "revocation_status": "active"
+    },
+    {
+      "capability_id": "release-evidence-reader",
+      "version": "1.0.0",
+      "owner": "engineering-governance",
+      "capability_type": "connector",
+      "trust_class": "reviewed_fixture",
+      "risk_tier": 2,
+      "input_contract": "schemas/release-evidence/v1",
+      "output_contract": "schemas/review-readiness-output/v1",
+      "policy_dependencies": ["release-evidence-required"],
+      "evaluation_evidence_ref": "examples/engineering-review-readiness-cases.json",
+      "checksum": "sha256:fixture-release-reader",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "entitlement_status": "entitled",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/engineering-review-readiness-decision-spec.json"
+      },
+      "revocation_status": "active"
+    },
+    {
+      "capability_id": "risk-signal-threshold-evaluator",
+      "version": "1.0.0",
+      "owner": "risk-operations",
+      "capability_type": "scoring_logic",
+      "trust_class": "reviewed_fixture",
+      "risk_tier": 3,
+      "input_contract": "schemas/operational-risk-input/v1",
+      "output_contract": "schemas/operational-risk-output/v1",
+      "policy_dependencies": ["approval-required-for-risk-tier"],
+      "evaluation_evidence_ref": "examples/operational-risk-triage-cases.json",
+      "checksum": "sha256:fixture-risk-evaluator",
+      "compatibility_status": "compatible",
+      "cost_profile": {
+        "currency": "USD",
+        "unit_cost": 0
+      },
+      "entitlement_status": "entitled",
+      "provenance": {
+        "source": "dip-fixture",
+        "source_ref": "examples/operational-risk-triage-decision-spec.json"
+      },
+      "revocation_status": "active"
     }
   ]
 }

@@ -27,8 +27,8 @@
   "identities": [
     {
       "identity_id": "acct-support-platform-owner-001",
-      "subject": "support-platform-owner@example.invalid",
-      "display_name": "Support Platform Owner",
+      "subject": "Raghurammutya@gmail.com",
+      "display_name": "Raghurammutya",
       "roles": ["support-platform-owner"],
       "active": true,
       "valid_from": "2026-05-23T00:00:00Z",
