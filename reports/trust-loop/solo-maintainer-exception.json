@@ -1,0 +1,23 @@
+{
+  "applies_to": "temporary_required_review_count_relaxation_for_merge",
+  "computed": true,
+  "evaluation_id": "solo-maintainer-exception-v2.1-pre-runtime-1",
+  "exception_hash": "1cfd8014f6a4cf407c048d0bc22887b961967beb36553d5c9b1e3ba085c146a3",
+  "exception_id": "dip-solo-maintainer-review-relaxation",
+  "exception_valid": true,
+  "exception_version": "2.1.0-pre",
+  "independent_human_review_available": false,
+  "independent_human_review_observed": false,
+  "independent_review_claim_blocked": true,
+  "max_relaxation_minutes": 30,
+  "production_decision_execution_authorized": false,
+  "reason": "GitHub repository currently has one available maintainer, so independent GitHub reviewer assignment is unavailable.",
+  "required_controls_present": true,
+  "restored_protection_required": true,
+  "review_relaxation_allowed": true,
+  "runtime_claims_blocked": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "solo-maintainer-exception-evaluation/v1",
+  "solo_maintainer_constraint": true,
+  "source_boundary": "declared_governance_exception_not_independent_review_evidence"
+}

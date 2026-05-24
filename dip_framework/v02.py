@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from dip_framework.contracts import ROOT, load_json, validate_default_examples
+from dip_framework.contracts import ROOT, load_json, validate_default_examples, validate_file
 
 
 ARTIFACTS = [
@@ -22,6 +22,10 @@ ARTIFACTS = [
     ("release_lifecycle_policy", "examples/release-lifecycle-policy.json"),
     ("external_identity_evidence", "examples/external-identity-evidence.json"),
     ("durable_evidence_store_policy", "examples/durable-evidence-store-policy.json"),
+    ("solo_maintainer_governance_exception", "examples/solo-maintainer-governance-exception.json"),
+    ("schema_stability_policy", "examples/schema-stability-policy.json"),
+    ("negative_decision_spec_fixture", "examples/negative/decision-spec-production-allowed.json"),
+    ("negative_approval_fixture", "examples/negative/approval-ai-approved.json"),
     ("support_ticket_case_set", "examples/support-ticket-simulation-cases.json"),
     ("engineering_decision_spec", "examples/engineering-review-readiness-decision-spec.json"),
     ("engineering_case_set", "examples/engineering-review-readiness-cases.json"),
@@ -33,6 +37,8 @@ ARTIFACTS = [
     ("decision_diff", "reports/trust-loop/computed-decision-diff.json"),
     ("capability_governance", "reports/trust-loop/capability-governance.json"),
     ("shared_context_governance", "reports/trust-loop/shared-context-governance.json"),
+    ("solo_maintainer_exception", "reports/trust-loop/solo-maintainer-exception.json"),
+    ("schema_stability", "reports/trust-loop/schema-stability.json"),
     ("case_evidence", "reports/trust-loop/case-evidence.json"),
 ]
 
@@ -451,6 +457,133 @@ def evaluate_shared_context_governance(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_solo_maintainer_exception(root: Path = ROOT) -> dict[str, Any]:
+    exception = load_json(root / "examples/solo-maintainer-governance-exception.json")
+    controls = set(exception.get("required_controls", []))
+    required_controls = {
+        "ci_success_before_merge",
+        "before_branch_protection_capture",
+        "after_branch_protection_capture",
+        "immediate_review_gate_restoration",
+        "release_acceptance_artifact",
+        "edi_observation",
+    }
+    prohibited_claims = set(exception.get("prohibited_claims", []))
+    return {
+        "schema_version": "solo-maintainer-exception-evaluation/v1",
+        "evaluation_id": "solo-maintainer-exception-v2.1-pre-runtime-1",
+        "computed": True,
+        "exception_id": exception.get("exception_id"),
+        "exception_version": exception.get("exception_version"),
+        "exception_hash": _sha256(root / "examples/solo-maintainer-governance-exception.json"),
+        "source_boundary": exception.get("source_boundary"),
+        "reason": exception.get("reason"),
+        "applies_to": exception.get("applies_to"),
+        "solo_maintainer_constraint": exception.get("solo_maintainer_constraint") is True,
+        "independent_human_review_available": exception.get("independent_human_review_available") is True,
+        "independent_human_review_observed": exception.get("independent_human_review_observed") is True,
+        "review_relaxation_allowed": exception.get("review_relaxation_allowed") is True,
+        "max_relaxation_minutes": exception.get("max_relaxation_minutes", 0),
+        "required_controls_present": required_controls.issubset(controls),
+        "restored_protection_required": exception.get("restored_protection_required") is True,
+        "independent_review_claim_blocked": "independent_human_review_observed" in prohibited_claims
+        and exception.get("independent_human_review_observed") is False,
+        "runtime_claims_blocked": {"production_runtime_readiness", "production_decision_authority"}.issubset(
+            prohibited_claims
+        ),
+        "exception_valid": exception.get("solo_maintainer_constraint") is True
+        and exception.get("independent_human_review_available") is False
+        and exception.get("independent_human_review_observed") is False
+        and exception.get("review_relaxation_allowed") is True
+        and int(exception.get("max_relaxation_minutes", 0) or 0) <= 30
+        and required_controls.issubset(controls)
+        and exception.get("restored_protection_required") is True
+        and exception.get("runtime_integration_authorized") is False
+        and exception.get("production_decision_execution_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_schema_stability(root: Path = ROOT) -> dict[str, Any]:
+    policy = load_json(root / "examples/schema-stability-policy.json")
+    examples = root / "examples"
+    example_paths = {
+        "decision_spec": examples / "support-ticket-routing-decision-spec.json",
+        "capability_registry": examples / "support-ticket-capability-registry.json",
+        "policy_definitions": examples / "support-ticket-policy-definitions.json",
+        "preflight": examples / "support-ticket-policy-preflight.json",
+        "simulation": examples / "support-ticket-simulation-evidence.json",
+        "decision_diff": examples / "support-ticket-decision-diff.json",
+        "approval": examples / "support-ticket-approval-record.json",
+        "identity_rbac_registry": examples / "identity-rbac-registry.json",
+        "repository_governance_policy": examples / "repository-governance-policy.json",
+        "release_lifecycle_policy": examples / "release-lifecycle-policy.json",
+        "external_identity_evidence": examples / "external-identity-evidence.json",
+        "durable_evidence_store_policy": examples / "durable-evidence-store-policy.json",
+        "shared_context_contract": examples / "shared-context-contract.json",
+        "case_evidence": examples / "support-ticket-case-evidence.json",
+        "replay": examples / "support-ticket-replay-result.json",
+        "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
+    }
+    frozen_results = []
+    for contract in policy.get("frozen_contracts", []):
+        kind = str(contract.get("kind", ""))
+        path = example_paths.get(kind)
+        observed = load_json(path).get("schema_version") if path and path.exists() else None
+        frozen_results.append(
+            {
+                "kind": kind,
+                "expected_schema_version": contract.get("schema_version"),
+                "observed_schema_version": observed,
+                "matches": observed == contract.get("schema_version"),
+            }
+        )
+
+    negative_results = []
+    for fixture in policy.get("negative_fixtures", []):
+        result = validate_file(str(fixture.get("kind")), root / str(fixture.get("path")))
+        expected = str(fixture.get("expected_error_contains", ""))
+        errors = result.get("errors", [])
+        negative_results.append(
+            {
+                "kind": fixture.get("kind"),
+                "path": fixture.get("path"),
+                "passed_negative_check": result.get("passed") is False and any(expected in error for error in errors),
+                "expected_error_contains": expected,
+                "errors": errors,
+            }
+        )
+
+    return {
+        "schema_version": "schema-stability-evaluation/v1",
+        "evaluation_id": "schema-stability-v2.1-pre-runtime-1",
+        "computed": True,
+        "policy_id": policy.get("policy_id"),
+        "policy_version": policy.get("policy_version"),
+        "policy_hash": _sha256(root / "examples/schema-stability-policy.json"),
+        "source_boundary": policy.get("source_boundary"),
+        "frozen_contract_count": len(policy.get("frozen_contracts", [])),
+        "frozen_contracts": frozen_results,
+        "frozen_contracts_valid": bool(frozen_results) and all(item["matches"] for item in frozen_results),
+        "compatibility_rule_count": len(policy.get("compatibility_rules", [])),
+        "compatibility_rules_declared": bool(policy.get("compatibility_rules")),
+        "negative_fixture_count": len(policy.get("negative_fixtures", [])),
+        "negative_fixtures": negative_results,
+        "negative_fixtures_valid": bool(negative_results)
+        and all(item["passed_negative_check"] for item in negative_results),
+        "schema_stability_valid": bool(frozen_results)
+        and all(item["matches"] for item in frozen_results)
+        and bool(policy.get("compatibility_rules"))
+        and bool(negative_results)
+        and all(item["passed_negative_check"] for item in negative_results)
+        and policy.get("runtime_integration_authorized") is False
+        and policy.get("production_decision_execution_authorized") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
@@ -493,6 +626,8 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
     replay = load_json(root / "reports/trust-loop/replay-result.json")
     capability = load_json(root / "reports/trust-loop/capability-governance.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     runtime = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     surfaces = [
         {"id": "decision_review", "state": "ready", "summary": case_evidence.get("decision_id")},
@@ -503,6 +638,16 @@ def build_product_review_surface(root: Path = ROOT) -> dict[str, Any]:
         {"id": "replay_evidence", "state": "ready", "summary": str(replay.get("manifest_replay_valid"))},
         {"id": "capability_lineage", "state": "ready", "summary": f"{capability.get('resolved_capability_count')} capabilities"},
         {"id": "shared_context", "state": "ready", "summary": shared_context.get("contract_id")},
+        {
+            "id": "solo_maintainer_exception",
+            "state": "exception_recorded",
+            "summary": str(solo_exception.get("exception_valid")),
+        },
+        {
+            "id": "schema_stability",
+            "state": "ready",
+            "summary": f"{schema_stability.get('frozen_contract_count')} frozen contracts",
+        },
         {"id": "runtime_readiness", "state": "blocked", "summary": "runtime authority blocked"},
     ]
     return {
@@ -912,6 +1057,8 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -982,6 +1129,20 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "resolved_capability_count": capability_governance.get("resolved_capability_count", 0),
         "shared_context_contract_observed": shared_context.get("computed") is True,
         "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
+        "solo_maintainer_exception_observed": solo_exception.get("computed") is True,
+        "solo_maintainer_exception_valid": solo_exception.get("exception_valid") is True,
+        "solo_maintainer_constraint": solo_exception.get("solo_maintainer_constraint") is True,
+        "independent_human_review_available": solo_exception.get("independent_human_review_available") is True,
+        "independent_human_review_observed": solo_exception.get("independent_human_review_observed") is True,
+        "review_relaxation_allowed": solo_exception.get("review_relaxation_allowed") is True,
+        "review_relaxation_max_minutes": solo_exception.get("max_relaxation_minutes", 0),
+        "review_gate_restoration_required": solo_exception.get("restored_protection_required") is True,
+        "schema_stability_observed": schema_stability.get("computed") is True,
+        "schema_stability_valid": schema_stability.get("schema_stability_valid") is True,
+        "frozen_contract_count": schema_stability.get("frozen_contract_count", 0),
+        "compatibility_rule_count": schema_stability.get("compatibility_rule_count", 0),
+        "negative_fixture_count": schema_stability.get("negative_fixture_count", 0),
+        "negative_fixtures_valid": schema_stability.get("negative_fixtures_valid") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -1014,6 +1175,9 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         and durable_store.get("durable_store_contract_valid") is True
         and capability_governance.get("capability_governance_valid") is True
         and shared_context.get("shared_context_contract_valid") is True
+        and solo_exception.get("exception_valid") is True
+        and solo_exception.get("independent_human_review_observed") is False
+        and schema_stability.get("schema_stability_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 8
@@ -1021,6 +1185,7 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v0.2.0-pre", sou
         "blocked_claims": [
             "runtime integration is authorized",
             "production decision execution is authorized",
+            "independent human review was observed for solo-maintainer merges",
         ],
     }
 
@@ -1073,6 +1238,20 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"Resolved capability count: `{payload['resolved_capability_count']}`",
         f"Shared context contract observed: `{payload['shared_context_contract_observed']}`",
         f"Shared context contract valid: `{payload['shared_context_contract_valid']}`",
+        f"Solo-maintainer exception observed: `{payload['solo_maintainer_exception_observed']}`",
+        f"Solo-maintainer exception valid: `{payload['solo_maintainer_exception_valid']}`",
+        f"Solo-maintainer constraint: `{payload['solo_maintainer_constraint']}`",
+        f"Independent human review available: `{payload['independent_human_review_available']}`",
+        f"Independent human review observed: `{payload['independent_human_review_observed']}`",
+        f"Review relaxation allowed: `{payload['review_relaxation_allowed']}`",
+        f"Review relaxation max minutes: `{payload['review_relaxation_max_minutes']}`",
+        f"Review gate restoration required: `{payload['review_gate_restoration_required']}`",
+        f"Schema stability observed: `{payload['schema_stability_observed']}`",
+        f"Schema stability valid: `{payload['schema_stability_valid']}`",
+        f"Frozen contract count: `{payload['frozen_contract_count']}`",
+        f"Compatibility rule count: `{payload['compatibility_rule_count']}`",
+        f"Negative fixture count: `{payload['negative_fixture_count']}`",
+        f"Negative fixtures valid: `{payload['negative_fixtures_valid']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -1107,6 +1286,10 @@ def write_v0_2_evidence(
     write_json(target / "capability-governance.json", capability_governance)
     shared_context = evaluate_shared_context_governance(root)
     write_json(target / "shared-context-governance.json", shared_context)
+    solo_exception = evaluate_solo_maintainer_exception(root)
+    write_json(target / "solo-maintainer-exception.json", solo_exception)
+    schema_stability = evaluate_schema_stability(root)
+    write_json(target / "schema-stability.json", schema_stability)
     case_evidence = build_case_evidence()
     write_json(target / "case-evidence.json", case_evidence)
     manifest = build_case_manifest(root)
@@ -1142,6 +1325,8 @@ def write_v0_2_evidence(
         "decision_diff": decision_diff,
         "capability_governance": capability_governance,
         "shared_context": shared_context,
+        "solo_exception": solo_exception,
+        "schema_stability": schema_stability,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "case_evidence": case_evidence,

@@ -15,6 +15,8 @@
     "evaluate_durable_evidence_store_contract",
     "evaluate_capability_governance",
     "evaluate_shared_context_contract",
+    "evaluate_solo_maintainer_exception",
+    "evaluate_schema_stability",
     "assess_runtime_readiness",
     "materialize_product_review_surface",
     "write_case_evidence",

@@ -1,0 +1,10 @@
+{
+  "schema_version": "approval-record/v1",
+  "approval_id": "negative-ai-approval",
+  "decision_id": "negative-production-decision",
+  "decision_version": "0.0.0-negative",
+  "approver_identity": "acct-dip-autopilot-001",
+  "decision": "approved",
+  "approval_reason": "Negative fixture proving AI approval is rejected.",
+  "ai_approved": true
+}

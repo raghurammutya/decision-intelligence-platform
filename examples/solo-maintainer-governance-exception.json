@@ -1,0 +1,29 @@
+{
+  "schema_version": "solo-maintainer-governance-exception/v1",
+  "exception_id": "dip-solo-maintainer-review-relaxation",
+  "exception_version": "2.1.0-pre",
+  "source_boundary": "declared_governance_exception_not_independent_review_evidence",
+  "reason": "GitHub repository currently has one available maintainer, so independent GitHub reviewer assignment is unavailable.",
+  "applies_to": "temporary_required_review_count_relaxation_for_merge",
+  "solo_maintainer_constraint": true,
+  "independent_human_review_available": false,
+  "independent_human_review_observed": false,
+  "review_relaxation_allowed": true,
+  "max_relaxation_minutes": 30,
+  "required_controls": [
+    "ci_success_before_merge",
+    "before_branch_protection_capture",
+    "after_branch_protection_capture",
+    "immediate_review_gate_restoration",
+    "release_acceptance_artifact",
+    "edi_observation"
+  ],
+  "prohibited_claims": [
+    "independent_human_review_observed",
+    "production_runtime_readiness",
+    "production_decision_authority"
+  ],
+  "restored_protection_required": true,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

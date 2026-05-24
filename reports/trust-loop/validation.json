@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 15,
-  "record_count": 15,
+  "passed_count": 17,
+  "record_count": 17,
   "records": [
     {
       "errors": [],
@@ -74,6 +74,18 @@
       "kind": "durable_evidence_store_policy",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/durable-evidence-store-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "solo_maintainer_governance_exception",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/solo-maintainer-governance-exception.json"
+    },
+    {
+      "errors": [],
+      "kind": "schema_stability_policy",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/schema-stability-policy.json"
     },
     {
       "errors": [],

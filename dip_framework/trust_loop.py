@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v2.0.0-pre")
+    write_v0_2_evidence(root, version="v2.1.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -33,6 +33,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     durable_store = load_json(root / "reports/trust-loop/durable-evidence-store.json")
     capability_governance = load_json(root / "reports/trust-loop/capability-governance.json")
     shared_context = load_json(root / "reports/trust-loop/shared-context-governance.json")
+    solo_exception = load_json(root / "reports/trust-loop/solo-maintainer-exception.json")
+    schema_stability = load_json(root / "reports/trust-loop/schema-stability.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -55,6 +57,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_durable_evidence_store_contract",
             "evaluate_capability_governance",
             "evaluate_shared_context_contract",
+            "evaluate_solo_maintainer_exception",
+            "evaluate_schema_stability",
             "assess_runtime_readiness",
             "materialize_product_review_surface",
             "write_case_evidence",
@@ -101,6 +105,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "capability_governance_valid": capability_governance.get("capability_governance_valid") is True,
         "shared_context_contract_observed": shared_context.get("computed") is True,
         "shared_context_contract_valid": shared_context.get("shared_context_contract_valid") is True,
+        "solo_maintainer_exception_observed": solo_exception.get("computed") is True,
+        "solo_maintainer_exception_valid": solo_exception.get("exception_valid") is True,
+        "independent_human_review_observed": solo_exception.get("independent_human_review_observed") is True,
+        "schema_stability_observed": schema_stability.get("computed") is True,
+        "schema_stability_valid": schema_stability.get("schema_stability_valid") is True,
+        "negative_fixtures_valid": schema_stability.get("negative_fixtures_valid") is True,
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,
@@ -110,6 +120,7 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "blocked_claims": [
             "runtime integration is authorized",
             "production decision execution is authorized",
+            "independent human review was observed for solo-maintainer merges",
         ],
     }
     return {
@@ -128,6 +139,8 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "durable_store": durable_store,
         "capability_governance": capability_governance,
         "shared_context": shared_context,
+        "solo_exception": solo_exception,
+        "schema_stability": schema_stability,
         "runtime_readiness": runtime_readiness,
         "product_surface": product_surface,
         "replay_result": replay_result,
@@ -153,6 +166,8 @@ def write_trust_loop(out: Path, root: Path = ROOT) -> dict[str, Any]:
     write_json(out / "durable-evidence-store.json", payload["durable_store"])
     write_json(out / "capability-governance.json", payload["capability_governance"])
     write_json(out / "shared-context-governance.json", payload["shared_context"])
+    write_json(out / "solo-maintainer-exception.json", payload["solo_exception"])
+    write_json(out / "schema-stability.json", payload["schema_stability"])
     write_json(out / "runtime-readiness-assessment.json", payload["runtime_readiness"])
     write_json(out / "product-review-surface.json", payload["product_surface"])
     write_json(out / "replay-result.json", payload["replay_result"])

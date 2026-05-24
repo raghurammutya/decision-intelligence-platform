@@ -147,6 +147,35 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "solo_maintainer_governance_exception": [
+        "schema_version",
+        "exception_id",
+        "exception_version",
+        "source_boundary",
+        "reason",
+        "applies_to",
+        "solo_maintainer_constraint",
+        "independent_human_review_available",
+        "independent_human_review_observed",
+        "review_relaxation_allowed",
+        "max_relaxation_minutes",
+        "required_controls",
+        "prohibited_claims",
+        "restored_protection_required",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "schema_stability_policy": [
+        "schema_version",
+        "policy_id",
+        "policy_version",
+        "source_boundary",
+        "frozen_contracts",
+        "compatibility_rules",
+        "negative_fixtures",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "shared_context_contract": [
         "schema_version",
         "contract_id",
@@ -258,6 +287,34 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("durable evidence store policy must require append-only contract")
         if payload.get("runtime_integration_authorized") is not False:
             errors.append("durable evidence store policy cannot authorize runtime integration")
+    if kind == "solo_maintainer_governance_exception":
+        if payload.get("solo_maintainer_constraint") is not True:
+            errors.append("solo-maintainer exception must declare the solo maintainer constraint")
+        if payload.get("independent_human_review_available") is not False:
+            errors.append("solo-maintainer exception cannot claim independent review availability")
+        if payload.get("independent_human_review_observed") is not False:
+            errors.append("solo-maintainer exception cannot claim independent human review")
+        if payload.get("review_relaxation_allowed") is not True:
+            errors.append("solo-maintainer exception must explicitly allow temporary review relaxation")
+        if int(payload.get("max_relaxation_minutes", 0) or 0) <= 0:
+            errors.append("solo-maintainer exception must declare a positive max relaxation window")
+        if payload.get("restored_protection_required") is not True:
+            errors.append("solo-maintainer exception must require restored protection")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("solo-maintainer exception cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("solo-maintainer exception cannot authorize production decisions")
+    if kind == "schema_stability_policy":
+        if not payload.get("frozen_contracts"):
+            errors.append("schema stability policy must freeze at least one contract")
+        if not payload.get("compatibility_rules"):
+            errors.append("schema stability policy must declare compatibility rules")
+        if not payload.get("negative_fixtures"):
+            errors.append("schema stability policy must declare negative fixtures")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("schema stability policy cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("schema stability policy cannot authorize production decisions")
     if kind == "shared_context_contract":
         if payload.get("runtime_context_exchange_authorized") is not False:
             errors.append("shared context contract cannot authorize runtime exchange")
@@ -298,6 +355,8 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "release_lifecycle_policy": examples / "release-lifecycle-policy.json",
         "external_identity_evidence": examples / "external-identity-evidence.json",
         "durable_evidence_store_policy": examples / "durable-evidence-store-policy.json",
+        "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
+        "schema_stability_policy": examples / "schema-stability-policy.json",
         "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",

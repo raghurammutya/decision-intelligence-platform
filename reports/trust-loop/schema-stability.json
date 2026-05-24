@@ -1,0 +1,136 @@
+{
+  "compatibility_rule_count": 5,
+  "compatibility_rules_declared": true,
+  "computed": true,
+  "evaluation_id": "schema-stability-v2.1-pre-runtime-1",
+  "frozen_contract_count": 16,
+  "frozen_contracts": [
+    {
+      "expected_schema_version": "decision-spec/v1",
+      "kind": "decision_spec",
+      "matches": true,
+      "observed_schema_version": "decision-spec/v1"
+    },
+    {
+      "expected_schema_version": "capability-registry/v1",
+      "kind": "capability_registry",
+      "matches": true,
+      "observed_schema_version": "capability-registry/v1"
+    },
+    {
+      "expected_schema_version": "policy-definitions/v1",
+      "kind": "policy_definitions",
+      "matches": true,
+      "observed_schema_version": "policy-definitions/v1"
+    },
+    {
+      "expected_schema_version": "policy-preflight/v1",
+      "kind": "preflight",
+      "matches": true,
+      "observed_schema_version": "policy-preflight/v1"
+    },
+    {
+      "expected_schema_version": "simulation-evidence/v1",
+      "kind": "simulation",
+      "matches": true,
+      "observed_schema_version": "simulation-evidence/v1"
+    },
+    {
+      "expected_schema_version": "decision-diff/v1",
+      "kind": "decision_diff",
+      "matches": true,
+      "observed_schema_version": "decision-diff/v1"
+    },
+    {
+      "expected_schema_version": "approval-record/v1",
+      "kind": "approval",
+      "matches": true,
+      "observed_schema_version": "approval-record/v1"
+    },
+    {
+      "expected_schema_version": "identity-rbac-registry/v1",
+      "kind": "identity_rbac_registry",
+      "matches": true,
+      "observed_schema_version": "identity-rbac-registry/v1"
+    },
+    {
+      "expected_schema_version": "repository-governance-policy/v1",
+      "kind": "repository_governance_policy",
+      "matches": true,
+      "observed_schema_version": "repository-governance-policy/v1"
+    },
+    {
+      "expected_schema_version": "release-lifecycle-policy/v1",
+      "kind": "release_lifecycle_policy",
+      "matches": true,
+      "observed_schema_version": "release-lifecycle-policy/v1"
+    },
+    {
+      "expected_schema_version": "external-identity-evidence/v1",
+      "kind": "external_identity_evidence",
+      "matches": true,
+      "observed_schema_version": "external-identity-evidence/v1"
+    },
+    {
+      "expected_schema_version": "durable-evidence-store-policy/v1",
+      "kind": "durable_evidence_store_policy",
+      "matches": true,
+      "observed_schema_version": "durable-evidence-store-policy/v1"
+    },
+    {
+      "expected_schema_version": "shared-context-contract/v1",
+      "kind": "shared_context_contract",
+      "matches": true,
+      "observed_schema_version": "shared-context-contract/v1"
+    },
+    {
+      "expected_schema_version": "case-evidence-pack/v1",
+      "kind": "case_evidence",
+      "matches": true,
+      "observed_schema_version": "case-evidence-pack/v1"
+    },
+    {
+      "expected_schema_version": "replay-result/v1",
+      "kind": "replay",
+      "matches": true,
+      "observed_schema_version": "replay-result/v1"
+    },
+    {
+      "expected_schema_version": "solo-maintainer-governance-exception/v1",
+      "kind": "solo_maintainer_governance_exception",
+      "matches": true,
+      "observed_schema_version": "solo-maintainer-governance-exception/v1"
+    }
+  ],
+  "frozen_contracts_valid": true,
+  "negative_fixture_count": 2,
+  "negative_fixtures": [
+    {
+      "errors": [
+        "decision spec production_allowed must be false for the first wedge"
+      ],
+      "expected_error_contains": "production_allowed must be false",
+      "kind": "decision_spec",
+      "passed_negative_check": true,
+      "path": "examples/negative/decision-spec-production-allowed.json"
+    },
+    {
+      "errors": [
+        "approval cannot be AI-approved"
+      ],
+      "expected_error_contains": "approval cannot be AI-approved",
+      "kind": "approval",
+      "passed_negative_check": true,
+      "path": "examples/negative/approval-ai-approved.json"
+    }
+  ],
+  "negative_fixtures_valid": true,
+  "policy_hash": "79038be8cfe30d812d3448c6e45574ac04dcabf44909f57531cd499ea0942a8d",
+  "policy_id": "dip-schema-stability",
+  "policy_version": "2.1.0-pre",
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_stability_valid": true,
+  "schema_version": "schema-stability-evaluation/v1",
+  "source_boundary": "declared_schema_stability_policy_not_runtime_execution"
+}

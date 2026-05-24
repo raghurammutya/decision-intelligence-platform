@@ -119,6 +119,35 @@ not fixture or contract evidence:
 - independent approval flow
 - replay against production-like evidence
 
+### v2.1 Governance Exception and Schema Stability
+
+Purpose: keep the solo-maintainer GitHub workaround governed and prevent
+contract drift while the platform remains pre-runtime.
+
+The current GitHub repository has one available maintainer. Because GitHub
+cannot provide independent reviewer assignment in that state, DIP may continue
+to use a temporary review-count relaxation only as a governed exception.
+
+Required exception evidence:
+
+- solo-maintainer constraint declared
+- independent human review availability declared false
+- independent human review observation declared false
+- CI success required before merge
+- branch protection captured before and after relaxation
+- review gate restored immediately after merge
+- release acceptance artifact generated
+- EDI observation required
+- runtime and production authority remain blocked
+
+Required schema stability evidence:
+
+- frozen schema versions for every first-wedge contract
+- explicit compatibility rules
+- negative fixtures for blocked production authority and AI approval
+- validation that negative fixtures continue to fail
+- runtime authority remains explicit and denied by default
+
 ## Completion Gate
 
 The current phase is complete only if:
