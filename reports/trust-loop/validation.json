@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 17,
-  "record_count": 17,
+  "passed_count": 18,
+  "record_count": 18,
   "records": [
     {
       "errors": [],
@@ -86,6 +86,12 @@
       "kind": "schema_stability_policy",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/schema-stability-policy.json"
+    },
+    {
+      "errors": [],
+      "kind": "external_approval_boundary",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/external-approval-boundary.json"
     },
     {
       "errors": [],

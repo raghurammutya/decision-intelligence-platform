@@ -176,6 +176,29 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "external_approval_boundary": [
+        "schema_version",
+        "boundary_id",
+        "boundary_version",
+        "source_boundary",
+        "purpose",
+        "approval_system_type",
+        "live_approval_system_observed",
+        "github_code_review_is_decision_approval",
+        "solo_maintainer_exception_is_decision_approval",
+        "decision_approval_required",
+        "decision_approval_source",
+        "approval_subject_binding_required",
+        "approval_role_scope_required",
+        "approval_expiry_required",
+        "approval_mfa_required",
+        "approval_audit_export_required",
+        "ai_approval_allowed",
+        "required_evidence",
+        "admission_controls",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
     "shared_context_contract": [
         "schema_version",
         "contract_id",
@@ -315,6 +338,31 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("schema stability policy cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("schema stability policy cannot authorize production decisions")
+    if kind == "external_approval_boundary":
+        if payload.get("github_code_review_is_decision_approval") is not False:
+            errors.append("external approval boundary cannot treat GitHub review as decision approval")
+        if payload.get("solo_maintainer_exception_is_decision_approval") is not False:
+            errors.append("external approval boundary cannot treat solo-maintainer exception as decision approval")
+        if payload.get("decision_approval_required") is not True:
+            errors.append("external approval boundary must require decision approval")
+        if payload.get("approval_subject_binding_required") is not True:
+            errors.append("external approval boundary must require subject binding")
+        if payload.get("approval_role_scope_required") is not True:
+            errors.append("external approval boundary must require role and scope")
+        if payload.get("approval_mfa_required") is not True:
+            errors.append("external approval boundary must require MFA")
+        if payload.get("approval_audit_export_required") is not True:
+            errors.append("external approval boundary must require audit export")
+        if payload.get("ai_approval_allowed") is not False:
+            errors.append("external approval boundary cannot allow AI approval")
+        if not payload.get("required_evidence"):
+            errors.append("external approval boundary must declare required evidence")
+        if not payload.get("admission_controls"):
+            errors.append("external approval boundary must declare admission controls")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("external approval boundary cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("external approval boundary cannot authorize production decisions")
     if kind == "shared_context_contract":
         if payload.get("runtime_context_exchange_authorized") is not False:
             errors.append("shared context contract cannot authorize runtime exchange")
@@ -357,6 +405,7 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "durable_evidence_store_policy": examples / "durable-evidence-store-policy.json",
         "solo_maintainer_governance_exception": examples / "solo-maintainer-governance-exception.json",
         "schema_stability_policy": examples / "schema-stability-policy.json",
+        "external_approval_boundary": examples / "external-approval-boundary.json",
         "shared_context_contract": examples / "shared-context-contract.json",
         "case_evidence": examples / "support-ticket-case-evidence.json",
         "replay": examples / "support-ticket-replay-result.json",

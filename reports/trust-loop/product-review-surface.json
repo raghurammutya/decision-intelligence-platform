@@ -6,7 +6,7 @@
   "runtime_integration_authorized": false,
   "runtime_readiness_percent": 0.0,
   "schema_version": "product-review-surface/v1",
-  "surface_count": 11,
+  "surface_count": 12,
   "surface_id": "dip-pre-runtime-review-workspace",
   "surfaces": [
     {
@@ -57,7 +57,12 @@
     {
       "id": "schema_stability",
       "state": "ready",
-      "summary": "16 frozen contracts"
+      "summary": "17 frozen contracts"
+    },
+    {
+      "id": "external_approval_boundary",
+      "state": "ready",
+      "summary": "True"
     },
     {
       "id": "runtime_readiness",

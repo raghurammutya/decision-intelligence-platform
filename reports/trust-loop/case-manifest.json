@@ -1,6 +1,6 @@
 {
   "append_only_required": true,
-  "artifact_count": 27,
+  "artifact_count": 30,
   "artifacts": [
     {
       "artifact_type": "decision_spec",
@@ -55,7 +55,12 @@
     {
       "artifact_type": "schema_stability_policy",
       "path": "examples/schema-stability-policy.json",
-      "sha256": "79038be8cfe30d812d3448c6e45574ac04dcabf44909f57531cd499ea0942a8d"
+      "sha256": "9948bc5e8fede7c7d68dcedbf204216a1803df648ca6b34c0d3f9b3de07416d1"
+    },
+    {
+      "artifact_type": "external_approval_boundary",
+      "path": "examples/external-approval-boundary.json",
+      "sha256": "d865321915a59c25392bf4ef8738d59e5588667c236dafe4eaa39a170b5d02a6"
     },
     {
       "artifact_type": "negative_decision_spec_fixture",
@@ -66,6 +71,11 @@
       "artifact_type": "negative_approval_fixture",
       "path": "examples/negative/approval-ai-approved.json",
       "sha256": "22d22620ec70b0d9272fb8b97da05738a104327fac2aa21f34e142179843cfab"
+    },
+    {
+      "artifact_type": "negative_external_approval_fixture",
+      "path": "examples/negative/external-approval-github-review-as-decision-approval.json",
+      "sha256": "01cf4f5032e293c63417229710d14cbda2f8f9bca38a58dabdffce134ce7c014"
     },
     {
       "artifact_type": "support_ticket_case_set",
@@ -130,7 +140,12 @@
     {
       "artifact_type": "schema_stability",
       "path": "reports/trust-loop/schema-stability.json",
-      "sha256": "2d69c670091990e6cd036f9283931733ad58843e7219c13e27a4ff9278314eff"
+      "sha256": "933479149f1ce60ca5ff694c9845bca97ad532053e88a10b14cbded8fcb292bc"
+    },
+    {
+      "artifact_type": "external_approval_boundary",
+      "path": "reports/trust-loop/external-approval-boundary.json",
+      "sha256": "69fd49e0a7dbe4e2c39a698b6dc2fc63e90ebc3e00fe05eaa4652af683d3b3f5"
     },
     {
       "artifact_type": "case_evidence",

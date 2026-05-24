@@ -1,0 +1,23 @@
+{
+  "schema_version": "external-approval-boundary/v1",
+  "boundary_id": "negative-github-review-as-decision-approval",
+  "boundary_version": "0.0.0-negative",
+  "source_boundary": "negative_fixture",
+  "purpose": "Negative fixture proving GitHub code review cannot satisfy decision approval authority.",
+  "approval_system_type": "github_code_review",
+  "live_approval_system_observed": false,
+  "github_code_review_is_decision_approval": true,
+  "solo_maintainer_exception_is_decision_approval": true,
+  "decision_approval_required": true,
+  "decision_approval_source": "github_pull_request_review",
+  "approval_subject_binding_required": false,
+  "approval_role_scope_required": false,
+  "approval_expiry_required": false,
+  "approval_mfa_required": false,
+  "approval_audit_export_required": false,
+  "ai_approval_allowed": false,
+  "required_evidence": [],
+  "admission_controls": [],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

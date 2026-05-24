@@ -1,0 +1,40 @@
+{
+  "schema_version": "external-approval-boundary/v1",
+  "boundary_id": "dip-external-decision-approval-boundary",
+  "boundary_version": "2.2.0-pre",
+  "source_boundary": "external_decision_approval_contract_not_live_approval_system",
+  "purpose": "Separate decision approval authority from GitHub code-review and solo-maintainer merge exceptions.",
+  "approval_system_type": "contract_backed_external_approval_boundary",
+  "live_approval_system_observed": false,
+  "github_code_review_is_decision_approval": false,
+  "solo_maintainer_exception_is_decision_approval": false,
+  "decision_approval_required": true,
+  "decision_approval_source": "external_approval_record_contract",
+  "approval_subject_binding_required": true,
+  "approval_role_scope_required": true,
+  "approval_expiry_required": true,
+  "approval_mfa_required": true,
+  "approval_audit_export_required": true,
+  "ai_approval_allowed": false,
+  "required_evidence": [
+    "external_approval_record_id",
+    "approver_subject",
+    "approver_role",
+    "decision_scope",
+    "approval_timestamp",
+    "approval_expires_at",
+    "mfa_evidence",
+    "approval_reason",
+    "case_manifest_hash",
+    "audit_export_ref"
+  ],
+  "admission_controls": [
+    "policy_preflight_requires_approval",
+    "approval_bound_to_case_manifest",
+    "approver_cannot_be_requester",
+    "ai_identity_excluded",
+    "runtime_authority_denied"
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}
