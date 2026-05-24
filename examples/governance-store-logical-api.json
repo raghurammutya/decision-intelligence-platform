@@ -1,0 +1,22 @@
+{
+  "schema_version": "governance-store-logical-api/v1",
+  "api_id": "dip-governance-store-logical-api-v24",
+  "storage_backend_selected": false,
+  "append_only_required": true,
+  "projection_rebuild_required": true,
+  "direct_database_access_allowed": false,
+  "mutation_headers_required": ["Idempotency-Key", "Correlation-Id"],
+  "operations": [
+    {"method": "POST", "path": "/api/v1/governance-store/records", "operation": "append_record", "append_only": true, "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/governance-store/records/{record_id}", "operation": "read_record"},
+    {"method": "GET", "path": "/api/v1/governance-store/cases/{case_id}/records", "operation": "query_case_records"},
+    {"method": "GET", "path": "/api/v1/governance-store/products/{product_id}/records", "operation": "query_product_records"},
+    {"method": "POST", "path": "/api/v1/governance-store/projections/rebuild", "operation": "rebuild_projection", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/governance-store/projections/{projection_id}", "operation": "read_projection"},
+    {"method": "GET", "path": "/api/v1/governance-store/lineage/{resource_id}", "operation": "read_lineage"},
+    {"method": "GET", "path": "/api/v1/governance-store/events", "operation": "read_events"}
+  ],
+  "delete_operation_allowed": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

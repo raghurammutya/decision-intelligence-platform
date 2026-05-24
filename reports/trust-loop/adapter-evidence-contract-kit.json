@@ -1,0 +1,14 @@
+{
+  "adapter_contract_count": 11,
+  "adapter_evidence_contract_kit_valid": true,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v23.0-adapter-evidence-contract-kit-1",
+  "live_invocation_allowed_count": 0,
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "sample_evidence_present": true,
+  "sample_lineage_present": true,
+  "sample_result_present": true,
+  "schema_version": "adapter-evidence-contract-kit-evaluation/v1"
+}

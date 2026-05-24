@@ -1,0 +1,14 @@
+{
+  "computed": true,
+  "contract_valid": true,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v22.0-product-pack-contract-kit-1",
+  "hidden_shared_state_allowed": false,
+  "product_pack_contract_kit_valid": true,
+  "production_decision_execution_authorized": false,
+  "required_field_count": 10,
+  "runtime_authority_granted_count": 0,
+  "runtime_integration_authorized": false,
+  "schema_version": "product-pack-contract-kit-evaluation/v1",
+  "template_count": 3
+}

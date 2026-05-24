@@ -1,0 +1,17 @@
+{
+  "closure_gate_complete_count": 5,
+  "closure_gate_count": 5,
+  "closure_gates": {
+    "v21_canonical_openapi_contract_valid": true,
+    "v22_product_pack_contract_kit_valid": true,
+    "v23_adapter_evidence_contract_kit_valid": true,
+    "v24_governance_store_logical_api_valid": true,
+    "v25_event_recovery_contract_v2_valid": true
+  },
+  "computed": true,
+  "evaluation_id": "v25.0-safe-contract-closure-1",
+  "production_decision_execution_authorized": false,
+  "runtime_integration_authorized": false,
+  "schema_version": "v25-contract-closure-evaluation/v1",
+  "v25_contract_closure_valid": true
+}

@@ -65,6 +65,11 @@ ARTIFACTS = [
     ("openapi_skeleton", "examples/openapi-skeleton.json"),
     ("event_recovery_fixtures", "examples/event-recovery-fixtures.json"),
     ("governance_store_logical_schema", "examples/governance-store-logical-schema.json"),
+    ("canonical_openapi_contract", "examples/canonical-openapi-contract.json"),
+    ("product_pack_contract_kit", "examples/product-pack-contract-kit.json"),
+    ("adapter_evidence_contract_kit", "examples/adapter-evidence-contract-kit.json"),
+    ("governance_store_logical_api", "examples/governance-store-logical-api.json"),
+    ("event_recovery_contract_v2", "examples/event-recovery-contract-v2.json"),
     ("policy_preflight", "reports/trust-loop/computed-policy-preflight.json"),
     ("policy_engine", "reports/trust-loop/computed-policy-engine.json"),
     ("simulation", "reports/trust-loop/computed-simulation-evidence.json"),
@@ -2726,6 +2731,195 @@ def evaluate_v20_architecture_closure(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def evaluate_canonical_openapi_contract(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/canonical-openapi-contract.json")
+    result = validate_file("canonical_openapi_contract", root / "examples/canonical-openapi-contract.json")
+    operations = contract.get("resource_operations", [])
+    commands = [operation for operation in operations if operation.get("operation") == "command"]
+    required_headers = set(contract.get("mutation_headers_required", []))
+    return {
+        "schema_version": "canonical-openapi-contract-evaluation/v1",
+        "evaluation_id": "v21.0-canonical-openapi-contract-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "openapi_version": contract.get("openapi_version"),
+        "operation_count": len(operations),
+        "command_count": len(commands),
+        "rest_authoritative": contract.get("authority") == "rest",
+        "all_commands_require_idempotency": all(
+            "Idempotency-Key" in operation.get("headers_required", []) for operation in commands
+        ),
+        "all_commands_require_correlation": all(
+            "Correlation-Id" in operation.get("headers_required", []) for operation in commands
+        ),
+        "runtime_authority_blocked_response": contract.get("runtime_authority_response", {}).get("authority")
+        == "blocked",
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "canonical_openapi_contract_valid": result.get("passed") is True
+        and contract.get("authority") == "rest"
+        and len(operations) >= 20
+        and required_headers == {"Idempotency-Key", "Correlation-Id"}
+        and all(set(operation.get("headers_required", [])) == required_headers for operation in commands)
+        and contract.get("runtime_authority_response", {}).get("authority") == "blocked"
+        and contract.get("websocket_authoritative") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_product_pack_contract_kit(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/product-pack-contract-kit.json")
+    result = validate_file("product_pack_contract_kit", root / "examples/product-pack-contract-kit.json")
+    templates = contract.get("templates", [])
+    return {
+        "schema_version": "product-pack-contract-kit-evaluation/v1",
+        "evaluation_id": "v22.0-product-pack-contract-kit-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "required_field_count": len(contract.get("required_fields", [])),
+        "template_count": len(templates),
+        "direct_database_access_allowed": any(
+            template.get("direct_database_access_allowed") is True for template in templates
+        ),
+        "hidden_shared_state_allowed": any(template.get("hidden_shared_state_allowed") is True for template in templates),
+        "runtime_authority_granted_count": len(
+            [template for template in templates if template.get("runtime_authority") != "none"]
+        ),
+        "product_pack_contract_kit_valid": result.get("passed") is True
+        and len(contract.get("required_fields", [])) >= 10
+        and len(templates) >= 3
+        and all(template.get("runtime_authority") == "none" for template in templates)
+        and all(template.get("direct_database_access_allowed") is False for template in templates)
+        and all(template.get("hidden_shared_state_allowed") is False for template in templates),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_adapter_evidence_contract_kit(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/adapter-evidence-contract-kit.json")
+    result = validate_file("adapter_evidence_contract_kit", root / "examples/adapter-evidence-contract-kit.json")
+    adapters = contract.get("adapter_contracts", [])
+    sample = contract.get("sample_response", {})
+    return {
+        "schema_version": "adapter-evidence-contract-kit-evaluation/v1",
+        "evaluation_id": "v23.0-adapter-evidence-contract-kit-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "adapter_contract_count": len(adapters),
+        "live_invocation_allowed_count": len(
+            [adapter for adapter in adapters if adapter.get("live_invocation_allowed") is True]
+        ),
+        "sample_result_present": "result" in sample,
+        "sample_evidence_present": "evidence" in sample,
+        "sample_lineage_present": bool(sample.get("evidence", {}).get("lineage")),
+        "adapter_evidence_contract_kit_valid": result.get("passed") is True
+        and len(adapters) >= 10
+        and all(adapter.get("live_invocation_allowed") is False for adapter in adapters)
+        and "result" in sample
+        and "evidence" in sample
+        and bool(sample.get("evidence", {}).get("correlation_id")),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_governance_store_logical_api(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/governance-store-logical-api.json")
+    result = validate_file("governance_store_logical_api", root / "examples/governance-store-logical-api.json")
+    operations = contract.get("operations", [])
+    commands = [operation for operation in operations if operation.get("method") == "POST"]
+    required_headers = set(contract.get("mutation_headers_required", []))
+    return {
+        "schema_version": "governance-store-logical-api-evaluation/v1",
+        "evaluation_id": "v24.0-governance-store-logical-api-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "operation_count": len(operations),
+        "storage_backend_selected": contract.get("storage_backend_selected") is True,
+        "append_only_required": contract.get("append_only_required") is True,
+        "projection_rebuild_required": contract.get("projection_rebuild_required") is True,
+        "direct_database_access_allowed": contract.get("direct_database_access_allowed") is True,
+        "delete_operation_allowed": contract.get("delete_operation_allowed") is True,
+        "all_commands_require_idempotency": all(
+            "Idempotency-Key" in operation.get("headers_required", []) for operation in commands
+        ),
+        "all_commands_require_correlation": all(
+            "Correlation-Id" in operation.get("headers_required", []) for operation in commands
+        ),
+        "governance_store_logical_api_valid": result.get("passed") is True
+        and len(operations) >= 8
+        and contract.get("storage_backend_selected") is False
+        and contract.get("append_only_required") is True
+        and contract.get("projection_rebuild_required") is True
+        and contract.get("direct_database_access_allowed") is False
+        and contract.get("delete_operation_allowed") is False
+        and all(set(operation.get("headers_required", [])) == required_headers for operation in commands),
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_event_recovery_contract_v2(root: Path = ROOT) -> dict[str, Any]:
+    contract = load_json(root / "examples/event-recovery-contract-v2.json")
+    result = validate_file("event_recovery_contract_v2", root / "examples/event-recovery-contract-v2.json")
+    event_types = contract.get("recoverable_event_types", [])
+    return {
+        "schema_version": "event-recovery-contract-v2-evaluation/v1",
+        "evaluation_id": "v25.0-event-recovery-contract-v2-1",
+        "computed": True,
+        "contract_valid": result.get("passed") is True,
+        "event_type_count": len(event_types),
+        "rest_recovery_endpoint_count": len(contract.get("rest_recovery_endpoints", [])),
+        "websocket_authoritative": contract.get("websocket_authoritative") is True,
+        "events_mutate_business_state": contract.get("events_mutate_business_state") is True,
+        "rest_event_log_required": contract.get("rest_event_log_required") is True,
+        "reconnect_recovery_required": contract.get("reconnect_recovery_required") is True,
+        "all_event_types_have_resource_uri": all(bool(event.get("resource_uri")) for event in event_types),
+        "all_event_types_have_evidence_uri": all(bool(event.get("evidence_uri")) for event in event_types),
+        "event_recovery_contract_v2_valid": result.get("passed") is True
+        and len(event_types) >= 7
+        and len(contract.get("rest_recovery_endpoints", [])) >= 3
+        and contract.get("websocket_authoritative") is False
+        and contract.get("events_mutate_business_state") is False
+        and contract.get("rest_event_log_required") is True
+        and contract.get("reconnect_recovery_required") is True,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
+def evaluate_v25_contract_closure(root: Path = ROOT) -> dict[str, Any]:
+    v21 = load_json(root / "reports/trust-loop/canonical-openapi-contract.json")
+    v22 = load_json(root / "reports/trust-loop/product-pack-contract-kit.json")
+    v23 = load_json(root / "reports/trust-loop/adapter-evidence-contract-kit.json")
+    v24 = load_json(root / "reports/trust-loop/governance-store-logical-api.json")
+    v25 = load_json(root / "reports/trust-loop/event-recovery-contract-v2.json")
+    gates = {
+        "v21_canonical_openapi_contract_valid": v21.get("canonical_openapi_contract_valid") is True,
+        "v22_product_pack_contract_kit_valid": v22.get("product_pack_contract_kit_valid") is True,
+        "v23_adapter_evidence_contract_kit_valid": v23.get("adapter_evidence_contract_kit_valid") is True,
+        "v24_governance_store_logical_api_valid": v24.get("governance_store_logical_api_valid") is True,
+        "v25_event_recovery_contract_v2_valid": v25.get("event_recovery_contract_v2_valid") is True,
+    }
+    return {
+        "schema_version": "v25-contract-closure-evaluation/v1",
+        "evaluation_id": "v25.0-safe-contract-closure-1",
+        "computed": True,
+        "closure_gates": gates,
+        "closure_gate_count": len(gates),
+        "closure_gate_complete_count": len([value for value in gates.values() if value is True]),
+        "v25_contract_closure_valid": all(gates.values())
+        and v21.get("websocket_authoritative") is False
+        and v22.get("direct_database_access_allowed") is False
+        and v23.get("live_invocation_allowed_count", 1) == 0
+        and v24.get("storage_backend_selected") is False
+        and v25.get("websocket_authoritative") is False,
+        "runtime_integration_authorized": False,
+        "production_decision_execution_authorized": False,
+    }
+
+
 def build_runtime_readiness_assessment(root: Path = ROOT) -> dict[str, Any]:
     external_identity = load_json(root / "reports/trust-loop/external-identity.json")
     live_identity_rbac = load_json(root / "reports/trust-loop/live-identity-rbac.json")
@@ -3505,6 +3699,12 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
     event_recovery_fixtures = load_json(root / "reports/trust-loop/event-recovery-fixtures.json")
     governance_store_logical_schema = load_json(root / "reports/trust-loop/governance-store-logical-schema.json")
     v20_closure = load_json(root / "reports/trust-loop/v20-architecture-closure.json")
+    canonical_openapi_contract = load_json(root / "reports/trust-loop/canonical-openapi-contract.json")
+    product_pack_contract_kit = load_json(root / "reports/trust-loop/product-pack-contract-kit.json")
+    adapter_evidence_contract_kit = load_json(root / "reports/trust-loop/adapter-evidence-contract-kit.json")
+    governance_store_logical_api = load_json(root / "reports/trust-loop/governance-store-logical-api.json")
+    event_recovery_contract_v2 = load_json(root / "reports/trust-loop/event-recovery-contract-v2.json")
+    v25_closure = load_json(root / "reports/trust-loop/v25-contract-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     replay = load_json(root / "reports/trust-loop/replay-result.json")
@@ -4062,6 +4262,78 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         "v20_0_architecture_closure_valid": v20_closure.get("v20_architecture_closure_valid") is True,
         "v20_0_closure_gate_complete_count": v20_closure.get("closure_gate_complete_count", 0),
         "v20_0_closure_gate_count": v20_closure.get("closure_gate_count", 0),
+        "v21_0_canonical_openapi_contract_observed": canonical_openapi_contract.get("computed") is True,
+        "v21_0_canonical_openapi_contract_valid": canonical_openapi_contract.get(
+            "canonical_openapi_contract_valid"
+        )
+        is True,
+        "v21_0_rest_authoritative": canonical_openapi_contract.get("rest_authoritative") is True,
+        "v21_0_operation_count": canonical_openapi_contract.get("operation_count", 0),
+        "v21_0_all_commands_require_idempotency": canonical_openapi_contract.get(
+            "all_commands_require_idempotency"
+        )
+        is True,
+        "v21_0_all_commands_require_correlation": canonical_openapi_contract.get(
+            "all_commands_require_correlation"
+        )
+        is True,
+        "v21_0_runtime_authority_blocked_response": canonical_openapi_contract.get(
+            "runtime_authority_blocked_response"
+        )
+        is True,
+        "v21_0_websocket_authoritative": canonical_openapi_contract.get("websocket_authoritative") is True,
+        "v22_0_product_pack_contract_kit_observed": product_pack_contract_kit.get("computed") is True,
+        "v22_0_product_pack_contract_kit_valid": product_pack_contract_kit.get(
+            "product_pack_contract_kit_valid"
+        )
+        is True,
+        "v22_0_template_count": product_pack_contract_kit.get("template_count", 0),
+        "v22_0_direct_database_access_allowed": product_pack_contract_kit.get("direct_database_access_allowed")
+        is True,
+        "v22_0_hidden_shared_state_allowed": product_pack_contract_kit.get("hidden_shared_state_allowed")
+        is True,
+        "v22_0_runtime_authority_granted_count": product_pack_contract_kit.get(
+            "runtime_authority_granted_count", 0
+        ),
+        "v23_0_adapter_evidence_contract_kit_observed": adapter_evidence_contract_kit.get("computed") is True,
+        "v23_0_adapter_evidence_contract_kit_valid": adapter_evidence_contract_kit.get(
+            "adapter_evidence_contract_kit_valid"
+        )
+        is True,
+        "v23_0_adapter_contract_count": adapter_evidence_contract_kit.get("adapter_contract_count", 0),
+        "v23_0_live_invocation_allowed_count": adapter_evidence_contract_kit.get(
+            "live_invocation_allowed_count", 0
+        ),
+        "v23_0_sample_evidence_present": adapter_evidence_contract_kit.get("sample_evidence_present") is True,
+        "v24_0_governance_store_logical_api_observed": governance_store_logical_api.get("computed") is True,
+        "v24_0_governance_store_logical_api_valid": governance_store_logical_api.get(
+            "governance_store_logical_api_valid"
+        )
+        is True,
+        "v24_0_storage_backend_selected": governance_store_logical_api.get("storage_backend_selected") is True,
+        "v24_0_direct_database_access_allowed": governance_store_logical_api.get(
+            "direct_database_access_allowed"
+        )
+        is True,
+        "v24_0_delete_operation_allowed": governance_store_logical_api.get("delete_operation_allowed") is True,
+        "v24_0_projection_rebuild_required": governance_store_logical_api.get("projection_rebuild_required")
+        is True,
+        "v25_0_event_recovery_contract_v2_observed": event_recovery_contract_v2.get("computed") is True,
+        "v25_0_event_recovery_contract_v2_valid": event_recovery_contract_v2.get(
+            "event_recovery_contract_v2_valid"
+        )
+        is True,
+        "v25_0_event_type_count": event_recovery_contract_v2.get("event_type_count", 0),
+        "v25_0_websocket_authoritative": event_recovery_contract_v2.get("websocket_authoritative") is True,
+        "v25_0_events_mutate_business_state": event_recovery_contract_v2.get("events_mutate_business_state")
+        is True,
+        "v25_0_rest_event_log_required": event_recovery_contract_v2.get("rest_event_log_required") is True,
+        "v25_0_reconnect_recovery_required": event_recovery_contract_v2.get("reconnect_recovery_required")
+        is True,
+        "v25_0_contract_closure_observed": v25_closure.get("computed") is True,
+        "v25_0_contract_closure_valid": v25_closure.get("v25_contract_closure_valid") is True,
+        "v25_0_closure_gate_complete_count": v25_closure.get("closure_gate_complete_count", 0),
+        "v25_0_closure_gate_count": v25_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "production_decision_authority_percent": runtime_readiness.get("production_decision_authority_percent", 0.0),
@@ -4236,6 +4508,30 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
         and governance_store_logical_schema.get("direct_database_access_allowed") is False
         and governance_store_logical_schema.get("append_only_required") is True
         and v20_closure.get("v20_architecture_closure_valid") is True
+        and canonical_openapi_contract.get("canonical_openapi_contract_valid") is True
+        and canonical_openapi_contract.get("rest_authoritative") is True
+        and canonical_openapi_contract.get("all_commands_require_idempotency") is True
+        and canonical_openapi_contract.get("all_commands_require_correlation") is True
+        and canonical_openapi_contract.get("runtime_authority_blocked_response") is True
+        and canonical_openapi_contract.get("websocket_authoritative") is False
+        and product_pack_contract_kit.get("product_pack_contract_kit_valid") is True
+        and product_pack_contract_kit.get("direct_database_access_allowed") is False
+        and product_pack_contract_kit.get("hidden_shared_state_allowed") is False
+        and product_pack_contract_kit.get("runtime_authority_granted_count", 1) == 0
+        and adapter_evidence_contract_kit.get("adapter_evidence_contract_kit_valid") is True
+        and adapter_evidence_contract_kit.get("live_invocation_allowed_count", 1) == 0
+        and adapter_evidence_contract_kit.get("sample_evidence_present") is True
+        and governance_store_logical_api.get("governance_store_logical_api_valid") is True
+        and governance_store_logical_api.get("storage_backend_selected") is False
+        and governance_store_logical_api.get("direct_database_access_allowed") is False
+        and governance_store_logical_api.get("delete_operation_allowed") is False
+        and governance_store_logical_api.get("projection_rebuild_required") is True
+        and event_recovery_contract_v2.get("event_recovery_contract_v2_valid") is True
+        and event_recovery_contract_v2.get("websocket_authoritative") is False
+        and event_recovery_contract_v2.get("events_mutate_business_state") is False
+        and event_recovery_contract_v2.get("rest_event_log_required") is True
+        and event_recovery_contract_v2.get("reconnect_recovery_required") is True
+        and v25_closure.get("v25_contract_closure_valid") is True
         and runtime_readiness.get("runtime_readiness_percent") == 0.0
         and runtime_readiness.get("production_decision_authority_percent") == 0.0
         and product_surface.get("surface_count", 0) >= 42
@@ -4280,6 +4576,11 @@ def build_release_acceptance(root: Path = ROOT, version: str = "v10.0.0-pre", so
             "OpenAPI contracts authorize runtime decisions",
             "event recovery exists only in WebSocket state",
             "governance store production backend is selected",
+            "canonical OpenAPI contract grants runtime authority",
+            "product-pack contract kit allows direct database access",
+            "adapter evidence contracts invoke live shared services",
+            "governance-store logical API selects production storage",
+            "event recovery v2 makes WebSocket authoritative",
         ],
     }
 
@@ -4548,6 +4849,35 @@ def write_release_acceptance_markdown(path: Path, payload: dict[str, Any]) -> No
         f"v20.0 append-only required: `{payload['v20_0_append_only_required']}`",
         f"v20.0 architecture closure valid: `{payload['v20_0_architecture_closure_valid']}`",
         f"v20.0 closure gates complete: `{payload['v20_0_closure_gate_complete_count']}/{payload['v20_0_closure_gate_count']}`",
+        f"v21.0 canonical OpenAPI valid: `{payload['v21_0_canonical_openapi_contract_valid']}`",
+        f"v21.0 REST authoritative: `{payload['v21_0_rest_authoritative']}`",
+        f"v21.0 operations: `{payload['v21_0_operation_count']}`",
+        f"v21.0 idempotency required: `{payload['v21_0_all_commands_require_idempotency']}`",
+        f"v21.0 correlation required: `{payload['v21_0_all_commands_require_correlation']}`",
+        f"v21.0 runtime authority blocked response: `{payload['v21_0_runtime_authority_blocked_response']}`",
+        f"v21.0 WebSocket authoritative: `{payload['v21_0_websocket_authoritative']}`",
+        f"v22.0 product-pack kit valid: `{payload['v22_0_product_pack_contract_kit_valid']}`",
+        f"v22.0 product-pack templates: `{payload['v22_0_template_count']}`",
+        f"v22.0 direct database access allowed: `{payload['v22_0_direct_database_access_allowed']}`",
+        f"v22.0 hidden shared state allowed: `{payload['v22_0_hidden_shared_state_allowed']}`",
+        f"v22.0 runtime authority granted count: `{payload['v22_0_runtime_authority_granted_count']}`",
+        f"v23.0 adapter evidence kit valid: `{payload['v23_0_adapter_evidence_contract_kit_valid']}`",
+        f"v23.0 adapter contracts: `{payload['v23_0_adapter_contract_count']}`",
+        f"v23.0 live invocation allowed count: `{payload['v23_0_live_invocation_allowed_count']}`",
+        f"v23.0 sample evidence present: `{payload['v23_0_sample_evidence_present']}`",
+        f"v24.0 governance-store logical API valid: `{payload['v24_0_governance_store_logical_api_valid']}`",
+        f"v24.0 storage backend selected: `{payload['v24_0_storage_backend_selected']}`",
+        f"v24.0 direct database access allowed: `{payload['v24_0_direct_database_access_allowed']}`",
+        f"v24.0 delete operation allowed: `{payload['v24_0_delete_operation_allowed']}`",
+        f"v24.0 projection rebuild required: `{payload['v24_0_projection_rebuild_required']}`",
+        f"v25.0 event recovery v2 valid: `{payload['v25_0_event_recovery_contract_v2_valid']}`",
+        f"v25.0 event types: `{payload['v25_0_event_type_count']}`",
+        f"v25.0 WebSocket authoritative: `{payload['v25_0_websocket_authoritative']}`",
+        f"v25.0 events mutate business state: `{payload['v25_0_events_mutate_business_state']}`",
+        f"v25.0 REST event log required: `{payload['v25_0_rest_event_log_required']}`",
+        f"v25.0 reconnect recovery required: `{payload['v25_0_reconnect_recovery_required']}`",
+        f"v25.0 contract closure valid: `{payload['v25_0_contract_closure_valid']}`",
+        f"v25.0 closure gates complete: `{payload['v25_0_closure_gate_complete_count']}/{payload['v25_0_closure_gate_count']}`",
         f"Runtime readiness assessment observed: `{payload['runtime_readiness_assessment_observed']}`",
         f"Runtime readiness percent: `{payload['runtime_readiness_percent']}`",
         f"Production decision authority percent: `{payload['production_decision_authority_percent']}`",
@@ -4710,6 +5040,18 @@ def write_v0_2_evidence(
     write_json(target / "governance-store-logical-schema.json", governance_store_logical_schema)
     v20_closure = evaluate_v20_architecture_closure(root)
     write_json(target / "v20-architecture-closure.json", v20_closure)
+    canonical_openapi_contract = evaluate_canonical_openapi_contract(root)
+    write_json(target / "canonical-openapi-contract.json", canonical_openapi_contract)
+    product_pack_contract_kit = evaluate_product_pack_contract_kit(root)
+    write_json(target / "product-pack-contract-kit.json", product_pack_contract_kit)
+    adapter_evidence_contract_kit = evaluate_adapter_evidence_contract_kit(root)
+    write_json(target / "adapter-evidence-contract-kit.json", adapter_evidence_contract_kit)
+    governance_store_logical_api = evaluate_governance_store_logical_api(root)
+    write_json(target / "governance-store-logical-api.json", governance_store_logical_api)
+    event_recovery_contract_v2 = evaluate_event_recovery_contract_v2(root)
+    write_json(target / "event-recovery-contract-v2.json", event_recovery_contract_v2)
+    v25_closure = evaluate_v25_contract_closure(root)
+    write_json(target / "v25-contract-closure.json", v25_closure)
     product_surface = build_product_review_surface(root)
     write_json(target / "product-review-surface.json", product_surface)
     write_product_review_surface_html(target / "product-review-workspace.html", product_surface)
@@ -4780,6 +5122,12 @@ def write_v0_2_evidence(
         "event_recovery_fixtures": event_recovery_fixtures,
         "governance_store_logical_schema": governance_store_logical_schema,
         "v20_closure": v20_closure,
+        "canonical_openapi_contract": canonical_openapi_contract,
+        "product_pack_contract_kit": product_pack_contract_kit,
+        "adapter_evidence_contract_kit": adapter_evidence_contract_kit,
+        "governance_store_logical_api": governance_store_logical_api,
+        "event_recovery_contract_v2": event_recovery_contract_v2,
+        "v25_closure": v25_closure,
         "approval_authority": approval_authority,
         "repository_governance": repository_governance,
         "release_lifecycle": release_lifecycle,

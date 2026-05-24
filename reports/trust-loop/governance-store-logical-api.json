@@ -1,0 +1,17 @@
+{
+  "all_commands_require_correlation": true,
+  "all_commands_require_idempotency": true,
+  "append_only_required": true,
+  "computed": true,
+  "contract_valid": true,
+  "delete_operation_allowed": false,
+  "direct_database_access_allowed": false,
+  "evaluation_id": "v24.0-governance-store-logical-api-1",
+  "governance_store_logical_api_valid": true,
+  "operation_count": 8,
+  "production_decision_execution_authorized": false,
+  "projection_rebuild_required": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "governance-store-logical-api-evaluation/v1",
+  "storage_backend_selected": false
+}

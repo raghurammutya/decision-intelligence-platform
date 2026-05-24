@@ -67,6 +67,12 @@ from dip_framework.v02 import (
     evaluate_event_recovery_fixtures,
     evaluate_governance_store_logical_schema,
     evaluate_v20_architecture_closure,
+    evaluate_canonical_openapi_contract,
+    evaluate_product_pack_contract_kit,
+    evaluate_adapter_evidence_contract_kit,
+    evaluate_governance_store_logical_api,
+    evaluate_event_recovery_contract_v2,
+    evaluate_v25_contract_closure,
     evaluate_shared_context_runtime_governance,
     evaluate_shared_context_governance,
     evaluate_solo_maintainer_exception,
@@ -1066,6 +1072,62 @@ class TrustLoopTests(unittest.TestCase):
         self.assertFalse(result["release"]["v20_0_direct_database_access_allowed"])
         self.assertTrue(result["release"]["v20_0_append_only_required"])
         self.assertTrue(result["release"]["v20_0_architecture_closure_valid"])
+        self.assertFalse(result["release"]["runtime_integration_authorized"])
+        self.assertFalse(result["release"]["production_decision_execution_authorized"])
+        self.assertTrue(result["release"]["release_acceptance_passed"])
+
+    def test_v25_contract_closure_without_runtime_authority(self) -> None:
+        result = write_v0_2_evidence(ROOT, ROOT / "reports" / "trust-loop", "v25.0.0-pre")
+        openapi = evaluate_canonical_openapi_contract(ROOT)
+        product_kit = evaluate_product_pack_contract_kit(ROOT)
+        adapter_kit = evaluate_adapter_evidence_contract_kit(ROOT)
+        governance_api = evaluate_governance_store_logical_api(ROOT)
+        events = evaluate_event_recovery_contract_v2(ROOT)
+        closure = evaluate_v25_contract_closure(ROOT)
+
+        self.assertTrue(openapi["canonical_openapi_contract_valid"])
+        self.assertTrue(openapi["rest_authoritative"])
+        self.assertTrue(openapi["all_commands_require_idempotency"])
+        self.assertTrue(openapi["all_commands_require_correlation"])
+        self.assertTrue(openapi["runtime_authority_blocked_response"])
+        self.assertFalse(openapi["websocket_authoritative"])
+        self.assertTrue(product_kit["product_pack_contract_kit_valid"])
+        self.assertFalse(product_kit["direct_database_access_allowed"])
+        self.assertFalse(product_kit["hidden_shared_state_allowed"])
+        self.assertEqual(product_kit["runtime_authority_granted_count"], 0)
+        self.assertTrue(adapter_kit["adapter_evidence_contract_kit_valid"])
+        self.assertEqual(adapter_kit["live_invocation_allowed_count"], 0)
+        self.assertTrue(adapter_kit["sample_evidence_present"])
+        self.assertTrue(governance_api["governance_store_logical_api_valid"])
+        self.assertFalse(governance_api["storage_backend_selected"])
+        self.assertFalse(governance_api["direct_database_access_allowed"])
+        self.assertFalse(governance_api["delete_operation_allowed"])
+        self.assertTrue(governance_api["projection_rebuild_required"])
+        self.assertTrue(events["event_recovery_contract_v2_valid"])
+        self.assertFalse(events["websocket_authoritative"])
+        self.assertFalse(events["events_mutate_business_state"])
+        self.assertTrue(events["rest_event_log_required"])
+        self.assertTrue(events["reconnect_recovery_required"])
+        self.assertTrue(closure["v25_contract_closure_valid"])
+        self.assertEqual(closure["closure_gate_complete_count"], closure["closure_gate_count"])
+        self.assertTrue(result["release"]["v21_0_canonical_openapi_contract_valid"])
+        self.assertTrue(result["release"]["v21_0_all_commands_require_idempotency"])
+        self.assertTrue(result["release"]["v21_0_all_commands_require_correlation"])
+        self.assertFalse(result["release"]["v21_0_websocket_authoritative"])
+        self.assertTrue(result["release"]["v22_0_product_pack_contract_kit_valid"])
+        self.assertFalse(result["release"]["v22_0_direct_database_access_allowed"])
+        self.assertFalse(result["release"]["v22_0_hidden_shared_state_allowed"])
+        self.assertEqual(result["release"]["v22_0_runtime_authority_granted_count"], 0)
+        self.assertTrue(result["release"]["v23_0_adapter_evidence_contract_kit_valid"])
+        self.assertEqual(result["release"]["v23_0_live_invocation_allowed_count"], 0)
+        self.assertTrue(result["release"]["v24_0_governance_store_logical_api_valid"])
+        self.assertFalse(result["release"]["v24_0_storage_backend_selected"])
+        self.assertFalse(result["release"]["v24_0_direct_database_access_allowed"])
+        self.assertFalse(result["release"]["v24_0_delete_operation_allowed"])
+        self.assertTrue(result["release"]["v25_0_event_recovery_contract_v2_valid"])
+        self.assertFalse(result["release"]["v25_0_websocket_authoritative"])
+        self.assertFalse(result["release"]["v25_0_events_mutate_business_state"])
+        self.assertTrue(result["release"]["v25_0_contract_closure_valid"])
         self.assertFalse(result["release"]["runtime_integration_authorized"])
         self.assertFalse(result["release"]["production_decision_execution_authorized"])
         self.assertTrue(result["release"]["release_acceptance_passed"])

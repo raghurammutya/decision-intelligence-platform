@@ -1,0 +1,62 @@
+{
+  "schema_version": "product-pack-contract-kit/v1",
+  "kit_id": "dip-product-pack-contract-kit-v22",
+  "required_fields": [
+    "product_id",
+    "owned_decisions",
+    "provided_capabilities",
+    "consumed_capabilities",
+    "shared_context_contracts",
+    "approval_authorities",
+    "emitted_evidence",
+    "replay_guarantees",
+    "runtime_authority",
+    "cost_model"
+  ],
+  "templates": [
+    {
+      "product_id": "edi-engineering-governance",
+      "owned_decisions": ["engineering-review-readiness"],
+      "provided_capabilities": ["engineering-governance-evidence"],
+      "consumed_capabilities": [],
+      "shared_context_contracts": ["engineering-governance-summary"],
+      "approval_authorities": ["engineering-governance-owner"],
+      "emitted_evidence": ["review-queue-evidence", "scanner-evidence"],
+      "replay_guarantees": ["case-pack-replay"],
+      "runtime_authority": "none",
+      "cost_model": "evidence-generation",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    },
+    {
+      "product_id": "ml-trading-decisions",
+      "owned_decisions": ["trading-signal-review"],
+      "provided_capabilities": ["candidate-computation-runtime"],
+      "consumed_capabilities": ["identity-provider-contract", "case-store-contract"],
+      "shared_context_contracts": ["market-signal-semantic-projection"],
+      "approval_authorities": ["trading-risk-owner"],
+      "emitted_evidence": ["signal-review-evidence", "model-lineage-evidence"],
+      "replay_guarantees": ["decision-input-replay"],
+      "runtime_authority": "none",
+      "cost_model": "simulation-and-computation",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    },
+    {
+      "product_id": "support-ticket-routing",
+      "owned_decisions": ["support-ticket-routing"],
+      "provided_capabilities": ["ticket-routing-simulation"],
+      "consumed_capabilities": ["policy-config-contract"],
+      "shared_context_contracts": ["support-ticket-context"],
+      "approval_authorities": ["support-platform-owner"],
+      "emitted_evidence": ["simulation-evidence", "decision-diff-evidence"],
+      "replay_guarantees": ["manifest-bound-replay"],
+      "runtime_authority": "none",
+      "cost_model": "case-review",
+      "direct_database_access_allowed": false,
+      "hidden_shared_state_allowed": false
+    }
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

@@ -21,7 +21,7 @@ Computed simulation decision shapes: `3`
 Computed decision diff observed: `True`
 Computed decision diff changed outcomes: `3`
 Case manifest valid: `True`
-Case manifest artifacts: `60`
+Case manifest artifacts: `65`
 Durable case manifest observed: `True`
 Durable case manifest valid: `True`
 Append-only chain valid: `True`
@@ -260,6 +260,35 @@ v20.0 direct database access allowed: `False`
 v20.0 append-only required: `True`
 v20.0 architecture closure valid: `True`
 v20.0 closure gates complete: `5/5`
+v21.0 canonical OpenAPI valid: `True`
+v21.0 REST authoritative: `True`
+v21.0 operations: `22`
+v21.0 idempotency required: `True`
+v21.0 correlation required: `True`
+v21.0 runtime authority blocked response: `True`
+v21.0 WebSocket authoritative: `False`
+v22.0 product-pack kit valid: `True`
+v22.0 product-pack templates: `3`
+v22.0 direct database access allowed: `False`
+v22.0 hidden shared state allowed: `False`
+v22.0 runtime authority granted count: `0`
+v23.0 adapter evidence kit valid: `True`
+v23.0 adapter contracts: `11`
+v23.0 live invocation allowed count: `0`
+v23.0 sample evidence present: `True`
+v24.0 governance-store logical API valid: `True`
+v24.0 storage backend selected: `False`
+v24.0 direct database access allowed: `False`
+v24.0 delete operation allowed: `False`
+v24.0 projection rebuild required: `True`
+v25.0 event recovery v2 valid: `True`
+v25.0 event types: `7`
+v25.0 WebSocket authoritative: `False`
+v25.0 events mutate business state: `False`
+v25.0 REST event log required: `True`
+v25.0 reconnect recovery required: `True`
+v25.0 contract closure valid: `True`
+v25.0 closure gates complete: `5/5`
 Runtime readiness assessment observed: `True`
 Runtime readiness percent: `0.0`
 Production decision authority percent: `0.0`
@@ -310,3 +339,8 @@ Release acceptance passed: `True`
 - `OpenAPI contracts authorize runtime decisions`
 - `event recovery exists only in WebSocket state`
 - `governance store production backend is selected`
+- `canonical OpenAPI contract grants runtime authority`
+- `product-pack contract kit allows direct database access`
+- `adapter evidence contracts invoke live shared services`
+- `governance-store logical API selects production storage`
+- `event recovery v2 makes WebSocket authoritative`

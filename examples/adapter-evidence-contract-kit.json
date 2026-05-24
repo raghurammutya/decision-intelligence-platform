@@ -1,0 +1,45 @@
+{
+  "schema_version": "adapter-evidence-contract-kit/v1",
+  "kit_id": "dip-adapter-evidence-contract-kit-v23",
+  "required_response_fields": ["result", "evidence"],
+  "required_evidence_fields": [
+    "provider",
+    "provider_version",
+    "contract_id",
+    "operation",
+    "subject",
+    "decision",
+    "lineage",
+    "checked_at",
+    "correlation_id"
+  ],
+  "adapter_contracts": [
+    {"adapter_id": "IdentityProviderAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "ApprovalProviderAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "PolicyConfigAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "CaseStoreAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "CapabilityRuntimeAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "ComputationRuntimeAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "ModelRuntimeAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "NotificationAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "CalendarWorkflowAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "UsageCostAdapter", "live_invocation_allowed": false},
+    {"adapter_id": "EvidenceProducerAdapter", "live_invocation_allowed": false}
+  ],
+  "sample_response": {
+    "result": {"allowed": false},
+    "evidence": {
+      "provider": "user_service",
+      "provider_version": "candidate",
+      "contract_id": "IdentityProviderAdapter",
+      "operation": "authorize_approval_scope",
+      "subject": "user_123",
+      "decision": "denied",
+      "lineage": ["identity-contract", "approval-scope-policy"],
+      "checked_at": "2026-05-24T00:00:00Z",
+      "correlation_id": "corr_123"
+    }
+  },
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

@@ -109,6 +109,11 @@ def main() -> int:
         "openapi_skeleton",
         "event_recovery_fixtures",
         "governance_store_logical_schema",
+        "canonical_openapi_contract",
+        "product_pack_contract_kit",
+        "adapter_evidence_contract_kit",
+        "governance_store_logical_api",
+        "event_recovery_contract_v2",
     ])
     validate_one_parser.add_argument("path")
     validate_one_parser.add_argument("--json", action="store_true")
@@ -120,7 +125,7 @@ def main() -> int:
     trust_loop_parser.set_defaults(func=trust_loop)
 
     release_parser = subparsers.add_parser("release-pack", help="Write DIP release acceptance evidence.")
-    release_parser.add_argument("--version", default="v20.0.0-pre")
+    release_parser.add_argument("--version", default="v25.0.0-pre")
     release_parser.add_argument("--source-commit", default="local-validation")
     release_parser.add_argument("--json", action="store_true")
     release_parser.set_defaults(func=release_pack)

@@ -69,6 +69,12 @@
     "evaluate_event_recovery_fixtures",
     "evaluate_governance_store_logical_schema",
     "evaluate_v20_architecture_closure",
+    "evaluate_canonical_openapi_contract",
+    "evaluate_product_pack_contract_kit",
+    "evaluate_adapter_evidence_contract_kit",
+    "evaluate_governance_store_logical_api",
+    "evaluate_event_recovery_contract_v2",
+    "evaluate_v25_contract_closure",
     "materialize_product_review_surface",
     "write_case_evidence",
     "replay_from_manifest"

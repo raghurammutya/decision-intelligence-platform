@@ -16,7 +16,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
-    write_v0_2_evidence(root, version="v20.0.0-pre")
+    write_v0_2_evidence(root, version="v25.0.0-pre")
     validation = validate_default_examples(root)
     case_evidence = load_json(root / "reports/trust-loop/case-evidence.json")
     replay_result = load_json(root / "reports/trust-loop/replay-result.json")
@@ -86,6 +86,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
     event_recovery_fixtures = load_json(root / "reports/trust-loop/event-recovery-fixtures.json")
     governance_store_logical_schema = load_json(root / "reports/trust-loop/governance-store-logical-schema.json")
     v20_closure = load_json(root / "reports/trust-loop/v20-architecture-closure.json")
+    canonical_openapi_contract = load_json(root / "reports/trust-loop/canonical-openapi-contract.json")
+    product_pack_contract_kit = load_json(root / "reports/trust-loop/product-pack-contract-kit.json")
+    adapter_evidence_contract_kit = load_json(root / "reports/trust-loop/adapter-evidence-contract-kit.json")
+    governance_store_logical_api = load_json(root / "reports/trust-loop/governance-store-logical-api.json")
+    event_recovery_contract_v2 = load_json(root / "reports/trust-loop/event-recovery-contract-v2.json")
+    v25_closure = load_json(root / "reports/trust-loop/v25-contract-closure.json")
     runtime_readiness = load_json(root / "reports/trust-loop/runtime-readiness-assessment.json")
     product_surface = load_json(root / "reports/trust-loop/product-review-surface.json")
     trust_loop_run = {
@@ -162,6 +168,12 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
             "evaluate_event_recovery_fixtures",
             "evaluate_governance_store_logical_schema",
             "evaluate_v20_architecture_closure",
+            "evaluate_canonical_openapi_contract",
+            "evaluate_product_pack_contract_kit",
+            "evaluate_adapter_evidence_contract_kit",
+            "evaluate_governance_store_logical_api",
+            "evaluate_event_recovery_contract_v2",
+            "evaluate_v25_contract_closure",
             "materialize_product_review_surface",
             "write_case_evidence",
             "replay_from_manifest",
@@ -497,6 +509,65 @@ def build_trust_loop(root: Path = ROOT) -> dict[str, Any]:
         "v20_0_architecture_closure_valid": v20_closure.get("v20_architecture_closure_valid") is True,
         "v20_0_closure_gate_complete_count": v20_closure.get("closure_gate_complete_count", 0),
         "v20_0_closure_gate_count": v20_closure.get("closure_gate_count", 0),
+        "v21_0_canonical_openapi_contract_valid": canonical_openapi_contract.get(
+            "canonical_openapi_contract_valid"
+        )
+        is True,
+        "v21_0_rest_authoritative": canonical_openapi_contract.get("rest_authoritative") is True,
+        "v21_0_all_commands_require_idempotency": canonical_openapi_contract.get(
+            "all_commands_require_idempotency"
+        )
+        is True,
+        "v21_0_all_commands_require_correlation": canonical_openapi_contract.get(
+            "all_commands_require_correlation"
+        )
+        is True,
+        "v21_0_runtime_authority_blocked_response": canonical_openapi_contract.get(
+            "runtime_authority_blocked_response"
+        )
+        is True,
+        "v21_0_websocket_authoritative": canonical_openapi_contract.get("websocket_authoritative") is True,
+        "v22_0_product_pack_contract_kit_valid": product_pack_contract_kit.get(
+            "product_pack_contract_kit_valid"
+        )
+        is True,
+        "v22_0_direct_database_access_allowed": product_pack_contract_kit.get("direct_database_access_allowed")
+        is True,
+        "v22_0_hidden_shared_state_allowed": product_pack_contract_kit.get("hidden_shared_state_allowed")
+        is True,
+        "v22_0_runtime_authority_granted_count": product_pack_contract_kit.get(
+            "runtime_authority_granted_count", 0
+        ),
+        "v23_0_adapter_evidence_contract_kit_valid": adapter_evidence_contract_kit.get(
+            "adapter_evidence_contract_kit_valid"
+        )
+        is True,
+        "v23_0_live_invocation_allowed_count": adapter_evidence_contract_kit.get(
+            "live_invocation_allowed_count", 0
+        ),
+        "v24_0_governance_store_logical_api_valid": governance_store_logical_api.get(
+            "governance_store_logical_api_valid"
+        )
+        is True,
+        "v24_0_storage_backend_selected": governance_store_logical_api.get("storage_backend_selected") is True,
+        "v24_0_direct_database_access_allowed": governance_store_logical_api.get(
+            "direct_database_access_allowed"
+        )
+        is True,
+        "v24_0_delete_operation_allowed": governance_store_logical_api.get("delete_operation_allowed") is True,
+        "v25_0_event_recovery_contract_v2_valid": event_recovery_contract_v2.get(
+            "event_recovery_contract_v2_valid"
+        )
+        is True,
+        "v25_0_websocket_authoritative": event_recovery_contract_v2.get("websocket_authoritative") is True,
+        "v25_0_events_mutate_business_state": event_recovery_contract_v2.get("events_mutate_business_state")
+        is True,
+        "v25_0_rest_event_log_required": event_recovery_contract_v2.get("rest_event_log_required") is True,
+        "v25_0_reconnect_recovery_required": event_recovery_contract_v2.get("reconnect_recovery_required")
+        is True,
+        "v25_0_contract_closure_valid": v25_closure.get("v25_contract_closure_valid") is True,
+        "v25_0_closure_gate_complete_count": v25_closure.get("closure_gate_complete_count", 0),
+        "v25_0_closure_gate_count": v25_closure.get("closure_gate_count", 0),
         "runtime_readiness_assessment_observed": runtime_readiness.get("computed") is True,
         "runtime_readiness_percent": runtime_readiness.get("runtime_readiness_percent", 0.0),
         "product_review_surface_observed": product_surface.get("computed") is True,

@@ -554,6 +554,92 @@ Required evidence:
 - direct database access denied
 - production backend selection remains blocked
 
+### v21.0 Canonical OpenAPI Contract
+
+Purpose: turn the OpenAPI skeleton into a validated canonical API contract
+without granting runtime authority.
+
+Required evidence:
+
+- OpenAPI 3.1 contract
+- REST remains authoritative
+- core DIP resources are represented
+- every mutation command requires `Idempotency-Key`
+- every mutation command requires `Correlation-Id`
+- runtime authority response remains blocked
+- WebSocket remains non-authoritative
+
+### v22.0 Product Pack Contract Kit
+
+Purpose: provide reusable product-pack templates for EDI, ML, and neutral
+sample products without allowing hidden shared state.
+
+Required evidence:
+
+- product id
+- owned decisions
+- provided and consumed capabilities
+- shared context contracts
+- approval authorities
+- emitted evidence
+- replay guarantees
+- cost model
+- runtime authority remains `none`
+- direct database access denied
+- hidden shared state denied
+
+### v23.0 Adapter Evidence Contract Kit
+
+Purpose: define the standard evidence-producing adapter response shape before
+any shared service can be invoked live.
+
+Required evidence:
+
+- result and evidence response fields
+- provider identity and version
+- contract id
+- operation
+- subject
+- decision
+- lineage
+- checked timestamp
+- correlation id
+- live invocation denied for all adapter contracts
+
+### v24.0 Governance Store Logical API
+
+Purpose: define append-only governance-store REST operations without selecting
+production storage.
+
+Required evidence:
+
+- append record operation
+- read record operation
+- case and product record queries
+- projection rebuild operation
+- lineage query
+- event query
+- mutation commands require idempotency and correlation headers
+- delete operation denied
+- direct database access denied
+- production backend selection remains blocked
+
+### v25.0 Event Recovery Contract v2
+
+Purpose: harden the realtime recovery model so every event can be recovered
+through REST state.
+
+Required evidence:
+
+- `/ws/v1/events` remains notification/progress only
+- REST event log required
+- reconnect recovery required
+- required event fields declared
+- REST recovery endpoints declared
+- representative event types include resource and evidence URIs
+- events do not mutate business state
+- WebSocket is not authoritative
+
 ### v2.7 Live Identity/RBAC Evidence
 
 Purpose: observe live identity and repository RBAC evidence without claiming a

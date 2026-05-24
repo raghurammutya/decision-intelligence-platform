@@ -1,0 +1,17 @@
+{
+  "all_event_types_have_evidence_uri": true,
+  "all_event_types_have_resource_uri": true,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v25.0-event-recovery-contract-v2-1",
+  "event_recovery_contract_v2_valid": true,
+  "event_type_count": 7,
+  "events_mutate_business_state": false,
+  "production_decision_execution_authorized": false,
+  "reconnect_recovery_required": true,
+  "rest_event_log_required": true,
+  "rest_recovery_endpoint_count": 3,
+  "runtime_integration_authorized": false,
+  "schema_version": "event-recovery-contract-v2-evaluation/v1",
+  "websocket_authoritative": false
+}

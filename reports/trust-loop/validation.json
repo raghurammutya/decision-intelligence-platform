@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "passed_count": 36,
-  "record_count": 36,
+  "passed_count": 41,
+  "record_count": 41,
   "records": [
     {
       "errors": [],
@@ -218,6 +218,36 @@
       "kind": "governance_store_logical_schema",
       "passed": true,
       "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-store-logical-schema.json"
+    },
+    {
+      "errors": [],
+      "kind": "canonical_openapi_contract",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/canonical-openapi-contract.json"
+    },
+    {
+      "errors": [],
+      "kind": "product_pack_contract_kit",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/product-pack-contract-kit.json"
+    },
+    {
+      "errors": [],
+      "kind": "adapter_evidence_contract_kit",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/adapter-evidence-contract-kit.json"
+    },
+    {
+      "errors": [],
+      "kind": "governance_store_logical_api",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/governance-store-logical-api.json"
+    },
+    {
+      "errors": [],
+      "kind": "event_recovery_contract_v2",
+      "passed": true,
+      "path": "/home/stocksadmin/workspace/decision-intelligence-platform/examples/event-recovery-contract-v2.json"
     }
   ]
 }

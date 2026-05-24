@@ -1,0 +1,17 @@
+{
+  "all_commands_require_correlation": true,
+  "all_commands_require_idempotency": true,
+  "canonical_openapi_contract_valid": true,
+  "command_count": 12,
+  "computed": true,
+  "contract_valid": true,
+  "evaluation_id": "v21.0-canonical-openapi-contract-1",
+  "openapi_version": "3.1.0",
+  "operation_count": 22,
+  "production_decision_execution_authorized": false,
+  "rest_authoritative": true,
+  "runtime_authority_blocked_response": true,
+  "runtime_integration_authorized": false,
+  "schema_version": "canonical-openapi-contract-evaluation/v1",
+  "websocket_authoritative": false
+}

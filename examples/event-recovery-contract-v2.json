@@ -1,0 +1,37 @@
+{
+  "schema_version": "event-recovery-contract-v2/v1",
+  "contract_id": "dip-event-recovery-contract-v25",
+  "websocket_endpoint": "/ws/v1/events",
+  "websocket_authoritative": false,
+  "events_mutate_business_state": false,
+  "rest_event_log_required": true,
+  "reconnect_recovery_required": true,
+  "required_event_fields": [
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "tenant_id",
+    "product_id",
+    "correlation_id",
+    "resource_type",
+    "resource_id",
+    "resource_uri",
+    "evidence_uri"
+  ],
+  "rest_recovery_endpoints": [
+    "/api/v1/events?after_event_id={event_id}",
+    "/api/v1/resources/{resource_type}/{resource_id}/events",
+    "/api/v1/cases/{case_id}/evidence-pack"
+  ],
+  "recoverable_event_types": [
+    {"event_type": "simulation.queued", "resource_uri": "/api/v1/simulations/{simulation_run_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "simulation.completed", "resource_uri": "/api/v1/simulations/{simulation_run_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "diff.completed", "resource_uri": "/api/v1/diffs/{diff_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "approval.status_changed", "resource_uri": "/api/v1/approvals/{approval_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "case.evidence_added", "resource_uri": "/api/v1/cases/{case_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "capability.certification_changed", "resource_uri": "/api/v1/service-certification/{certification_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"},
+    {"event_type": "runtime_authority.blocked", "resource_uri": "/api/v1/runtime-authority/requests/{request_id}", "evidence_uri": "/api/v1/cases/{case_id}/evidence-pack"}
+  ],
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

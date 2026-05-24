@@ -1,0 +1,41 @@
+{
+  "schema_version": "canonical-openapi-contract/v1",
+  "contract_id": "dip-canonical-openapi-contract-v21",
+  "openapi_version": "3.1.0",
+  "authority": "rest",
+  "mutation_headers_required": [
+    "Idempotency-Key",
+    "Correlation-Id"
+  ],
+  "resource_operations": [
+    {"method": "GET", "path": "/api/v1/products", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/products", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/product-packs", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/product-packs", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/decisions", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/decisions", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/capabilities", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/simulations", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/simulations/{simulation_run_id}", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/diffs", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "POST", "path": "/api/v1/approvals", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "POST", "path": "/api/v1/approvals/{approval_id}/approve", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "POST", "path": "/api/v1/cases", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/cases/{case_id}/evidence-pack", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/replay", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "POST", "path": "/api/v1/shared-context/contracts", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/governance-store/records", "operation": "query"},
+    {"method": "POST", "path": "/api/v1/runtime-authority/requests", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "POST", "path": "/api/v1/service-certification/requests", "operation": "command", "headers_required": ["Idempotency-Key", "Correlation-Id"]},
+    {"method": "GET", "path": "/api/v1/evidence/{evidence_id}", "operation": "query"},
+    {"method": "GET", "path": "/api/v1/usage", "operation": "query"},
+    {"method": "GET", "path": "/api/v1/events", "operation": "query"}
+  ],
+  "runtime_authority_response": {
+    "authority": "blocked",
+    "production_decision_authority": "blocked"
+  },
+  "websocket_authoritative": false,
+  "runtime_integration_authorized": false,
+  "production_decision_execution_authorized": false
+}

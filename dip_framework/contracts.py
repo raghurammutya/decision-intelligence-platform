@@ -460,6 +460,63 @@ REQUIRED = {
         "runtime_integration_authorized",
         "production_decision_execution_authorized",
     ],
+    "canonical_openapi_contract": [
+        "schema_version",
+        "contract_id",
+        "openapi_version",
+        "authority",
+        "mutation_headers_required",
+        "resource_operations",
+        "runtime_authority_response",
+        "websocket_authoritative",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "product_pack_contract_kit": [
+        "schema_version",
+        "kit_id",
+        "required_fields",
+        "templates",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "adapter_evidence_contract_kit": [
+        "schema_version",
+        "kit_id",
+        "required_response_fields",
+        "required_evidence_fields",
+        "adapter_contracts",
+        "sample_response",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "governance_store_logical_api": [
+        "schema_version",
+        "api_id",
+        "storage_backend_selected",
+        "append_only_required",
+        "projection_rebuild_required",
+        "direct_database_access_allowed",
+        "mutation_headers_required",
+        "operations",
+        "delete_operation_allowed",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
+    "event_recovery_contract_v2": [
+        "schema_version",
+        "contract_id",
+        "websocket_endpoint",
+        "websocket_authoritative",
+        "events_mutate_business_state",
+        "rest_event_log_required",
+        "reconnect_recovery_required",
+        "required_event_fields",
+        "rest_recovery_endpoints",
+        "recoverable_event_types",
+        "runtime_integration_authorized",
+        "production_decision_execution_authorized",
+    ],
 }
 
 
@@ -1053,6 +1110,138 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> list[str]:
             errors.append("governance store logical schema cannot authorize runtime integration")
         if payload.get("production_decision_execution_authorized") is not False:
             errors.append("governance store logical schema cannot authorize production decisions")
+    if kind == "canonical_openapi_contract":
+        if payload.get("openapi_version") != "3.1.0":
+            errors.append("canonical OpenAPI contract must use 3.1.0")
+        if payload.get("authority") != "rest":
+            errors.append("canonical OpenAPI contract must keep REST authoritative")
+        required_headers = {"Idempotency-Key", "Correlation-Id"}
+        if set(payload.get("mutation_headers_required", [])) != required_headers:
+            errors.append("canonical OpenAPI contract must require idempotency and correlation")
+        operations = payload.get("resource_operations", [])
+        if len(operations) < 20:
+            errors.append("canonical OpenAPI contract must include core resource operations")
+        for operation in operations:
+            if operation.get("operation") == "command" and set(operation.get("headers_required", [])) != required_headers:
+                errors.append(f"command {operation.get('method')} {operation.get('path')} missing required headers")
+        if payload.get("runtime_authority_response", {}).get("authority") != "blocked":
+            errors.append("canonical OpenAPI contract must expose blocked runtime authority")
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("canonical OpenAPI contract cannot make WebSocket authoritative")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("canonical OpenAPI contract cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("canonical OpenAPI contract cannot authorize production decisions")
+    if kind == "product_pack_contract_kit":
+        if len(payload.get("required_fields", [])) < 10:
+            errors.append("product-pack kit must declare required fields")
+        if len(payload.get("templates", [])) < 3:
+            errors.append("product-pack kit must include initial product templates")
+        for template in payload.get("templates", []):
+            missing = [field for field in payload.get("required_fields", []) if field not in template]
+            if missing:
+                errors.append(f"product template {template.get('product_id')} missing fields: {missing}")
+            if template.get("runtime_authority") != "none":
+                errors.append(f"product template {template.get('product_id')} cannot have runtime authority")
+            if template.get("direct_database_access_allowed") is not False:
+                errors.append(f"product template {template.get('product_id')} cannot allow direct database access")
+            if template.get("hidden_shared_state_allowed") is not False:
+                errors.append(f"product template {template.get('product_id')} cannot allow hidden shared state")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("product-pack kit cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("product-pack kit cannot authorize production decisions")
+    if kind == "adapter_evidence_contract_kit":
+        if set(payload.get("required_response_fields", [])) != {"result", "evidence"}:
+            errors.append("adapter evidence kit must require result and evidence")
+        evidence_fields = set(payload.get("required_evidence_fields", []))
+        required_evidence = {
+            "provider",
+            "provider_version",
+            "contract_id",
+            "operation",
+            "subject",
+            "decision",
+            "lineage",
+            "checked_at",
+            "correlation_id",
+        }
+        if not required_evidence.issubset(evidence_fields):
+            errors.append("adapter evidence kit missing required evidence fields")
+        if len(payload.get("adapter_contracts", [])) < 10:
+            errors.append("adapter evidence kit must include core adapter contracts")
+        for adapter in payload.get("adapter_contracts", []):
+            if adapter.get("live_invocation_allowed") is not False:
+                errors.append(f"adapter {adapter.get('adapter_id')} cannot allow live invocation")
+        sample = payload.get("sample_response", {})
+        if set(sample.keys()) != {"result", "evidence"}:
+            errors.append("adapter evidence kit sample response must include result and evidence")
+        if not required_evidence.issubset(set(sample.get("evidence", {}).keys())):
+            errors.append("adapter evidence kit sample response missing evidence fields")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("adapter evidence kit cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("adapter evidence kit cannot authorize production decisions")
+    if kind == "governance_store_logical_api":
+        if payload.get("storage_backend_selected") is not False:
+            errors.append("governance store logical API cannot select storage backend yet")
+        if payload.get("append_only_required") is not True:
+            errors.append("governance store logical API must require append-only records")
+        if payload.get("projection_rebuild_required") is not True:
+            errors.append("governance store logical API must require projection rebuild")
+        if payload.get("direct_database_access_allowed") is not False:
+            errors.append("governance store logical API cannot allow direct database access")
+        required_headers = {"Idempotency-Key", "Correlation-Id"}
+        if set(payload.get("mutation_headers_required", [])) != required_headers:
+            errors.append("governance store logical API must require idempotency and correlation")
+        if len(payload.get("operations", [])) < 8:
+            errors.append("governance store logical API must include core operations")
+        append_operations = [item for item in payload.get("operations", []) if item.get("operation") == "append_record"]
+        if not append_operations or any(item.get("append_only") is not True for item in append_operations):
+            errors.append("governance store logical API must include append-only append operation")
+        for operation in payload.get("operations", []):
+            if operation.get("method") == "POST" and set(operation.get("headers_required", [])) != required_headers:
+                errors.append(f"governance store command {operation.get('path')} missing required headers")
+        if payload.get("delete_operation_allowed") is not False:
+            errors.append("governance store logical API cannot allow deletes")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("governance store logical API cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("governance store logical API cannot authorize production decisions")
+    if kind == "event_recovery_contract_v2":
+        if payload.get("websocket_authoritative") is not False:
+            errors.append("event recovery v2 cannot make WebSocket authoritative")
+        if payload.get("events_mutate_business_state") is not False:
+            errors.append("event recovery v2 cannot mutate business state")
+        if payload.get("rest_event_log_required") is not True:
+            errors.append("event recovery v2 must require REST event log")
+        if payload.get("reconnect_recovery_required") is not True:
+            errors.append("event recovery v2 must require reconnect recovery")
+        required_fields = {
+            "event_id",
+            "event_type",
+            "occurred_at",
+            "tenant_id",
+            "product_id",
+            "correlation_id",
+            "resource_type",
+            "resource_id",
+            "resource_uri",
+            "evidence_uri",
+        }
+        if not required_fields.issubset(set(payload.get("required_event_fields", []))):
+            errors.append("event recovery v2 missing required event fields")
+        if len(payload.get("rest_recovery_endpoints", [])) < 3:
+            errors.append("event recovery v2 must declare REST recovery endpoints")
+        if len(payload.get("recoverable_event_types", [])) < 7:
+            errors.append("event recovery v2 must include core event types")
+        for event in payload.get("recoverable_event_types", []):
+            if not event.get("resource_uri") or not event.get("evidence_uri"):
+                errors.append(f"event {event.get('event_type')} missing resource/evidence URI")
+        if payload.get("runtime_integration_authorized") is not False:
+            errors.append("event recovery v2 cannot authorize runtime integration")
+        if payload.get("production_decision_execution_authorized") is not False:
+            errors.append("event recovery v2 cannot authorize production decisions")
     return errors
 
 
@@ -1101,6 +1290,11 @@ def validate_default_examples(root: Path = ROOT) -> dict[str, Any]:
         "openapi_skeleton": examples / "openapi-skeleton.json",
         "event_recovery_fixtures": examples / "event-recovery-fixtures.json",
         "governance_store_logical_schema": examples / "governance-store-logical-schema.json",
+        "canonical_openapi_contract": examples / "canonical-openapi-contract.json",
+        "product_pack_contract_kit": examples / "product-pack-contract-kit.json",
+        "adapter_evidence_contract_kit": examples / "adapter-evidence-contract-kit.json",
+        "governance_store_logical_api": examples / "governance-store-logical-api.json",
+        "event_recovery_contract_v2": examples / "event-recovery-contract-v2.json",
     }
     records = [validate_file(kind, path) for kind, path in files.items()]
     return {
